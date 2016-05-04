@@ -1,0 +1,27 @@
+body { 
+	text-align: center;
+	color: #333;
+	width: 100%;
+	height: 100%;
+	background:black;
+}
+ol,ul {list-style:none;}
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,p,blockquote,th,td{margin:0;padding:0;}
+
+.limiter {
+	margin-left: auto;
+	margin-right: auto;	
+}
+/*
+#portfolio{
+	margin-left: auto;
+	margin-right: auto;	
+}*/
+
+/* ul#portfolio li img{
+	border: none;
+	max-width: 1000px;
+	max-height: 650px;
+} */
+
+i
