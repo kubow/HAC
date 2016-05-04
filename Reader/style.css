@@ -1,0 +1,127 @@
+ /* Created by JaV 29.1.2015 - last edit 9.2.2015 */
+*{margin:0;padding:0}
+html, body {height:100%;width:100%;overflow:hidden;background-color:black;}
+	
+p {font-size: 8px; color:black;}
+h3{text-align: center; border-bottom: 1px solid #dec390; display: block; margin: 0px; padding: 0px;}
+h4{text-align: center; border-bottom: 1px solid #dec390; display: block; margin: 0px; padding: 0px;}
+table {width: 80%; margin: 5% 10% 10% 10%}
+
+/*Card System */
+A {	TEXT-DECORATION: none; COLOR: #0000ff}
+A:hover {COLOR: #ff3300}
+A:active {COLOR: #ff33ff}
+/*BODY {
+	FONT-FAMILY: arial CE, helvetica CE, verdana CE, arial, helvetica, verdana, Sans-serif; MARGIN: -10px 0 0 0
+}*/
+TH {FONT-SIZE: 9pt; /*FONT-FAMILY: Arial, Helvetica, sans-serif;*/ FONT-WEIGHT: bold; TEXT-ALIGN: center; BACKGROUND-COLOR: #d3dce3}
+TD {FONT-SIZE: 9pt; /*FONT-FAMILY: Arial, Helvetica, sans-serif;*/ TEXT-ALIGN: center}
+.inside {
+	COLOR: #d0d0d0; /*FONT-WEIGHT: bold; background-color: red*/
+}
+.outside {
+	COLOR: #000000
+}
+H1 {
+	FONT-SIZE: 16pt; FONT-FAMILY: Verdana, Arial, Helvetica, sans-serif; FONT-WEIGHT: bold
+}
+
+/* styles pro zobrazování i-frames */
+
+#frame{position: absolute; background: #000000; top: 0; left: 0; right: 0%; height: 100%; background-color:black;}
+#top{position: absolute; margin-top: 0px; width: 100%; background: #000000; color: white; width: 100%; font-size: 30px; height: 35px;}
+#west{position: absolute; top: 0; left: 0; right: 50%; height: 100%}
+#east{position: absolute; top: 0; left: 50%; right: 0; height: 100%}
+#left{background: #000000; color: white;position: absolute; margin-left: 35%;margin-top: 500px;z-index: 0;}	/* název restaurace nalevo a napravo */
+#right{background: #000000; color: white; position: absolute; margin-left: 90%;margin-top: 500px;z-index: 0;}	/* potřeba si pohrát s margin-top */
+
+img {
+	border: none;
+}
+
+.limiter {	display: block;	/* min-width: 800px;*/ width: 100%;}
+
+#limiter
+{
+    position:absolute;
+    width:100%;
+    height:100%;
+    text-align: center; /*handles the horizontal centering*/
+}
+
+.Centerer
+{
+    display: inline-block;
+	width:100%;
+    height: 100%;
+    vertical-align: middle;
+}
+
+ .Centered
+{
+    display: inline-block;
+    vertical-align: middle;
+	max-width: 950px;
+	max-height: 550px;
+}
+
+/* hlavni frame pro zobrazovani jidelnich listku */
+
+#Box { 
+	padding:5%;
+	margin:0;
+	font-size: 9px;
+	background-color: white;
+ }	
+ 
+/* --- restaurant specific hacks --- */
+ 
+/* Stará kotelna CSS template */
+/* používá heading jako názvy sekcí */
+/* jednotlive polozky odděleny třídou jídlo */
+
+.jidlo{
+    margin: 1px auto;
+    width: 100%;
+	display: block;
+}
+.jidlo .pocet{
+    width: 10%;
+    text-align: right;
+	display: inline-block;
+	vertical-align: top;
+
+}
+.jidlo .name{
+    width: 60%;
+    text-align: left;
+	display: inline-block;
+	vertical-align: top;
+}
+.jidlo .cena{
+    width: 20%;
+    float: right;
+    text-align: left;
+	display: inline-block;	
+	vertical-align: top;
+}
+/* SKANSKA - nemá divy - ovládáme h3 ul-li */
+/* V H3 se nachází spany, které asi časem vymažeme */
+
+/* Červený Trpaslík */
+/* Všechny přebytky vyřešeny VBA RegExp */
+
+.basic{
+	/*width: 100%;*/
+}
+
+/* U Žirafy */
+/* btw - konečně nějaká rozumě udělaná stránka */
+
+.foodmenu-head {width: 90%; border-bottom: 1px solid #000; padding: 0px 10px; margin-top: 15px;}
+.foodmenu-item {width: 100%; border-bottom: 1px solid #cecece; display: block; margin: 0px ; padding: 0px;line-height: 10px;}
+/*.foodmenu-item li {display: block; float: left;}*/
+.foodmenu-item .name_daily {margin-left: 20px; width: 70%; margin: 0px ; padding: 0px; display: inline-block; vertical-align: top;}
+.foodmenu-item .price {width: 30px; color: #A61A13; margin: 0px ; padding: 0px; text-align: right; display: inline-block; vertical-align: top;}
+.foodmenu-item .desc {width: 5%; color: #858585; display: inline-block; vertical-align: top;}
+.clear {clear: both; visibility: hidden;}	/* toto je však docela zvláštní */
