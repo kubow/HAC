@@ -1,5 +1,6 @@
 # HAC
-Home Automation Central
+Home Automation Central.
+Used for communicating with various datasources (and also some live data) and presenting results in most convenient way on localhost site (apache/nginx)
 
 ## Connector
 Used for communicating with databases. Currently supporting these ones:
