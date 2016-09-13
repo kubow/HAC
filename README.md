@@ -15,11 +15,16 @@ Main configuration should be platform independent, I guess Android & iOS not for
 (x86/x64/arm//linux/windows/apache/nginx/sqlite/postgre)
 
 ## Connector
-Used for communicating with databases. Currently supporting these ones:
+Used for connecting to various datasources. This connectow will be used for pushing data to reader and further to presenter. Currently supporting these ones:
+### Database
+- tk fromtend python tables
 - MySQL database (hosted on apache/nginx)
 - PostgreSQL database
 - sqlite databases (*.db)
-This connectow will be used for pushing data to reader and further to presenter
+### Geoinfromation
+- OpenLayers
+### Directory Control
+
 
 ## Presenter
 Presenting images in containing directory using java script.
