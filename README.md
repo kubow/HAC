@@ -4,12 +4,12 @@
 [![Python 2.7|3.0](https://img.shields.io/badge/Python-2.7%20%7C%203.0-yellow.svg)](https://www.python.org/)
 [![CSS [3]](https://img.shields.io/badge/CSS-%5B3%5D-ff69b4.svg)](http://www.w3schools.com/css/default.asp)
 [![HTML [5]](https://img.shields.io/badge/HTML-%5B5%5D-brightgreen.svg)](http://www.w3schools.com/html/default.asp)
-[![Architecture x64 | ARM](https://img.shields.io/badge/Architecture-x64%20%7C%20ARM-yellowgreen.svg)](http://www.arm.com/products/processors/instruction-set-architectures/index.php)
+[![Architecture x64|ARM](https://img.shields.io/badge/Architecture-x64|ARM-yellowgreen.svg)](http://www.arm.com/products/processors/instruction-set-architectures/index.php)
 
 
 Home Automation Central.
 Used for communicating with various datasources (and also some live data) and presenting results in on localhosts.
-Main configuration should be platform independent, I guess not Android & iOS for now.
+Main configuration should be platform independent, I guess Android & iOS not for now.
 (x86/x64/arm//linux/windows/apache/nginx/sqlite/postgre)
 
 ## Connector
