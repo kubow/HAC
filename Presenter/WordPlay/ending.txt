@@ -1,0 +1,25 @@
+problems of phonemic and morphological analysis.
+a corpus of utterance tokens upon which conformity has been defined by the paired utterance test.
+the traditional practice of grammarians.
+the levels of acceptability from fairly high (eg (99a)) to virtual gibberish (eg (98d)).
+a stipulation to place the constructions into these various categories.
+a descriptive fact.
+a parasitic gap construction.
+the extended c-command discussed in connection with (34).
+the ultimate standard that determines the accuracy of any proposed grammar.
+the system of base rules exclusive of the lexicon.
+irrelevant intervening contexts in selectional rules.
+nondistinctness in the sense of distinctive feature theory.
+a general convention regarding the forms of the grammar.
+an abstract underlying order.
+an important distinction in language use.
+the requirement that branching is not tolerated within the dominance scope of a complex symbol.
+the strong generative capacity of the theory.
+Quine's demonstration of the impossibility of translation between natural languages.
+the speaker's subconscious awareness of structural semantic fields. 
+a complete analysis of the meaning of natural language utterances in logical terms.
+the inheritance hierachy in Figure 8.3, where 'blue whales' are both aquatic and mammalian.
+an inheritance hierarchy described as a direct acylic graph (Levesque and Selman 1989).
+the common sense knowledge needed to accomplish this task.
+the frame representation found in Charniak (1976b) (Almost none of the program described here has been implemented).
+the notion of a script (Schank 1977).
