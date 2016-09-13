@@ -17,18 +17,20 @@ Main configuration should be platform independent, I guess Android & iOS not for
 ## Connector
 Used for connecting to various datasources. This connectow will be used for pushing data to reader and further to presenter. Currently supporting these ones:
 ### Database
-- tk fromtend python tables
-- MySQL database (hosted on apache/nginx)
-- PostgreSQL database
-- sqlite databases (*.db)
+#### - tk fromtend python tables
+#### - MySQL database (hosted on apache/nginx)
+#### - PostgreSQL database
+#### - sqlite databases (*.db)
 ### Geoinfromation
-- OpenLayers
+#### - OpenLayers
 ### Directory Control
 
 
 ## Presenter
 Presenting images in containing directory using java script.
+#### Word Play
 
 ## Reader
-Used for reading given websites.
-Currently only under windows using MS Access database automated with VBA code.
+Used for reading and processing text to standard fromat.
+#### Log Reader
+Processing log files with excel sheet
