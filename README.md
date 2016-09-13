@@ -1,6 +1,6 @@
 # HAC
 [![Architecture x64|ARM](https://img.shields.io/badge/Architecture-x64|ARM-yellowgreen.svg)](http://www.arm.com/products/processors/instruction-set-architectures/index.php)
-[![Platform Linux|Windows](https://img.shields.io/badge/Platform-Linux|Windows-orange.svg)](https://sqlite.org/features.html)
+[![Platform Linux|Win](https://img.shields.io/badge/Platform-Linux|Windows-orange.svg)](https://sqlite.org/features.html)
 [![Data SQLite|XML](https://img.shields.io/badge/Data-SQLite|XML-green.svg)](http://www.arm.com/products/processors/instruction-set-architectures/index.php)
 [![Bash Script](https://img.shields.io/badge/Bash-Script-blue.svg)](https://www.gnu.org/software/bash/)
 [![Visual Basic Script|VBA](https://img.shields.io/badge/Visual%20Basic-Script%20%7C%20VBA-lightgrey.svg)](https://msdn.microsoft.com/en-us/vstudio/ms788229.aspx)
