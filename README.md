@@ -17,20 +17,19 @@ Main configuration should be platform independent, I guess Android & iOS not for
 ## Connector
 Used for connecting to various datasources. This connectow will be used for pushing data to reader and further to presenter. Currently supporting these ones:
 ### Database
-#### - tk fromtend python tables
-#### - MySQL database (hosted on apache/nginx)
-#### - PostgreSQL database
-#### - sqlite databases (*.db)
+#### &nbsp;&nbsp;&nbsp;&nbsp; tk frontend python tables
+#### &nbsp;&nbsp;&nbsp;&nbsp; MySQL database (hosted on apache/nginx)
+#### &nbsp;&nbsp;&nbsp;&nbsp; PostgreSQL database
+#### &nbsp;&nbsp;&nbsp;&nbsp; sqlite databases (*.db)
 ### Geoinfromation
-#### - OpenLayers
+#### &nbsp;&nbsp;&nbsp;&nbsp; OpenLayers
 ### Directory Control
-
 
 ## Presenter
 Presenting images in containing directory using java script.
-#### Word Play
+#### &nbsp;&nbsp;&nbsp;&nbsp; Word Play
 
 ## Reader
 Used for reading and processing text to standard fromat.
-#### Log Reader
+#### &nbsp;&nbsp;&nbsp;&nbsp; Log Reader
 Processing log files with excel sheet
