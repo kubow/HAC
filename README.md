@@ -10,9 +10,8 @@
 [![Data SQLite|XML](https://img.shields.io/badge/Data-SQLite|XML-green.svg)](https://sqlite.org/features.html)
 
 Home Automation Central.
-Used for communicating with various datasources (and also some live data) and presenting results in on localhosts.
+Used for communicating with various datasources (and also some live data) and presenting results on localhosts.
 Main configuration should be platform independent, I guess Android & iOS not for now.
-(x86/x64/arm//linux/windows/apache/nginx/sqlite/postgre)
 
 ## Connector
 Used for connecting to various datasources. This connectow will be used for pushing data to reader and further to presenter. Currently supporting these ones:
