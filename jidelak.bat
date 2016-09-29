@@ -1,6 +1,6 @@
 echo on
 Set index=%~dp0iisstart.htm
-wscript %~dp0Reader\Reader_Menu.vbs
+wscript %~dp0Reader\ReaderMenu.vbs
 echo ^<html^> > %index%
 echo ^<head^> >> %index%
 echo ^<meta http-equiv="Content-Type" content="text/html; charset=windows-1250" /^> >> %index%
