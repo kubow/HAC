@@ -1,4 +1,4 @@
- /* Created by JaV 29.1.2015 - last edit 9.2.2015 */
+/* Created by JaV 29.1.2015 - last edit 1.10.2016 */
 *{margin:0;padding:0}
 html, body {height:100%;width:100%;overflow:hidden;background-color:black;}
 	
@@ -43,24 +43,24 @@ img {
 
 #limiter
 {
-    position:absolute;
-    width:100%;
-    height:100%;
-    text-align: center; /*handles the horizontal centering*/
+	position:absolute;
+	width:100%;
+	height:100%;
+	text-align: center; /*handles the horizontal centering*/
 }
 
 .Centerer
 {
-    display: inline-block;
+	display: inline-block;
 	width:100%;
-    height: 100%;
-    vertical-align: middle;
+	height: 100%;
+	vertical-align: middle;
 }
 
- .Centered
+.Centered
 {
-    display: inline-block;
-    vertical-align: middle;
+	display: inline-block;
+	vertical-align: middle;
 	max-width: 950px;
 	max-height: 550px;
 }
@@ -72,8 +72,8 @@ img {
 	margin:0;
 	font-size: 9px;
 	background-color: white;
- }	
- 
+}
+
 /* --- restaurant specific hacks --- */
  
 /* Stará kotelna CSS template */
@@ -81,27 +81,27 @@ img {
 /* jednotlive polozky odděleny třídou jídlo */
 
 .jidlo{
-    margin: 1px auto;
-    width: 100%;
+	margin: 1px auto;
+	width: 100%;
 	display: block;
 }
 .jidlo .pocet{
-    width: 10%;
-    text-align: right;
+	width: 10%;
+	text-align: right;
 	display: inline-block;
 	vertical-align: top;
 
 }
 .jidlo .name{
-    width: 60%;
-    text-align: left;
+	width: 60%;
+	text-align: left;
 	display: inline-block;
 	vertical-align: top;
 }
 .jidlo .cena{
-    width: 20%;
-    float: right;
-    text-align: left;
+	width: 20%;
+	float: right;
+	text-align: left;
 	display: inline-block;	
 	vertical-align: top;
 }
@@ -125,3 +125,49 @@ img {
 .foodmenu-item .price {width: 30px; color: #A61A13; margin: 0px ; padding: 0px; text-align: right; display: inline-block; vertical-align: top;}
 .foodmenu-item .desc {width: 5%; color: #858585; display: inline-block; vertical-align: top;}
 .clear {clear: both; visibility: hidden;}	/* toto je však docela zvláštní */
+
+/* Zomato */
+#menu-preview{
+	display: block;
+	background-color: #CCE2FF;
+	color: #33373D;
+	font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;
+	font-size: 14px;
+	line-height: 1.4285em;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+.dm-serving-time{
+	color: #89959B;
+	font-weight: 400;
+	margin-right: 4px;
+	text-transform: none;
+	content: attr(data-icon);
+	-webkit-font-smoothing: antialiased;
+}
+.tmi-group{
+	margin-top: 20px;
+}
+.tmi-group-name{
+	font-weight: 700;
+	font-size: 15px;
+	padding-bottom: 5px!important;
+	border-bottom: 1px solid #f0f0f0;
+}
+.tmi-daily{
+	font-weight: 600;
+	font-size: 13px;
+	padding-bottom: 5px!important;
+	padding-top: 5px;
+}
+.tmi-text-group{
+	width: 87.5%;
+	box-sizing: border-box;
+	float: left;
+}
+.tmi-price{
+	width: 12.5%;
+	box-sizing: border-box;
+	float: left;
+	text-align: right;
+}
