@@ -4,6 +4,7 @@ Option Explicit
 'Dim ws: Set ws = CreateObject("WScript.Shell")
 Dim fs: Set fs = CreateObject("Scripting.FileSystemObject")
 Dim cf: cf = fs.GetParentFolderName(WScript.ScriptFullName) 'ws.CurrentDirectory 'fs.GetAbsolutePathName(".") 'CurrentFolder
+Dim rm: rm = cf & "\RestMenu"
 'Dim of: Set of = fs.GetFolder(cf) 'ObjectFolder
 Dim DBPath: DBPath = cf & "\Reader.db"
 
@@ -43,11 +44,11 @@ Function DataRead(sAddress, sName, sID)
 	'MsgBox MainBox.innerText
 	ie.Quit
 	Set ie = Nothing    'close down IE and reset status bar
-	If fs.FileExists(cf & "\" & sName & ".htm") Then	
-		fs.DeleteFile(cf & "\" & sName & ".htm")
+	If fs.FileExists(rm & "\" & sName & ".htm") Then
+		fs.DeleteFile(rm & "\" & sName & ".htm")
 	End If
-	fs.CreateTextFile(cf & "\" & sName & ".htm")
-	Dim NewFile: Set NewFile = fs.OpenTextFile(cf & "\" & sName & ".htm",2)
+	fs.CreateTextFile(rm & "\" & sName & ".htm")
+	Dim NewFile: Set NewFile = fs.OpenTextFile(rm & "\" & sName & ".htm",2)
 	NewFile.Write(sf)
 	NewFile.Write(shtml)
 	NewFile.Write(ef)
