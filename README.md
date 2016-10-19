@@ -11,7 +11,7 @@
 
 Home Automation Central.
 Used for communicating with various datasources (and also some live data) and presenting results on localhosts.
-Main configuration should be platform independent, I guess Android & iOS not for now.
+Main configuration should be platform independent, I guess Android & iOS not for now (maybe in future).
 
 Prequisities:
 -python 2.x/3.x installed
