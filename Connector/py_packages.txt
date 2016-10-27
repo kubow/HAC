@@ -1,1 +1,1 @@
-PySide pyqtgraph dropbox
+PySide pyqtgraph dropbox xlwings
