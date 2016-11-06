@@ -1,3 +1,5 @@
+
+
 server = 'localhost'
 sender = 'jav@midisgroup.local'
 reciever = ['jakub.vajda@mdsaptech.cz']
@@ -16,8 +18,8 @@ import sys
 import os
 import re
 
-from smtplib import SMTP_SSL as SMTP       # secure SMTP (port 465, uses SSL)
-# from smtplib import SMTP                  # standard SMTP (port 25, no enc)
+from smtplib import SMTP_SSL as SMTP  # secure SMTP (port 465, uses SSL)
+# from smtplib import SMTP            # standard SMTP (port 25, no enc)
 
 from email.mime.text import MIMEText
 

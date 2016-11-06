@@ -40,10 +40,16 @@ class LinksParser(HTMLParser.HTMLParser):
 
 def process_url(url, tag_name):
   '''proccess text from url, given url, tag type and id'''
-  html = requests.get(url)
+  try:
+    html = requests.get(url)
+  except:
+    print 'there was a problem....'
+  print 'got '+url
+  print 'searching for tag: '+tag_name
   if easier:
     soup = BeautifulSoup(html.content, "lxml") 
-    div = soup.find('div', id=tag_name)
+    div = soup.find('div', {'id': 'tag_name'})
+    print div
     return ''.join(map(str, div.contents))
   else:
     p = LinksParser()
@@ -60,13 +66,13 @@ def write_html(file_name, content):
 conn=sqlite3.connect(os.getcwd()+'/Reader.db')
 rest=conn.execute('SELECT * FROM RestActive;').fetchall()
 for row in rest:
-  print row[3]+' > '+row[2]+'.htm'
+  print '---- Restaurant: '+row[3]+' > '+row[2]+'.htm'
   if not row[4]:
     # zomato address
     parsed_content=process_url(row[5], 'daily-menu-container')
   else:
     # dependalble on input text
     parsed_content=process_url(row[4], row[6])
-  write_html(os.getcwd()+'/'+row[2]+'.htm', )
+  write_html(os.getcwd()+'/RestMenu/'+row[2]+'.htm', parsed_content)
 
 

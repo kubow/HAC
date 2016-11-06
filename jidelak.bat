@@ -1,4 +1,4 @@
-echo on
+@echo off
 Set iname=iisstart
 Set index1=%~dp0%iname%.htm
 Set index2=%~dp0%iname%1.htm

@@ -1,13 +1,13 @@
 #!/bin/sh
 
-direct=${PWD}
-mainHTML=${direct}'/index.html'
-subHTML=${direct}'/Reader/index.html'
+mainHTML=${PWD}'/index.html'
+subHTML=${PWD}'/Reader/index.html'
 
-[]
+#[]
 
-echo ${direct}'/Reader/HTML_head.txt' > $subHTML
+cat ${PWD}'/Reader/HTML_head.txt' > $subHTML
 
+python
 #http://www.cyberciti.biz/faq/unix-linux-get-the-contents-of-a-webpage-in-a-terminal/
 #http://blog.mattwynne.net/2008/04/26/fetch-and-parse-html-web-page-content-from-bash-wow/
 page=$(curl http://www.cyberciti.biz/faq/bash-for-loop/)
