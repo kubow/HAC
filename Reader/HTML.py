@@ -24,7 +24,7 @@ class LinksParser(HTMLParser.HTMLParser):
       self.recording += 1
       return
     for name, value in attributes:
-      if name == 'id' and value == 'contentwsw':
+      if name == 'id' and value == 'daily-menu-container':
         break
     else:
       return
@@ -40,10 +40,8 @@ class LinksParser(HTMLParser.HTMLParser):
 
 def process_url(url, tag_name):
   '''proccess text from url, given url, tag type and id'''
-  try:
-    html = requests.get(url)
-  except:
-    print 'there was a problem....'
+  headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.90 Safari/537.36'}
+  html = requests.get(url)
   print 'got '+url
   print 'searching for tag: '+tag_name
   if easier:
@@ -53,7 +51,8 @@ def process_url(url, tag_name):
     return ''.join(map(str, div.contents))
   else:
     p = LinksParser()
-    div = p.feed(html)
+    div = p.feed(html.content)
+    print div
     p.close()
     return div
 
