@@ -62,7 +62,9 @@ def write_html(file_name, content):
   print content
   
 ''' read restaurant menus, write to separate htm files'''
-conn=sqlite3.connect(os.getcwd()+'/Reader.db')
+#workpath=os.getcwd() - not applicable if being called from elsewhere
+workpath=os.path.dirname(os.path.realpath(__file__))
+conn=sqlite3.connect(workpath+'/Reader.db')
 rest=conn.execute('SELECT * FROM RestActive;').fetchall()
 for row in rest:
   print '---- Restaurant: '+row[3]+' > '+row[2]+'.htm'
@@ -72,6 +74,6 @@ for row in rest:
   else:
     # dependalble on input text
     parsed_content=process_url(row[4], row[6])
-  write_html(os.getcwd()+'/RestMenu/'+row[2]+'.htm', parsed_content)
+  write_html(workpath+'/RestMenu/'+row[2]+'.htm', parsed_content)
 
 
