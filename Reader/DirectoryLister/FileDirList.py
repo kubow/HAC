@@ -27,6 +27,7 @@ head='List Generated on {0} / Total Folder Size - {1} / {2} Subfolders </td></tr
 table_row='<tr class="{0}"><td>{1}</td><td>{2}</td></tr>'
 # Determine if passed parguments for running over a directory
 if len(sys.argv)>1:
+    print sys.argv[1:]
     directory = sys.argv[1:]
     # might chceck for trailing \
 else:
