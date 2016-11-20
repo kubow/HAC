@@ -1,22 +1,26 @@
 #!/bin/sh
+#!/usr/bin python
 
 mainHTML=${PWD}'/index.html'
 subHTML=${PWD}'/Reader/index.html'
 
 cat ${PWD}'/Reader/HTML_head.txt' > $mainHTML
-#http://stackoverflow.com/questions/10520623/how-to-split-one-string-into-multiple-variables-in-bash-shell
 for line in $(sqlite3 ${PWD}/Reader/Reader.db 'select Shortcut,Address,ZomatoAddress,Tag from RestActive'); do
+	#http://stackoverflow.com/questions/10520623/how-to-split-one-string-into-multiple-variables-in-bash-shell
 	IFS='|' read -r shc add zom tag <<< $line
-	echo $read
-	echo ¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨
-	
+	#https://www.cyberciti.biz/faq/unix-linux-bash-script-check-if-variable-is-empty/
+	if [ -z "${add}" ] ; then
+		echo ${shc}--"daily-menu-conatiner"@${zom}
+	else
+		echo ${shc}--${tag}@${add}
+	fi
 	#python generate htm's
-	python ${PWD}'/Reader/HTML.py ' 
+	#echo python ${PWD}'/Reader/HTML.py '${shc}
+	python ${PWD}/Reader/HTML.py ${shc}
+	echo ¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨
 done
 
 cat ${PWD}'/Reader/HTML_tail.txt' >> $mainHTML
-
-
 
 #alternative version using command line
 #http://www.cyberciti.biz/faq/unix-linux-get-the-contents-of-a-webpage-in-a-terminal/
@@ -31,5 +35,3 @@ cat ${PWD}'/Reader/HTML_tail.txt' >> $mainHTML
 #while read p; do
 #  echo $p
 #done <peptides.txt
-
-
