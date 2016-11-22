@@ -1,4 +1,4 @@
-
+# http://stackoverflow.com/questions/73781/sending-mail-via-sendmail-from-python
 
 server = 'localhost'
 sender = 'jav@midisgroup.local'
