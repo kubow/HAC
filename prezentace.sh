@@ -27,6 +27,7 @@ for f in ${direct}/Presenter/image/*
 do
 	echo '<li>' >> $subHTML
 	echo '<span class="Centerer"></span>' >> $subHTML
+	echo '${f##*/}'
 	echo '<img class="Centered" src="image\'${f##*/}'" alt="X"/>' >> $subHTML
 	echo '</li>' >> $subHTML
 done
