@@ -1,8 +1,7 @@
 #!/bin/sh
 
-direct=${PWD}
-mainHTML=${direct}'/index.html'
-subHTML=${direct}'/Presenter/index.html'
+mainHTML=${PWD}'/index.html'
+subHTML=${PWD}'/Presenter/index.html'
 
 echo '<html>' > $mainHTML
 echo '<head>' >> $mainHTML
@@ -15,20 +14,20 @@ echo '<body>' >> $mainHTML
 echo '<div id="frame"><iframe src="Presenter/index.html" width="100%%" height="100%%"></iframe></div>' >> $mainHTML
 echo '<div id="top"><marquee behavior="scroll" direction="left" scrolldelay="100">' >> $mainHTML
 #echo '<div id="top"><marquee behavior="scroll" direction="left" scrolldelay="100" scrollamount="3">' >> $mainHTML
-cat  ${direct}'/Presenter/text.txt' >> $mainHTML
+cat  ${PWD}'/Presenter/text.txt' >> $mainHTML
 echo '</marquee></div>' >> $mainHTML
 echo '</body>' >> $mainHTML
 echo '</html>' >> $mainHTML
 
 # echo $subHTML
 
-cat ${direct}'/Presenter/HTML_head.txt' > $subHTML
-for f in ${direct}/Presenter/image/*
+cat ${PWD}'/Presenter/HTML_head.txt' > $subHTML
+for f in ${PWD}/Presenter/image/*
 do
 	echo '<li>' >> $subHTML
 	echo '<span class="Centerer"></span>' >> $subHTML
-	echo '${f##*/}'
+	echo ${f##*/}
 	echo '<img class="Centered" src="image\'${f##*/}'" alt="X"/>' >> $subHTML
 	echo '</li>' >> $subHTML
 done
-cat ${direct}'/Presenter/HTML_tail.txt' >> $subHTML
+cat ${PWD}'/Presenter/HTML_tail.txt' >> $subHTML
