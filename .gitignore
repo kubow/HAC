@@ -1,4 +1,6 @@
+index.html
 Connector/*.log
 Presenter/image/*.jpg
+Reader/index.html
 Reader/RestMenu/*.htm
 Reader/DirectoryList/*.htm
