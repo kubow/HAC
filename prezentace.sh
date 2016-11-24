@@ -27,7 +27,8 @@ do
 	echo '<li>' >> $subHTML
 	echo '<span class="Centerer"></span>' >> $subHTML
 	echo ${f##*/}
-	echo '<img class="Centered" src="image\'${f##*/}'" alt="X"/>' >> $subHTML
+	echo '<img class="Centered" src="image\' >> $subHTML
+	echo ${f##*/}'" alt="X"/>' >> $subHTML
 	echo '</li>' >> $subHTML
 done
 cat ${PWD}'/Presenter/HTML_tail.txt' >> $subHTML
