@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #!/usr/bin python
 
 mainHTML=${PWD}'/index.html'
@@ -7,6 +7,7 @@ subHTML=${PWD}'/Reader/index.html'
 cat ${PWD}'/Reader/HTML_head.txt' > $mainHTML
 for line in $(sqlite3 ${PWD}/Reader/Reader.db 'select Shortcut,Address,ZomatoAddress,Tag from RestActive'); do
 	#http://stackoverflow.com/questions/10520623/how-to-split-one-string-into-multiple-variables-in-bash-shell
+	echo $line
 	IFS='|' read -r shc add zom tag <<< $line
 	#https://www.cyberciti.biz/faq/unix-linux-bash-script-check-if-variable-is-empty/
 	if [ -z "${add}" ] ; then
