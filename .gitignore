@@ -1,4 +1,6 @@
 Connector/*.log
+Connector/Covert/*.json
+Connector/Covert/*.sqlite
 Presenter/image/*.jpg
 Reader/RestMenu/*.htm
 Reader/DirectoryList/*.htm
