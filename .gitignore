@@ -1,6 +1,8 @@
+index.html
 Connector/*.log
 Connector/Covert/*.json
 Connector/Covert/*.sqlite
 Presenter/image/*.jpg
+Reader/index.html
 Reader/RestMenu/*.htm
 Reader/DirectoryList/*.htm
