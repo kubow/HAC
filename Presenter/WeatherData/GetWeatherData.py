@@ -5,7 +5,7 @@ owm = pyowm.OWM('1050e850fbcc463dd98a726d6af37134')  # You MUST provide a valid 
 # owm = pyowm.OWM(API_key='your-API-key', subscription_type='pro')
 
 # Will it be sunny tomorrow at this time in Milan (Italy) ?
-forecast = owm.daily_forecast("Necin,cz")
+forecast = owm.daily_forecast('Necin,cz')
 tomorrow = pyowm.timeutils.tomorrow()
 forecast.will_be_sunny_at(tomorrow)  # Always True in Italy, right? ;-)
 
