@@ -1,0 +1,54 @@
+The situation is further complicated by the fact that
+There seems to be evidence that
+A general consensus is that
+Pragmatically,
+A basic methodological assumption of our work is that
+Nevertheless,
+Presumably,
+The advantage is that
+In some approaches to representation, 
+In a similar vein, 
+In other words, it is not necessarily the case that
+On our assumptions,
+It may be, then, that
+It must be emphasized, once again, that
+Interestingly enough,
+It is interesting to note that
+It seems plausible that
+Let us continue to suppose that
+Notice, incidentally, that
+With this clarification,
+We have already seen that
+Let us continue to suppose that 
+Summarizing, then, we assume that 
+For one thing
+This suggests that 
+Suppose, for instance, that
+From this it follows that
+For any transformation which is sufficiently diversified in application to be of any interest, 
+In the discussion of Chomskian hierarchies given above,
+Quine's contention is that 
+Before componential analysis emerged as a first concrete approach to describing word meaning (Trier 1931; Weisgerber 1951), 
+Luria (e.g., Vinogradova and Luria 1961) showed through a series of experiments that
+It was shown later by Katz and Fodor (1963) that
+Unfortunately, as formal semanticists readily admit, 
+In practice, 
+In our view, Marr and Nishihara's theory predicts that
+It may happen of course, that 
+One bonus of this analysis is that
+Within a declarative, predicate-based "logical" system,
+We can only give a brief overview here, but it should be stressed that
+It should not have escaped the reader's notice that
+Extending the same approach to formal semantics, 
+Without a prior formalization of mathematical proof, 
+Strictly speaking
+In this context, 
+Since domain models are unambiguous,
+The definition defined in Schmolze and Brachman 1982 (p11) obviously violates the plausible idea that
+Given the aforementioned view of inference as refining and deepening the semantic representation, 
+Although I have not worked out the exact mechanism here,
+As was assumed in the original example,
+In terms of our example, this means that
+It is sufficient to note that 
+Linguists have a tendency to describe language as a quasi-mathematical entity that can be studied without regard for its function as a communication device. However, 
+However, if we were somewhat worried about the effects of the Schank's search technique in terms of search time,
