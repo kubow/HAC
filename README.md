@@ -16,22 +16,31 @@ Main configuration should be platform independent, I guess Android & iOS not for
 Prequisities:
 -python 2.x/3.x installed
 
-## Connector
-Used for connecting to various datasources. This connectow will be used for pushing data to reader and further to presenter. Currently supporting these ones:
+## Multimedia
+Used for showing various media files:
 ### Database
 #### &nbsp;&nbsp;&nbsp;&nbsp; tk frontend python tables
 #### &nbsp;&nbsp;&nbsp;&nbsp; MySQL database (hosted on apache/nginx)
 #### &nbsp;&nbsp;&nbsp;&nbsp; PostgreSQL database
 #### &nbsp;&nbsp;&nbsp;&nbsp; sqlite databases (*.db)
-### Geoinfromation
+### Geo
 #### &nbsp;&nbsp;&nbsp;&nbsp; OpenLayers
-### Directory Control
+### images
+folder with images being presented 
+### RestMenu
+last loader restaurant menus, being presented with file presenting.html
+### WordPlay
+### text_horni_lista.txt
+information text running in the top of window
 
-## Presenter
-Presenting images in containing directory using java script.
-#### &nbsp;&nbsp;&nbsp;&nbsp; Word Play
+## Structure
+Bulding parts of system.
+### CSS files
+### JS files
+### HTML templates
 
-## Reader
+## System Modules
 Used for reading and processing text to standard fromat.
 #### &nbsp;&nbsp;&nbsp;&nbsp; Log Reader
 Processing log files with excel sheet
+### Directory Control
