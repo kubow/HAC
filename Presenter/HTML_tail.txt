@@ -1,9 +1,0 @@
-	</ul>
-</div>
-<noscript>
-	<div id="att">
-	    <p>Sorry, you need to activate JavaScript in your browser.</p>
-	</div>
-</noscript>					
-</body>
-</html>
