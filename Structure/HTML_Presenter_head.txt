@@ -5,8 +5,8 @@
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <meta http-equiv="imagetoolbar" content="no" />
 
-<script type="text/javascript" src="js/jquery.js"></script>
-<script type="text/javascript" src="js/jquery.innerfade.js"></script>
+<script type="text/javascript" src="../Structure/jquery.js"></script>
+<script type="text/javascript" src="../Structure/jquery.innerfade.js"></script>
 <script type="text/javascript">
 	   $(document).ready(
 				function(){
@@ -17,7 +17,7 @@
 					});
 			});
 </script>
-<link rel="stylesheet" href="../Reader/style.css"  type="text/css" media="all" />
+<link rel="stylesheet" href="../Structure/jq_fade.css"  type="text/css" media="all" />
 </head>
 <body>
 <div id="limiter">
