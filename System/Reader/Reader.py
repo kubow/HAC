@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- 
 import os
 import sys
 import sqlite3
@@ -10,9 +11,8 @@ except:
     import HTMLParser
     easier = False
 
-# http://stackoverflow.com/questions/3276040/how-can-i-use-the-python-htmlparser-library-to-extract-data-from-a-specific-div
-
 class LinksParser(HTMLParser.HTMLParser):
+    """http://stackoverflow.com/questions/3276040/how-can-i-use-the-python-htmlparser-library-to-extract-data-from-a-specific-div """
     def __init__(self):
         HTMLParser.HTMLParser.__init__(self)
         self.recording = 0
@@ -90,14 +90,21 @@ def write_html(file_name, content, html_template):
     #f.write(content.encode('utf8'))
     f.close()
     
-''' read restaurant menus, write to separate htm files'''
-# workpath=os.getcwd() - not applicable if being called from elsewhere
-workpath=os.path.dirname(os.path.realpath(__file__))
+""" read restaurant menus, write to separate htm files
+workpath can be either command line parameter
+or if not given to current working directory"""
+workpath=os.path.dirname(os.getcwd()+'/Multimedia/')
+temppath=os.path.dirname(os.getcwd()+'/Structure/')
+# workpath=os.path.dirname(os.path.realpath(__file__))
+# directory = os.path.dirname(os.path.realpath(__file__)+'/HTML')
 # check if RestMenu folder exists
+print workpath
 if not os.path.exists(workpath+'/RestMenu'):
     os.makedirs(workpath+'/RestMenu')
-    print 'directory '+workpath+'/RestMenu created ...'
-conn=sqlite3.connect(workpath+'/Reader.db')
+    print 'directory '+workpath+'/RestMenu folder created ...'
+print 'connecting from '+os.path.dirname(os.path.realpath(__file__))
+conn=sqlite3.connect(os.path.dirname(os.path.realpath(__file__))+'/Reader.db')
+# Determine if passed parguments for running over a directory
 if len(sys.argv)>1:
     # process command line arguments
     if len(sys.argv)<3:
@@ -111,10 +118,10 @@ else:
 print sql
 rest=conn.execute(sql).fetchall()
 # load html template file
-temp=read_tempfile((workpath+'/HTML_head.txt',workpath+'/HTML_tail.txt'))
+temp=read_tempfile((temppath+'/HTML_Base_head.txt',temppath+'/HTML_Base_tail.txt'))
 # iterate returned restaurants from table
 for row in rest:
-    print '---- Restaurant: '+row[3]+' > '+row[2]+'.htm'
+    #print '---- Restaurant: '+row[3].encode('utf-8')+' > '+row[2]+'.htm'
     if not row[4] or row[4]=='':
         # zomato address
         parsed_content=process_url(row[5], 'daily-menu-container', row[9])
