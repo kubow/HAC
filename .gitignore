@@ -1,8 +1,8 @@
-index.html
-*.log
-Multimedia/*.html
-Multimedia/image/*.jpg
-Multimedia/RestMenu/*.htm
-System/Coverter/*.json
-System/Coverter/*.sqlite
-System/DirectoryList/*.htm
+/index.html
+/*.log
+/Multimedia/*.html
+/Multimedia/image/*.jpg
+/Multimedia/RestMenu/*.htm
+/System/Coverter/*.json
+/System/Coverter/*.sqlite
+/System/DirectoryList/*.htm
