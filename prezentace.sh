@@ -21,17 +21,16 @@ cat  ${presDir}'/text_horni_lista.txt' >> $mainHTML
 echo '</marquee></div>' >> $mainHTML
 echo '</body>' >> $mainHTML
 echo '</html>' >> $mainHTML
-
-# echo 'Presenting images ...'
-
 cat ${tempDir}'/HTML_Presenter_head.txt' > $subHTML
-for f in ${presDir}'/image/*'
+
+echo 'list files in directory: '${presDir}'/image/*'
+for f in ${presDir}/image/*
 do
     echo '<li>' >> $subHTML
     echo '<span class="Centerer"></span>' >> $subHTML
-    echo ${presDir}'/image/'${f##*/}
-    echo '<img class="Centered" src="image\' >> $subHTML
-    echo ${f##*/}'" alt="X"/>' >> $subHTML
+    imagePath='image\'${f##*/}
+    echo ${imagePath}
+    echo '<img class="Centered" src="'${imagePath}'" alt="X"/>' >> $subHTML
     echo '</li>' >> $subHTML
 done
 cat ${tempDir}'/HTML_Presenter_tail.txt' >> $subHTML
