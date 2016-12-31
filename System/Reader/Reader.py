@@ -102,7 +102,7 @@ print workpath
 if not os.path.exists(workpath+'/RestMenu'):
     os.makedirs(workpath+'/RestMenu')
     print 'directory '+workpath+'/RestMenu folder created ...'
-print 'connecting from '+os.path.dirname(os.path.realpath(__file__))
+# print 'connecting from '+os.path.dirname(os.path.realpath(__file__))
 conn=sqlite3.connect(os.path.dirname(os.path.realpath(__file__))+'/Reader.db')
 # Determine if passed parguments for running over a directory
 if len(sys.argv)>1:
