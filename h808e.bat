@@ -32,7 +32,7 @@ IF /I '%INPUT%'=='4' GOTO Structure
 IF /I '%INPUT%'=='5' GOTO A
 IF /I '%INPUT%'=='6' GOTO B
 IF /I '%INPUT%'=='7' GOTO C
-IF /I '%INPUT%'=='8' GOTO UniversalPython
+IF /I '%INPUT%'=='8' GOTO UniPy
 IF /I '%INPUT%'=='9' GOTO BrowsePages
 IF /I '%INPUT%'=='Q' GOTO Quit
 
@@ -74,7 +74,8 @@ ECHO done
 PAUSE
 GOTO MENU
 
-:UniversalPython
+:UniPy
+:UniPy
 SET python_script=%py_script_path%DirBrowser.py
 ECHO will use tkinter and make a system to input data
 python %python_script%
