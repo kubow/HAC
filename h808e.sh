@@ -1,35 +1,49 @@
 #!/bin/bash
 # same menu as in batch
-# repeated menu with 9 custom selections
+# decide if dialog installed (debian, ubuntu)
+runflag=1
+# Loop forever (until break is issued)
+while true; do
+	#if [ "$runflag" -eq "0" ]; then
+	#	echo "must quit..."
+	#else
+		#clear the screen
+		clear
+		#show the menu
+		echo "============= -H_808_E- ============="
+		echo "-------------------------------------"
+		echo "1.  Open encyklopedia cherrytree"
+		echo "2.  Open encyklopedia sqlite browser"
+		echo "3.  Directory synchronizer"
+		echo "4.  Generate structure from db"
+		echo "5.  A"
+		echo "6.  B"
+		echo "7.  C"
+		echo "-------------------------------------"
+		echo "8.  Universal python project"
+		echo "-------------------------------------"
+		echo "9.  Browse pages in (FF/CH/IE)"
+		echo "-------------------------------------"
+		echo "==========PRESS 'Q' TO QUIT=========="
 
-### display main menu ###
-dialog --clear --help-button --backtitle "Linux Shell Script Tutorial" \
---title "============= -H_808_E- =============" \
---menu "-------------------------------------"15 50 4 \
-CherryTree "1. Open encyklopedia cherrytree" \
-SQLite "2. Open encyklopedia sqlite browser" \
-DirSync "3. Directory synchronizer" \
-Structure "4. Generate structure" \
-A "5. A" \
-B "6. B" \
-C "7. C" \
-UniPy "8.  Universal python project" \
-BrowsePages "9. Browse pages in (FF/CH/IE)" \
-Exit "Exit to the shell" 2>"${INPUT}"
+		options=("1" "2" "3" "4" "5" "6" "7" "8" "9" "Q")
+		PS3="Please select a number:"
+		select opt in "${options[@]}"
+		do 
+			case $opt in
+				"1" ) echo "running";;
+				"2" ) echo "You ..";;
+				"3" ) echo "You     :";;
+				"4" ) echo "Yo";;
+				"5" ) echo "Y";;
+				"6" ) echo "You $opt";;
+				"7" ) echo "Youked $opt";;
+				"8" ) echo "You pic $opt";;
+				"9" ) echo "You pcd $opt";;
+				"q" ) echo "You picked $opt which is option $REPLY";;
+				*) echo invalid option
+			esac
+		done
+	#fi
+done
 
-menuitem=$(<"${INPUT}") 
-
-# make decission
-case $menuitem in
-	CherryTree) show_date;;
-	SQLite) show_calendar;;
-	DirSync) $vi_editor;;
-	Structure) $vi_editor;;
-	DirSync) $vi_editor;;
-	A) continue;;
-	B) continue;;
-	C) continue;;
-	UniPy) continue;;
-	BrowsePages) continue;;
-	Exit) echo "Bye"; break;;
-esac
