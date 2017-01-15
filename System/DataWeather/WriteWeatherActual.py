@@ -8,10 +8,14 @@ import pyowm
 """
 # Determine if passed parguments for running over a directory
 if len(sys.argv)>2:
-    print sys.argv[1:2]
-    loc = sys.argv[1:2]
+    print sys.argv
+    # write_file_path=os.path.dirname(os.path.realpath(__file__))+'/weather.htm'
+    write_file_path=sys.argv[1]
+    print write_file_path
+    print sys.argv[2]
+    loc = sys.argv[2]
 else:
-    loc = 'Necin,cz'
+    loc = 'Horni Pocernice,cz' #'Necin,cz'
     print loc
 
 owm = pyowm.OWM('1050e850fbcc463dd98a726d6af37134')  # You MUST provide a valid API key
@@ -19,8 +23,8 @@ owm = pyowm.OWM('1050e850fbcc463dd98a726d6af37134')  # You MUST provide a valid 
 obs = owm.weather_at_place(loc)
 w = obs.get_weather()
 
-htm=open(os.path.dirname(os.path.realpath(__file__))+'/weather.htm', 'w+')
-print 'file '+os.path.dirname(os.path.realpath(__file__))+'/weather.htm created...'
+htm=open(write_file_path, 'w+')
+print 'file '+write_file_path+'/weather.htm created...'
 htm.write('<HTML>\n<HEAD>\n<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">\n')
 htm.write('<TITLE>Weather at '+loc+'</TITLE>\n</HEAD>\n<BODY>\n<H1>')
 htm.write('Weather at '+loc+'</H1>\n<P>')
