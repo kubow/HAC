@@ -1,3 +1,4 @@
+import sqlite3
 # get tepmerature
 # argument devicefile is the path of the sensor to be read,
 # returns None on error, or the temperature as a float
@@ -29,3 +30,5 @@ def log_temperature(temp, dbname):
     # commit the changes
     conn.commit()
     conn.close()
+    
+ temp_val = get_temp('xxx.db')
