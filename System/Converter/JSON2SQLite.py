@@ -6,6 +6,7 @@ import sqlite3
 import json
 
 check_select='SELECT EXISTS(SELECT 1 FROM sqlite_master WHERE type="table" AND name = "{0}");'
+insert_query = 'INSERT INTO {0} VALUES ("{1}");'
 
 try:
     if len(sys.argv[1:])>0:
@@ -24,7 +25,6 @@ try:
         print '***********************'
         if db.cursor().execute(check_select.format(tab_name)).fetchone()[0]:
             db.execute('DROP TABLE '+tab_name+';')
-        query = 'INSERT INTO '+tab_name+' VALUES ("{0}");'
         with open(json_file) as json_stream:
             print 'json opened...'
             source_item = []# for columns
@@ -46,10 +46,11 @@ try:
                             insert_string.append(str(source[json_item]))
                         else:
                             insert_string.append(str(source[json_item]).encode('utf8'))
-                insert_query = '", "'.join(x for x in insert_string)
-                db.execute(query.format(insert_query))
+                insert_items = '", "'.join(x for x in insert_string)
+                db.execute(insert_query.format(tab_name, insert_items.encode('utf8')))
                 db.commit()
-                print insert_query
+                #print insert_items
                 i += 1
 except Exception as ex:
-       print ex.args[0]
+    print 'some exception occured'
+    print ex.args
