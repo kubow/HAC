@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='utf-8'?>
+<package xmlns="http://www.idpf.org/2007/opf" version="2.0" unique-identifier="uuid_id">
+  <metadata xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:opf="http://www.idpf.org/2007/opf" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:calibre="http://calibre.kovidgoyal.net/2009/metadata" xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <dc:language>en</dc:language>
+    <dc:title>98.6 Degrees: The Art of Keeping Your Ass Alive</dc:title>
+    <dc:creator opf:file-as="Lundin, Cody" opf:role="aut">Lundin, Cody</dc:creator>
+    <dc:publisher>Gibbs Smith</dc:publisher>
+    <meta name="cover" content="cover"/>
+    <dc:date>2003-06-23T06:00:00+00:00</dc:date>
+    <dc:contributor opf:role="bkp">calibre (0.7.10) [http://calibre-ebook.com]</dc:contributor>
+    <dc:identifier id="uuid_id" opf:scheme="uuid">4b8e9350-4a0c-408e-804f-e9e2e362c695</dc:identifier>
+  </metadata>
+  <manifest>
+    <item href="index.html" id="id0" media-type="application/xhtml+xml"/>
+    <item href="cover.jpeg" id="id136" media-type="image/jpeg"/>
+    <item href="page_styles.css" id="css" media-type="text/css"/>
+    <item href="stylesheet.css" id="css" media-type="text/css"/>
+    <item href="titlepage.xhtml" id="titlepage" media-type="application/xhtml+xml"/>
+    <item href="toc.ncx" media-type="application/x-dtbncx+xml" id="ncx"/>
+    <item href="images/001.jpg" id="id1" media-type="image/jpeg"/>
+    <item href="images/002.jpg" id="id2" media-type="image/jpeg"/>
+    <item href="images/003.jpg" id="id3" media-type="image/jpeg"/>
+    <item href="images/004.jpg" id="id4" media-type="image/jpeg"/>
+    <item href="images/005.jpg" id="id5" media-type="image/jpeg"/>
+  </manifest>
+  <spine toc="ncx">
+    <itemref idref="titlepage"/>
+    <itemref idref="id0"/>
+  </spine>
+  <guide>
+    <reference href="titlepage.xhtml" type="cover" title="Cover"/>
+  </guide>
+</package>

@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" xml:lang="en">
+  <head>
+    <meta content="4b8e9350-4a0c-408e-804f-e9e2e362c695" name="dtb:uid"/>
+    <meta content="2" name="dtb:depth"/>
+    <meta content="calibre (0.7.10)" name="dtb:generator"/>
+    <meta content="0" name="dtb:totalPageCount"/>
+    <meta content="0" name="dtb:maxPageNumber"/>
+  </head>
+  <docTitle>
+    <text>{0}</text>
+  </docTitle>
+  <navMap>
+    <navPoint class="chapter" id="{1}" playOrder="0">
+      <navLabel>
+        <text>{2}</text>
+      </navLabel>
+      <content src="{3}.html"/>
+    </navPoint>
+    {4}
+  </navMap>
+</ncx>
