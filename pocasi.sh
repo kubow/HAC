@@ -1,14 +1,20 @@
 #!/bin/bash
 #!/usr/bin python
 
-#location='Horni Pocernice,cz'
-location='Praha,cz'
 mainHTML=${PWD}'/index.html'
-pythonFILE=${PWD}/System/DataWeather/WriteWeatherActual.py
+settings_db=${PWD}/System/Device/settings.db
+py_rain_file=${PWD}/System/Device/Rain.py
+py_temp_file=${PWD}/System/Device/Temperature.py
+py_wind_file=${PWD}/System/Device/Wind.py
+py_forecast_file=${PWD}/System/DataWeather/WriteWeatherActual.py
+
+#location='Horni Pocernice,cz'
+IFS='|' read -r loc cnt <<< $(sqlite3 ${settings_db} 'select * from place_active')
+location=${loc},${cnt}
 
 #python generate htm's
-echo ${pythonFILE}
-#python ${pythonFILE} ${mainHTML} 
-python ${pythonFILE} ${mainHTML} ${location}
+echo ${py_forecast_file}
+#python ${py_forecast_file} ${mainHTML} 
+python ${py_forecast_file} ${mainHTML} ${location}
 
 #cat ${PWD}'/Structure/HTML_Base_tail.txt' >> $mainHTML
