@@ -30,5 +30,9 @@ def log_temperature(temp, dbname):
     # commit the changes
     conn.commit()
     conn.close()
-    
- temp_val = get_temp('xxx.db')
+ 
+if sys.argv > 2:
+    temp_val = get_temp(sys.argv[2])
+    log_temperature(temp_val, sys.argv[1])
+else:
+    print 'no database submitted'
