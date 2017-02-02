@@ -3,7 +3,7 @@
 
 YY=$(date +%Y)
 MM=$(date +%m)
-mainHTML=${PWD}'/index.html'
+mainHTML=${PWD}/index.html
 settings_db=${PWD}/System/Device/settings.db
 py_rain_file=${PWD}/System/Device/Rain.py
 py_temp_file=${PWD}/System/Device/Temperature.py
@@ -16,7 +16,7 @@ location=${loc},${cnt}
 
 #python read forecast
 #====================
-#python ${py_forecast_file} ${mainHTML} 
+#syntax: py_forecast_file file_to_write location
 python ${py_forecast_file} ${mainHTML} ${location}
 
 #python read actual weather data
