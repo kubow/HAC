@@ -8,15 +8,16 @@ import pyowm
 """
 # Determine if passed parguments for running over a directory
 if len(sys.argv)>2:
-    print sys.argv
+    # print sys.argv
     # write_file_path=os.path.dirname(os.path.realpath(__file__))+'/weather.htm'
     write_file_path=sys.argv[1]
-    print write_file_path
-    print sys.argv[2]
+    # print write_file_path
+    # print sys.argv[2]
     loc = sys.argv[2]
 else:
     loc = 'Horni Pocernice,cz' #'Necin,cz'
-    print loc
+
+print 'weather forecast in '+loc
 
 owm = pyowm.OWM('1050e850fbcc463dd98a726d6af37134')  # You MUST provide a valid API key
 
