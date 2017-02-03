@@ -17,14 +17,15 @@ location=${loc},${cnt}
 #python read forecast
 #====================
 #syntax: py_forecast_file file_to_write location
-python ${py_forecast_file} ${mainHTML} ${location}
+#forecast temporarily diabled
+#python ${py_forecast_file} ${mainHTML} ${location}
 
 #python read actual weather data
 #===============================
 weather_db=${PWD}/Multimedia/Weather/${loc}_${YY}${MM}.db
-echo ${weather_db}
+#echo ${weather_db}
 driver=$(sqlite3 ${settings_db} 'select driverloc from device where active=1')
-echo ${driver}
-#python ${py_rain_file} ${weather_db}
-#python ${py_wind_file} ${weather_db}
-#python ${py_temp_file} ${weather_db}
+#echo ${driver}
+#python ${py_rain_file} ${weather_db} ${driver}
+#python ${py_wind_file} ${weather_db} ${driver}
+python ${py_temp_file} ${weather_db} ${driver}

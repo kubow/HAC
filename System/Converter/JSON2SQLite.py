@@ -21,7 +21,7 @@ try:
         i = 0
         tab_name = json_file.lower().replace('.json', '').replace('.', '_')
         db = sqlite3.connect(tab_name+'.sqlite')
-        db.cursor().execute(check_select.format(tab_name))
+        # db.cursor().execute(check_select.format(tab_name))
         print '***********************'
         if db.cursor().execute(check_select.format(tab_name)).fetchone()[0]:
             db.execute('DROP TABLE '+tab_name+';')
