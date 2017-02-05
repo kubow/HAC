@@ -28,32 +28,33 @@ def conh808e():
                     real = True
                 lev += 1
                 sub_sub = {'code': (a_max * 100) + ((b + 1) * 10) + (c + 1),
-                'real': real, 'name': '', 'level:': lev}
+                'real': real, 'name': '', 'level': lev}
                 sub_sub_categories.append(sub_sub)
                 lev -= 1
             sub = {'code': (a_max * 100) + ((b + 1) * 10), 'real': real,
-             'name': '', 'level:': lev, 'child': sub_sub_categories}
+             'name': '', 'level': lev, 'child': sub_sub_categories}
             lev -= 1
             sub_categories.append(sub)
         h808e_dict = {'code': a_max * 100, 'real': real, 'name': '',
-         'level:': lev, 'child': sub_categories}
+         'level': lev, 'child': sub_categories}
         h808e.append(h808e_dict)
     return h808e
     
 he = conh808e()
 # connect to database
-conn = sqlite3.connect('/home/kubow/Dokumenty/H808E.ctb ')
+conn = sqlite3.connect('/home/kubow/Dokumenty/H808E.ctb')
 # prepare the insert query
-insert = 'INSERT INTO veci VALUES ( , {0}, {1}, "", {2}, 0, "");'
+insert = 'INSERT INTO veci (hmotne, oblast, uroven) VALUES ({0}, "{1}", {2});'
 # browse encyklopedia node (en) + subnode (esn), subsubnode (essn)
 for en in he:
     # 1 
-    print en
     print str(en['code']) + '/' + str(en['level'])
+    print insert.format(en['code'], en['real'], en['level'])
+    conn.execute(insert.format(en['real'], en['code'], en['level']))
     for esn in en['child']:
         print str(esn['code']) + '/' + str(esn['level'])
         for essn in esn['child']:
             print str(essn['code']) + '/' + str(essn['level'])
     break
 
-tbl = conn.execute('SELECT COUNT(*) FROM veci;')
+tbl = conn.execute('SELECT * FROM veci;')
