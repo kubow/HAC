@@ -3,6 +3,7 @@
 
 YY=$(date +%Y)
 MM=$(date +%m)
+last_run_file=${PWD}/Multimedia/Weather/last.run
 mainHTML=${PWD}/index.html
 settings_db=${PWD}/System/Device/settings.db
 py_rain_file=${PWD}/System/Device/Rain.py
@@ -29,3 +30,4 @@ driver=$(sqlite3 ${settings_db} 'select driverloc from device where active=1')
 #python ${py_rain_file} ${weather_db} ${driver}
 #python ${py_wind_file} ${weather_db} ${driver}
 python ${py_temp_file} ${weather_db} ${driver}
+touch ${last_run_file}

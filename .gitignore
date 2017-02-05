@@ -3,7 +3,7 @@
 /Multimedia/*.html
 /Multimedia/image/*.jpg
 /Multimedia/RestMenu/*.htm
-/Multimedia/Weather/*
+/Multimedia/Weather/*.db
 /System/Coverter/*.json
 /System/Coverter/*.sqlite
 /System/DirectoryList/*.htm
