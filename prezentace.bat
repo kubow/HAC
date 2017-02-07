@@ -1,12 +1,12 @@
 @echo off
 
-Set presName=Multimedia
-Set tempName=Structure
-Set presDir=%~dp0%presName%\
-Set tempDir=%~dp0%tempName%\
+Set presDir=%~dp0Multimedia\
+Set tempDir=%~dp0Structure\
+Set sysDir=%~dp0System\
 Set mainHTML=%~dp0index.html
 Set subHTML=%presDir%presenting.html
 
+python %sysDir%log.py -l %presDir%logfile.log -t "Image presentation"
 echo ^<html^> > %mainHTML%
 echo ^<head^> >> %mainHTML%
 echo ^<meta http-equiv="Content-Type" content="text/html; charset=windows-1250" /^> >> %mainHTML%
