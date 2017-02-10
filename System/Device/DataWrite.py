@@ -72,7 +72,7 @@ def log_value(measure, column, dbname):
     already = curs.execute(dev.value_select.format(column, table_name, now)).fetchone()
     if already:
         if already[0] <> measure:
-            print """someting has happened - two different values 
+            print """someting has happened - two different values
             for one timestamp {0}""".format(now)
         else:
             curs.execute(dev.value_update.format(table_name, 'temp', already[0]+1, now))
@@ -87,7 +87,7 @@ if __name__ == '__main__':
     parser.add_argument('-d', help='database file', type=str, default='')
     parser.add_argument('-p', help='device path', type=str, default='')
     args = parser.parse_args()
-
+    
     # create class for controlling device
     dev=DeviceControl()
     # log value
