@@ -57,7 +57,7 @@ CALL C:\_Run\Shortcut\Batch\SQLite.bat
 GOTO MENU
 
 :DirSync
-SET python_script=%py_script_path%FileWatcher\FileWatcherRegistry.py
+SET python_script=%py_script_path%Data\Reader\Directory\FileWatcherRegistry.py
 FOR /d %%a in ("%enc_path%*") do (
   FOR %%* in ("%%a\.") do ECHO %%a
   rem python %python_script% %%a 

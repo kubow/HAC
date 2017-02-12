@@ -26,21 +26,21 @@ while true; do
 		echo "-------------------------------------"
 		echo "==========PRESS 'Q' TO QUIT=========="
 
-		options=("1" "2" "3" "4" "5" "6" "7" "8" "9" "Q")
+		options=("1" "2" "3" "4" "5" "6" "7" "8" "9" "0")
 		PS3="Please select a number:"
 		select opt in "${options[@]}"
 		do 
 			case $opt in
-				"1" ) echo "running";;
-				"2" ) echo "You ..";;
-				"3" ) echo "You     :";;
-				"4" ) echo "Yo";;
+				"1" ) cherrytree;;
+				"2" ) sqlitebrowser;;
+				"3" ) echo "for all files in directory: /home/kubow/Dokumenty/Web";;
+				"4" ) python /home/kubow/Dokumenty/H808E_gen.py;;
 				"5" ) echo "Y";;
 				"6" ) echo "You $opt";;
 				"7" ) echo "Youked $opt";;
 				"8" ) echo "You pic $opt";;
 				"9" ) echo "You pcd $opt";;
-				"q" ) echo "You picked $opt which is option $REPLY";;
+				"0" ) echo "You picked $opt which is option $REPLY";;
 				*) echo invalid option
 			esac
 		done
