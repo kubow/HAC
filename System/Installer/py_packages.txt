@@ -1,1 +1,1 @@
-ipython numpy scipy PySide pyqtgraph matplotlib dropbox xlwings pyowm
+ipython numpy scipy PySide pyqtgraph matplotlib dropbox pyowm pandas
