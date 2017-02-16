@@ -19,7 +19,7 @@ class DeviceControl(object):
     table_cr_temp = """CREATE TABLE {0} ({1});"""
     get_settings = """SELECT drivertype, driverloc 
     FROM driver 
-    WHERE active = 1 AND device = (
+    WHERE device = (
         SELECT ID from device where devicename = '{0}'
     )"""
     get_structure = 'SELECT * FROM structure'
@@ -69,8 +69,9 @@ def log_value(measure, velocity, c, ins_qry):
     fill_values = now+', '+str(measure)+', 0, 0, "0", 0, 0'
     column = '"' + velocity + '"'
     # check if row already exist
-    print c.execute(dev.value_select.format(column, table_name, now)).fetchone()
-    already = c.execute(dev.value_select.format(column, table_name, now)).fetchone()
+    value_select = dev.value_select.format(column, table_name, now)
+    already = c.execute(value_select).fetchone()
+    # print already
     if already:
         if already[0] <> measure:
             print """someting has happened - two different values
