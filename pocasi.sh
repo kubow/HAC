@@ -3,6 +3,7 @@
 
 YY=$(date +%Y)
 MM=$(date +%m)
+DD=$(date +%d)
 last_run_file=${PWD}/Multimedia/Weather/last.run
 mainHTML=${PWD}/index.html
 settings_db=${PWD}/System/Device/settings.db
@@ -19,7 +20,6 @@ echo got: ${location} : 'select * from place_active'
 echo ====================
 echo python read forecast 
 echo ====================
-echo syntax: ${py_for_file} file_to_write location (now disabled)
 #syntax: py_for_file file_to_write location
 #forecast temporarily diabled
 #python ${py_for_file} ${mainHTML} ${location}
@@ -27,8 +27,9 @@ echo syntax: ${py_for_file} file_to_write location (now disabled)
 echo ==========================
 echo python read weather actual
 echo ==========================
-weather_db=${PWD}/Multimedia/Weather/${loc}_${YY}${MM}.db
-platform=$(sqlite3 ${settings_db} 'select devicename from device where active=1')
-echo ${platform} - writing ${loc}_${YY}${MM}.db
-python ${py_dev_file} -d ${weather_db} -p ${platform}
+weather_mo=${PWD}/Multimedia/Weather/${YY}${MM}.db
+weather_dy=${PWD}/Multimedia/Weather/${YY}${MM}${DD}.db
+platform=$(sqlite3 ${settings_db} 'select devicename from device_active')
+echo Running on ${platform} - writing ${YY}${MM}"("${DD}").db"
+python ${py_dev_file} -d ${weather_mo} -p ${platform}
 touch ${last_run_file}
