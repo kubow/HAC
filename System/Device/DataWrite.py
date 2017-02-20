@@ -37,7 +37,6 @@ def get_time(timevalue, modnum):
     """function to return rounded time
     second parameter aggregation time interval """
     # saving in <modnum> minute intervals
-    modnum = 2
     minute = timevalue.minute + float(timevalue.second)/60
     modulo = float(minute%modnum)
     # decide where to put value
@@ -128,17 +127,16 @@ if __name__ == '__main__':
     conn = sqlite3.connect(args.d)
     c = conn.cursor()
     # check if table exist - create new
-    table_create = dev.table_ddl.format(table_name, col_list[:-2])
     if not c.execute(dev.table_exist.format(table_name)).fetchone()[0]:
+        table_create = dev.table_ddl.format(table_name, col_list[:-2])
         c.execute(table_create)
-    # log value - perform get value from device first
+    # log values - construct insert query from device list
+    timestamp = get_time(now, 2) #now rounded to two minutes
+    ins_col = 'timestamp, device'
+    ins_val = '"' + str(timestamp) + '", "' + args.p + '"'
     for velocity, driver in lst:
-        print velocity + '----------------'
-        ins_col = ''
-        ins_val = ''
-        i = 0
         for column, defa in col_defa.iteritems():
-            ins_col += column + ', '
+            ins_col += ', ' + column
             if column in ('timestamp', 'device', velocity):
                 ins_val += '{' + str(i) + '}, '
                 i += 1
@@ -146,7 +144,6 @@ if __name__ == '__main__':
                 ins_val += defa + ', '
         ins_col = table_name + ' (' + ins_col[:-2] + ')'
         # get value for driver
-        timestamp = get_time(now, 2) #now rounded to two minutes
         ins_vals = ins_val.format(123, '"'+args.p+'"', '"'+str(timestamp)+'"')
         ins_qry = dev.value_insert.format(ins_col, ins_vals[:-2])
         # print str(timestamp) + ' - real time: ' + str(now)
