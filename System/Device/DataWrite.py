@@ -21,17 +21,18 @@ class DeviceControl(object):
     FROM driver 
     WHERE device = (
         SELECT ID from device where devicename = '{0}'
-    )"""
+    );"""
     get_device_spec = """SELECT * 
     FROM driver
     WHERE device = (
         SELECT ID from device where devicename = '{0}'
-    """
+    ;"""
     get_structure = 'SELECT * FROM structure'
+    get_table_name = 'SELECT table_name FROM setting'
     value_exist = 'SELECT timestamp FROM {0} WHERE timestamp = {1};'
     value_select = 'SELECT {0} FROM {1} WHERE timestamp = {2};'
     value_insert = 'INSERT INTO {0} VALUES ({1});'
-    value_update = 'UPDATE {0} SET {1} = {2} WHERE timestamp = {3};'
+    value_update = 'UPDATE {0} SET {1} WHERE timestamp = {2};'
 
 def get_time(timevalue, modnum):
     """function to return rounded time
@@ -48,7 +49,7 @@ def get_time(timevalue, modnum):
         # print str(modulo) + 'is less than' + str(float(modnum/2))
     timevalue_aggregated = datetime.datetime(timevalue.year,
      timevalue.month, timevalue.day, timevalue.hour, int(min_new), 0, 0)
-    print str(timevalue) + ' > ' + str(timevalue_aggregated)
+    print 'timestamp: ' + str(timevalue) + ' > ' + str(timevalue_aggregated)
     return timevalue_aggregated
 
 def get_value(devicefile):
@@ -111,7 +112,7 @@ if __name__ == '__main__':
     sdb = os.path.dirname(os.path.realpath(__file__)) + '/settings.db'
     conn = sqlite3.connect(sdb)
     c = conn.cursor()
-    # # build insert values
+    # # build table structure
     col_list = '' # columns - string to create table
     col_vals = {} # columns - default values to insert query
     for row in c.execute(dev.get_structure).fetchall():
@@ -120,36 +121,37 @@ if __name__ == '__main__':
     col_defa = OrderedDict(sorted(col_vals.items(), key=lambda x: x[1]))
     # get all drivers to read from device
     lst = c.execute(dev.get_settings.format(args.p)).fetchall()
-    conn.close()
     # name of table being saved
-    table_name = 'measured'
-    # create connection
+    table_name = c.execute(dev.get_table_name).fetchone()[0]
+    conn.close()
+    # create connection to new database file
     conn = sqlite3.connect(args.d)
     c = conn.cursor()
     # check if table exist - create new
     if not c.execute(dev.table_exist.format(table_name)).fetchone()[0]:
         table_create = dev.table_ddl.format(table_name, col_list[:-2])
         c.execute(table_create)
-    # log values - construct insert query from device list
+    # get proper timestamp - check if exist in database
     timestamp = get_time(now, 2) #now rounded to two minutes
-    ins_col = 'timestamp, device'
-    ins_val = '"' + str(timestamp) + '", "' + args.p + '"'
-    for velocity, driver in lst:
-        for column, defa in col_defa.iteritems():
-            ins_col += ', ' + column
-            if column in ('timestamp', 'device', velocity):
-                ins_val += '{' + str(i) + '}, '
-                i += 1
-            else:
-                ins_val += defa + ', '
-        ins_col = table_name + ' (' + ins_col[:-2] + ')'
-        # get value for driver
-        ins_vals = ins_val.format(123, '"'+args.p+'"', '"'+str(timestamp)+'"')
-        ins_qry = dev.value_insert.format(ins_col, ins_vals[:-2])
+    ts_exist = dev.value_exist.format(table_name, timestamp)
+    if not c.execute(ts_exist).fetchone()[0]:
+        # log values - construct insert query from device list
+        ins_col = table_name + ' (timestamp, device'
+        ins_val = '"' + str(timestamp) + '", "' + args.p + '"'
+        for velocity, driver in lst:
+            ins_col += ', ' + velocity
+            #ins_val += ', ' + get_value(driver)
+            ins_val += ', ' + str(11)
+            # get value for driver
+        ins_qry = dev.value_insert.format(ins_col + ')', ins_val)
         # print str(timestamp) + ' - real time: ' + str(now)
-        # print ins_qry
+        print ins_qry
         # log_value(get_value(driver), velocity, c, ins_qry)
         #log_value(11, velocity, c, ins_qry, timestamp)
+    else:
+        
+    #write values
+    c.execute(ins_qry)
     # finish changes
     conn.commit()
     conn.close()
