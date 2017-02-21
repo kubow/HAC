@@ -134,8 +134,9 @@ if __name__ == '__main__':
     # get proper timestamp - check if exist in database
     timestamp = get_time(now, 2) #now rounded to two minutes
     ts_exist = dev.value_exist.format(table_name, timestamp)
+    print ts_exist
     if not c.execute(ts_exist).fetchone()[0]:
-        # log values - construct insert query from device list
+        # construct insert query from device list
         ins_col = table_name + ' (timestamp, device'
         ins_val = '"' + str(timestamp) + '", "' + args.p + '"'
         for velocity, driver in lst:
@@ -143,15 +144,18 @@ if __name__ == '__main__':
             #ins_val += ', ' + get_value(driver)
             ins_val += ', ' + str(11)
             # get value for driver
-        ins_qry = dev.value_insert.format(ins_col + ')', ins_val)
+        qry = dev.value_insert.format(ins_col + ')', ins_val)
         # print str(timestamp) + ' - real time: ' + str(now)
-        print ins_qry
+        print qry
         # log_value(get_value(driver), velocity, c, ins_qry)
         #log_value(11, velocity, c, ins_qry, timestamp)
     else:
-        
+        # construct update query from device list
+        upd_val = ''
+        for velocity, driver in lst:
+            upd_val += velocity + ' = ' + str(11) + ', '
     #write values
-    c.execute(ins_qry)
+    c.execute(qry)
     # finish changes
     conn.commit()
     conn.close()
