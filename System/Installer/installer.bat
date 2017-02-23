@@ -10,4 +10,4 @@ REM echo %CHESSPYTHONPATHv1%
 REM check if pip path in variables
 SET /p args=<%~dp0py_packages.txt
 echo checking if installed: %args%
-python installer.py %args%
+python installer.py %args% > %~dp0py_install.log

@@ -4,6 +4,7 @@
 /Multimedia/image/*.jpg
 /Multimedia/RestMenu/*.htm
 /Multimedia/Weather/*.db
-/System/Coverter/*.json
-/System/Coverter/*.sqlite
-/System/DirectoryList/*.htm
+/System/Data/Coverter/*.json
+/System/Data/Coverter/*.sqlite
+/System/Data/Reader/Directory/*.htm
+/System/Installer/*.log
