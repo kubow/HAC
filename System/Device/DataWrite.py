@@ -11,49 +11,10 @@ from collections import OrderedDict
 # get tepmerature
 # argument devicefile is the path of the sensor to be read,
 # returns None on error, or the temperature as a float
-class DeviceControl(object):
-    table_exist = """SELECT EXISTS(
-        SELECT 1 FROM sqlite_master 
-        WHERE type="table" AND name = "{0}"
-    );"""
-    table_ddl = 'CREATE TABLE {0} ({1});'
-    get_settings = """SELECT drivertype, driverloc 
-    FROM driver 
-    WHERE device = (
-        SELECT ID from device where devicename = '{0}'
-    );"""
-    get_device_spec = """SELECT * 
-    FROM driver
-    WHERE device = (
-        SELECT ID from device where devicename = '{0}'
-    ;"""
-    get_structure = 'SELECT * FROM structure'
-    get_table_name = 'SELECT table_name FROM setting'
-    value_exist = 'SELECT timestamp FROM {0} WHERE timestamp = {1};'
-    value_select = 'SELECT {0} FROM {1} WHERE timestamp = {2};'
-    value_insert = 'INSERT INTO {0} VALUES ({1});'
-    value_update = 'UPDATE {0} SET {1} WHERE timestamp = {2};'
-
-def get_time(timevalue, modnum):
-    """function to return rounded time
-    second parameter aggregation time interval """
-    # saving in <modnum> minute intervals
-    minute = timevalue.minute + float(timevalue.second)/60
-    modulo = float(minute%modnum)
-    # decide where to put value
-    if modulo >= float(modnum/2):
-        min_new = minute - modulo + modnum
-        # print str(modulo) + 'is greater than' + str(float(modnum/2))
-    else:
-        min_new = minute - modulo
-        # print str(modulo) + 'is less than' + str(float(modnum/2))
-    timevalue_aggregated = datetime.datetime(timevalue.year,
-     timevalue.month, timevalue.day, timevalue.hour, int(min_new), 0, 0)
-    print 'timestamp: ' + str(timevalue) + ' > ' + str(timevalue_aggregated)
-    return timevalue_aggregated
+import Control
 
 def get_value(devicefile):
-    """read value from device"""
+    """read value from bunch of files"""
     try:
         fileobj = open(devicefile,'r')
         lines = fileobj.readlines()
@@ -106,7 +67,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     # create class for controlling device
-    dev = DeviceControl()
+    dev = Control.Device()
     # load settings from settings db
     now = datetime.datetime.now()
     sdb = os.path.dirname(os.path.realpath(__file__)) + '/settings.db'
@@ -132,10 +93,10 @@ if __name__ == '__main__':
         table_create = dev.table_ddl.format(table_name, col_list[:-2])
         c.execute(table_create)
     # get proper timestamp - check if exist in database
-    timestamp = get_time(now, 2) #now rounded to two minutes
+    timestamp = Control.get_time(now, 2) #now rounded to two minutes
     ts_exist = dev.value_exist.format(table_name, timestamp)
-    print ts_exist
-    if not c.execute(ts_exist).fetchone()[0]:
+    #print c.execute(ts_exist).fetchone()
+    if not c.execute(ts_exist).fetchone():
         # construct insert query from device list
         ins_col = table_name + ' (timestamp, device'
         ins_val = '"' + str(timestamp) + '", "' + args.p + '"'
@@ -154,6 +115,9 @@ if __name__ == '__main__':
         upd_val = ''
         for velocity, driver in lst:
             upd_val += velocity + ' = ' + str(11) + ', '
+        upd_val = upd_val[:-2]
+        print upd_val
+        qry = dev.value_update.format(table_name, upd_val, timestamp)
     #write values
     c.execute(qry)
     # finish changes

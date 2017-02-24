@@ -3,7 +3,7 @@ cls
 SET YY=%Date:~10,4%
 SET MM=%Date:~4,2%
 SET mainHTML=%~dp0index.html
-SET data_db=%~dp0Multimedia\Weather\
+SET data_db=%~dp0Multimedia\Measured\
 SET settings_db=%~dp0System\Device\settings.db
 SET py_data_file=%~dp0System\Device\DataWrite.py
 SET py_forecast_file=%~dp0System\Data\Weather\WriteWeatherActual.py

@@ -4,8 +4,10 @@
 YY=$(date +%Y)
 MM=$(date +%m)
 DD=$(date +%d)
-last_run_file=${PWD}/Multimedia/Weather/last.run
 mainHTML=${PWD}/index.html
+data_db=${PWD}/Multimedia/Measured/
+last_run_file=${data_db}last.run
+
 settings_db=${PWD}/System/Device/settings.db
 py_dev_file=${PWD}/System/Device/DataWrite.py
 py_for_file=${PWD}/System/DataWeather/WriteWeatherActual.py
@@ -27,8 +29,8 @@ echo ====================
 echo ==========================
 echo python read weather actual
 echo ==========================
-weather_mo=${PWD}/Multimedia/Weather/${YY}${MM}.db
-weather_dy=${PWD}/Multimedia/Weather/${YY}${MM}${DD}.db
+weather_mo=${data_db}${YY}${MM}.db
+weather_dy=${data_db}${YY}${MM}${DD}.db
 platform=$(sqlite3 ${settings_db} 'select devicename from device_active')
 echo Running on ${platform} - writing ${YY}${MM}"("${DD}").db"
 python ${py_dev_file} -d ${weather_mo} -p ${platform}
