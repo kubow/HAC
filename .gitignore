@@ -2,8 +2,11 @@
 /*.log
 /Multimedia/*.html
 /Multimedia/image/*.jpg
+/Multimedia/Measured/*.db
+/Multimedia/Measured/*.sqlite
+/Multimedia/Measured/*.csv
+/Multimedia/Measured/*.txt
 /Multimedia/RestMenu/*.htm
-/Multimedia/Weather/*.db
 /System/Data/Coverter/*.json
 /System/Data/Coverter/*.sqlite
 /System/Data/Reader/Directory/*.htm

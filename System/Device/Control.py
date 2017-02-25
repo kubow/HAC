@@ -1,5 +1,7 @@
-"""File contains class for 
+"""File contains class for controlling Device through sqlite settings
+function get_time to round 
 """
+import os
 import time
 import datetime
 
@@ -24,6 +26,8 @@ class Device(object):
     value_select = 'SELECT {0} FROM {1} WHERE timestamp = "{2}";'
     value_insert = 'INSERT INTO {0} VALUES ({1});'
     value_update = 'UPDATE {0} SET {1} WHERE timestamp = "{2}";'
+    date_format = '%Y/%m/%d %H:%M:%S'
+    date_file_format = '%Y%m%d_%H%M'
     
     
 def get_time(timevalue, modnum):
@@ -43,14 +47,33 @@ def get_time(timevalue, modnum):
      timevalue.month, timevalue.day, timevalue.hour, int(min_new), 0, 0)
     #print 'timestamp: ' + str(timevalue) + ' > ' + str(timevalue_aggregated)
     return timevalue_aggregated
+
+def min_between(d1, d2):
+    #d1 = datetime.strptime(d1, "%Y-%m-%d")
+    #d2 = datetime.strptime(d2, "%Y-%m-%d")
+    return abs(d2 - d1)    
     
-    
-def writeCSV(location, name, header, values):
-    """header - list of columns"""
-    if os.path.exists(fileName):
-        f = open(fileName, "a")
+def writeCSV(file_name, values, timestamp, device):
+    """write a CSV file
+    values - in dictionary
+    timestamp of exact time measured
+    device - which perform data read"""
+    if os.path.exists(file_name):
+        f = open(file_name, "a")
     else:
-        f = open(fileName, "a+")
-        for element in header:
-          f.write(element + ",")
-        f.write("\n")
+        f = open(file_name, "a+")
+        line = 1
+        # write time series and header
+        for actime, vals in values.iteritems():
+            row = ''
+            if line == 1:
+                for d, v in vals.iteritems():
+                    row += str(d) + ','
+                row = 'datetime, ' + row
+                f.write(row + "\n")
+            row = str(actime) + ','
+            for d, v in vals.iteritems():
+                row += str(v) + ','
+            f.write(row+"\n")
+            line += 1
+    f.close()
