@@ -10,7 +10,7 @@ last_run_file=${data_db}last.run
 
 settings_db=${PWD}/System/Device/settings.db
 py_dev_file=${PWD}/System/Device/DataWrite.py
-py_for_file=${PWD}/System/DataWeather/WriteWeatherActual.py
+py_for_file=${PWD}/System/Data/Weather/WriteWeatherActual.py
 
 echo ============================================
 echo "getting location in format ('city','country')"
@@ -24,7 +24,7 @@ echo python read forecast
 echo ====================
 #syntax: py_for_file file_to_write location
 #forecast temporarily diabled
-#python ${py_for_file} ${mainHTML} ${location}
+python ${py_for_file} ${mainHTML} ${location}
 
 echo ==========================
 echo python read weather actual
