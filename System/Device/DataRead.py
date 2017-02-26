@@ -1,3 +1,6 @@
+""" 1st argument - device reading data
+2nd argument - sensor location
+3rd argument - where to write csv data"""
 import os
 import sys
 import time
@@ -47,28 +50,29 @@ if __name__ == '__main__':
     csv = ''
     
     while 1:
-        #try:
+        try:
             recieved = ser.readline().replace('\r\n', ' ')
             if len(recieved) >= 1:
                 vel_val = recieved.split(':')
                 just_now = datetime.datetime.now()
                 now = Control.get_time(just_now, int_shift)
-                csv_name = [args.l, str(now.year), str(now.month), 
-                str(now.day), '_'+str(now.hour), str(now.minute), '.csv']
+                csv_fname = now.strftime(dev.date_file_format)+'.csv'
                 # checking interval shifts
                 if now > last_run:
                     Control.writeCSV(csv, data_vals, just_now, 'RPi')
                     data_vals = {} # clear the dictionaries 
                     data_int = {} 
                     last_run = now
-                csv = ''.join(csv_name)
+                csv = args.l + csv_fname
                 print recieved + str(just_now.strftime(dev.date_format))
                 #building dictionary
                 data_int[vel_val[0]] = vel_val[-1]
                 data_vals[just_now.strftime(dev.date_format)] = data_int 
             time.sleep(1)
-        #except Exception as ex:
-            #print ex.args[0].replace('\n', ' ')
+        except Exception as ex:
+            print ex.args[0].replace('\n', ' ')
+            print 'now '+ str(now)
+            print 'last_run' + str(last_run)
             #print data_vals
             #raw_input("Press enter to continue")
             #os.system("pause")

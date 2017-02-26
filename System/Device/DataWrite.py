@@ -13,27 +13,6 @@ from collections import OrderedDict
 # returns None on error, or the temperature as a float
 import Control
 
-def get_value(devicefile):
-    """read value from bunch of files"""
-    try:
-        fileobj = open(devicefile,'r')
-        lines = fileobj.readlines()
-        fileobj.close()
-    except:
-        return None
-    # get the status from the end of line 1 
-    status = lines[0][-4:-1]
-    # is the status is ok, get the temperature from line 2
-    if status=="YES":
-        print status
-        tempstr= lines[1][-6:-1]
-        tempvalue=float(tempstr)/1000
-        print tempvalue
-        return tempvalue
-    else:
-        print "There was an error."
-        return None
-
 def log_value(measure, velocity, c, ins_qry, timestamp):
     """store the value in the database
     measure - value which was measured
@@ -62,14 +41,13 @@ def log_value(measure, velocity, c, ins_qry, timestamp):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Write weather data")
-    parser.add_argument('-d', help='db file', type=str, default='')
-    parser.add_argument('-p', help='device name', type=str, default='')
+    parser.add_argument('-d', help='device name', type=str, default='')
+    parser.add_argument('-l', help='location', type=str, default='')
     args = parser.parse_args()
     
     # create class for controlling device
     dev = Control.Device()
     # load settings from settings db
-    now = datetime.datetime.now()
     sdb = os.path.dirname(os.path.realpath(__file__)) + '/settings.db'
     conn = sqlite3.connect(sdb)
     c = conn.cursor()
@@ -79,49 +57,54 @@ if __name__ == '__main__':
     for row in c.execute(dev.get_structure).fetchall():
         col_list += row[1] + ' ' + row[2] + ','
         col_vals[row[1]] = row[4]
-    col_defa = OrderedDict(sorted(col_vals.items(), key=lambda x: x[1]))
-    # get all drivers to read from device
-    lst = c.execute(dev.get_settings.format(args.p)).fetchall()
     # name of table being saved
     table_name = c.execute(dev.get_table_name).fetchone()[0]
     conn.close()
-    # create connection to new database file
-    conn = sqlite3.connect(args.d)
-    c = conn.cursor()
-    # check if table exist - create new
-    if not c.execute(dev.table_exist.format(table_name)).fetchone()[0]:
-        table_create = dev.table_ddl.format(table_name, col_list[:-2])
-        c.execute(table_create)
-    # get proper timestamp - check if exist in database
-    timestamp = Control.get_time(now, 2) #now rounded to two minutes
-    ts_exist = dev.value_exist.format(table_name, timestamp)
-    #print c.execute(ts_exist).fetchone()
-    if not c.execute(ts_exist).fetchone():
-        # construct insert query from device list
-        ins_col = table_name + ' (timestamp, device'
-        ins_val = '"' + str(timestamp) + '", "' + args.p + '"'
-        for velocity, driver in lst:
-            ins_col += ', ' + velocity
-            #ins_val += ', ' + get_value(driver)
-            ins_val += ', ' + str(11)
-            # get value for driver
-        qry = dev.value_insert.format(ins_col + ')', ins_val)
-        # print str(timestamp) + ' - real time: ' + str(now)
+    # iterate csv files in given directory
+    for csv_file in os.listdir(args.l):
+        if csv_file.split('.')[-1] <> 'csv':
+            continue
+            # only csv files
+        # create connection to new database file
+        base_name = args.l + csv_file[:6]
+        conn = sqlite3.connect(base_name + '.sqlite')
+        c = conn.cursor()
+        # check if table exist - create new
+        if not c.execute(dev.table_exist.format(table_name)).fetchone()[0]:
+            table_create = dev.table_ddl.format(table_name, col_list[:-2])
+            c.execute(table_create)
+        # get csv file as dictionary
+        ts = Control.readCSV(args.l + csv_file)
+        # timestamp = dictionary index 0
+        for key, value in ts.iteritems():
+            timestamp = key
+        print timestamp
+        ts_exist = dev.value_exist.format(table_name, timestamp)
+        # check if about to update or insert
+        if not c.execute(ts_exist).fetchone():
+            # construct insert query from device list
+            ins_col = table_name + ' (timestamp, device'
+            ins_val = '"' + str(timestamp) + '", "' + args.d + '"'
+            for timestamp_n, vals in ts.iteritems():
+                for vel, val in vals.iteritems():
+                    ins_col += ', ' + vel
+                    ins_val += ', "' + str(val) + '"'
+            qry = dev.value_insert.format(ins_col + ')', ins_val)
+        else:
+            # construct update query from device list
+            upd_val = ''
+            for timestamp_n, vals in ts.iteritems():
+                for vel, val in vals.iteritems():
+                    upd_val += vel + ' = "' + str(val) + '", '
+            upd_val = upd_val[:-2]
+            qry = dev.value_update.format(table_name, upd_val, timestamp)
+        # write values
         print qry
-        # log_value(get_value(driver), velocity, c, ins_qry)
-        #log_value(11, velocity, c, ins_qry, timestamp)
-    else:
-        # construct update query from device list
-        upd_val = ''
-        for velocity, driver in lst:
-            upd_val += velocity + ' = ' + str(11) + ', '
-        upd_val = upd_val[:-2]
-        print upd_val
-        qry = dev.value_update.format(table_name, upd_val, timestamp)
-    #write values
-    c.execute(qry)
+        c.execute(qry)
+        conn.commit()
+        # archive csv
+        # nothing for now, just read
     # finish changes
-    conn.commit()
     conn.close()
 else:
     print 'What is this file name? - ' + __name__

@@ -29,9 +29,10 @@ echo ====================
 echo ==========================
 echo python read weather actual
 echo ==========================
-weather_mo=${data_db}${YY}${MM}.db
-weather_dy=${data_db}${YY}${MM}${DD}.db
+#weather_mo=${data_db}${YY}${MM}.db
+#weather_dy=${data_db}${YY}${MM}${DD}.db
 platform=$(sqlite3 ${settings_db} 'select devicename from device_active')
 echo Running on ${platform} - writing ${YY}${MM}"("${DD}").db"
-python ${py_dev_file} -d ${weather_mo} -p ${platform}
+#python ${py_dev_file} -d ${weather_mo} -p ${platform}
+python ${py_dev_file} -d ${platform} -l ${data_db}
 touch ${last_run_file}

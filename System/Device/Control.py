@@ -1,5 +1,6 @@
 """File contains class for controlling Device through sqlite settings
 function get_time to round 
+also logger
 """
 import os
 import time
@@ -39,16 +40,33 @@ def get_time(timevalue, modnum):
     # decide where to put value
     if modulo >= float(modnum/2):
         min_new = minute - modulo + modnum
-        # print str(modulo) + 'is greater than' + str(float(modnum/2))
+        hour_new = timevalue.hour
     else:
         min_new = minute - modulo
-        # print str(modulo) + 'is less than' + str(float(modnum/2))
+        if min_new > 58:
+            hour_new = timevalue.hour + 1
+            min_new = 0
+        else:
+            hour_new = timevalue.hour
     timevalue_aggregated = datetime.datetime(timevalue.year,
-     timevalue.month, timevalue.day, timevalue.hour, int(min_new), 0, 0)
+     timevalue.month, timevalue.day, hour_new, int(min_new), 0, 0)
     #print 'timestamp: ' + str(timevalue) + ' > ' + str(timevalue_aggregated)
     return timevalue_aggregated
 
+def get_time_from_file(file):
+    file_name = file.split('/')[-1]
+    not_csv = file_name.split('.')[0]
+    file_date = not_csv.split('_')[0]
+    file_time = not_csv.split('_')[1]
+    file_year = int(file_date[:4])
+    file_month = int(file_date[4:6])
+    file_day = int(file_date[6:])
+    file_hour = int(file_time[:2])
+    file_minute = int(file_time[2:])
+    return datetime.datetime(file_year, file_month, file_day, file_hour, file_minute, 0)
+
 def min_between(d1, d2):
+    '''not used for now - just temp'''
     #d1 = datetime.strptime(d1, "%Y-%m-%d")
     #d2 = datetime.strptime(d2, "%Y-%m-%d")
     return abs(d2 - d1)    
@@ -77,3 +95,44 @@ def writeCSV(file_name, values, timestamp, device):
             f.write(row+"\n")
             line += 1
     f.close()
+
+def readCSV(csvfile):
+    """read value from csv file
+    return in dictionary"""
+    try:
+        fileobj = open(csvfile,'r')
+        lines = fileobj.readlines()
+        timestamp = get_time_from_file(csvfile)
+        fileobj.close()
+        # load field names as variables
+        val = 0
+        timestamps = {}
+        flds = []  # field number
+        vels = []  # velocities
+        values = {}
+        velocities = {}
+        # load values to dictionary
+        for row in lines:
+            hd = row.split(',')
+            if val == 0:
+                # various columns save
+                for i in range(len(hd)):
+                    if hd[i] not in ('datetime', None, '\n'):
+                        flds.append('val_'+str(i))
+                        vels.append(hd[i].strip())
+                        values['val_'+str(i)] = 0
+                val += 1
+            else:
+                for fld in flds:
+                    idx = int(fld.split('_')[-1])
+                    values[fld] = int(values[fld]) + int(hd[idx])
+                val += 1
+        for field, sum_vals in values.iteritems():
+            values[field] = sum_vals/val
+            # get index of field - change to proper list
+            velocities[vels[flds.index(field)]] = sum_vals/val
+        timestamps[timestamp] = velocities
+        return timestamps
+    except Exception as ex:
+        print ex.args[0]
+        return None
