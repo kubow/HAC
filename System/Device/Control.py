@@ -1,6 +1,10 @@
-"""File contains class for controlling Device through sqlite settings
-function get_time to round 
-also logger
+"""Developped by Kube Kubow 2017
+File contains class for controlling Device through sqlite settings
+function get_time to round (aggregate) timestamp
+function get_time_from_file to build date and time from file name
+function to read CSV file content to a dictionary
+function to write CSV file from downloaded data
+and a logger module - currently not implemented
 """
 import os
 import time
@@ -54,6 +58,8 @@ def get_time(timevalue, modnum):
     return timevalue_aggregated
 
 def get_time_from_file(file):
+    """build a date-time stamp from file name
+    ... presuming structure <YYYYMMDD_hhmm>"""
     file_name = file.split('/')[-1]
     not_csv = file_name.split('.')[0]
     file_date = not_csv.split('_')[0]
