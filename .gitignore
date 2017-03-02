@@ -7,6 +7,7 @@
 /Multimedia/Measured/*.csv
 /Multimedia/Measured/*.txt
 /Multimedia/RestMenu/*.htm
+/System/Device/Control.pyc
 /System/Data/Coverter/*.json
 /System/Data/Coverter/*.sqlite
 /System/Data/Reader/Directory/*.htm
