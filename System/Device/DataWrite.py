@@ -60,6 +60,7 @@ if __name__ == '__main__':
     # name of table being saved
     table_name = c.execute(dev.get_table_name).fetchone()[0]
     conn.close()
+    
     # iterate csv files in given directory
     for csv_file in os.listdir(args.l):
         if csv_file.split('.')[-1] <> 'csv':

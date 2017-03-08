@@ -15,7 +15,7 @@ py_for_file=${PWD}/System/Data/Weather/WriteWeatherActual.py
 echo ============================================
 echo "getting location in format ('city','country')"
 echo ============================================
-command=$(sqlite3 ${settings_db} 'select * from place_active')
+command=$(sqlite3 ${settings_db} 'select * from place_active;')
 IFS='|' read -r loc cnt <<< ${command}
 location=${loc},${cnt}
 echo got: ${location} : 'select * from place_active'
@@ -25,13 +25,12 @@ echo ====================
 #syntax: py_for_file file_to_write location
 #forecast temporarily diabled
 python ${py_for_file} ${mainHTML} ${location}
-
 echo ==========================
-echo python read weather actual
+echo python write weather forecast
 echo ==========================
 #weather_mo=${data_db}${YY}${MM}.db
 #weather_dy=${data_db}${YY}${MM}${DD}.db
-platform=$(sqlite3 ${settings_db} 'select devicename from device_active')
+platform=$(sqlite3 ${settings_db} 'select devicename from device_active;')
 echo Running on ${platform} - writing ${YY}${MM}"("${DD}").db"
 #python ${py_dev_file} -d ${weather_mo} -p ${platform}
 python ${py_dev_file} -d ${platform} -l ${data_db}
