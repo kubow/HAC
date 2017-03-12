@@ -60,7 +60,7 @@ def get_time(timevalue, modnum):
 def get_time_from_file(file):
     """build a date-time stamp from file name
     ... presuming structure <YYYYMMDD_hhmm>"""
-    file_name = file.split('/')[-1]
+    file_name = file.replace('\\', '/').split('/')[-1]
     not_csv = file_name.split('.')[0]
     file_date = not_csv.split('_')[0]
     file_time = not_csv.split('_')[1]
@@ -119,6 +119,8 @@ def readCSV(csvfile):
         velocities = {}
         # load values to dictionary
         for row in lines:
+            if not row:
+                continue
             hd = row.split(',')
             if val == 0:
                 # various columns save
@@ -141,4 +143,5 @@ def readCSV(csvfile):
         return timestamps
     except Exception as ex:
         print ex.args[0]
+        print 'problem in csv ' + csvfile + ' (line{0})'.format(str(val))
         return None

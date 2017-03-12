@@ -23,8 +23,14 @@ ECHO ====================
 ECHO syntax: %py_forecast_file% file_to_write location (now disabled)
 REM python %py_forecast_file% %mainHTML% %location%
 ECHO ==========================
-ECHO python read weather actual
+ECHO python write proccessed data
 ECHO ==========================
-ECHO syntax: %py_data_file% -d database.sqlite -p device.name
-ECHO writing to: %data_db%%YY%%MM%.sqlite 
-python %py_data_file% -d %data_db%%YY%%MM%.sqlite -p RPi
+SET command=%sqlite%sqlite3.exe %settings_db%  "select devicename from device_active;"
+FOR /F "tokens=* USEBACKQ" %%F IN (`%command%`) DO (
+REM ECHO %%F
+SET platform=%%F
+)
+ECHO syntax: %py_data_file% -d %platform% -l location
+REM ECHO writing to: %data_db%%YY%%MM%.sqlite 
+ECHO ...............
+python %py_data_file% -d %platform% -l %data_db%

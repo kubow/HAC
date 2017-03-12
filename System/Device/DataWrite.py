@@ -1,12 +1,13 @@
-""" 1st argument - what kind of data temp/rain/wind/all
-2nd argument - where to write
-3rd argument - where to present"""
+""" File used to read all data downloaded from sensors
+and aggregate to sqlite database
+intermediate CSV files are being archived"""
 import os
 import sys
+import shutil
 import argparse
 import sqlite3
 import datetime
-from collections import OrderedDict
+#from collections import OrderedDict
 
 # get tepmerature
 # argument devicefile is the path of the sensor to be read,
@@ -61,11 +62,21 @@ if __name__ == '__main__':
     table_name = c.execute(dev.get_table_name).fetchone()[0]
     conn.close()
     
+    # check if Archive directory present
+    if not os.path.exists(args.l + 'Archive'):
+        os.makedirs(args.l + 'Archive')
+        
+    # prepare JSON file to HTML graphs
+    json = open(args.l + 'data.json','w')
+    json.write('[')
+    
     # iterate csv files in given directory
+    csv_cnt = 0 # counter for iterated files
     for csv_file in os.listdir(args.l):
-        if csv_file.split('.')[-1] <> 'csv':
+        if csv_file.split('.')[-1].lower() <> 'csv':
             continue
             # only csv files
+        csv_cnt += 1
         # create connection to new database file
         base_name = args.l + csv_file[:6]
         conn = sqlite3.connect(base_name + '.sqlite')
@@ -76,35 +87,45 @@ if __name__ == '__main__':
             c.execute(table_create)
         # get csv file as dictionary
         ts = Control.readCSV(args.l + csv_file)
+        if not ts:
+            print '!!!!file was not proccessed ...'
+            continue
+        print 'file read: ' + args.l + csv_file
         # timestamp = dictionary index 0
         for key, value in ts.iteritems():
             timestamp = key
-        print timestamp
         ts_exist = dev.value_exist.format(table_name, timestamp)
         # check if about to update or insert
         if not c.execute(ts_exist).fetchone():
             # construct insert query from device list
             ins_col = table_name + ' (timestamp, device'
-            ins_val = '"' + str(timestamp) + '", "' + args.d + '"'
+            values = '"' + str(timestamp) + '", "' + args.d + '"'
             for timestamp_n, vals in ts.iteritems():
                 for vel, val in vals.iteritems():
                     ins_col += ', ' + vel
-                    ins_val += ', "' + str(val) + '"'
-            qry = dev.value_insert.format(ins_col + ')', ins_val)
+                    values += ', "' + str(val) + '"'
+            qry = dev.value_insert.format(ins_col + ')', values)
         else:
             # construct update query from device list
-            upd_val = ''
+            values = ''
             for timestamp_n, vals in ts.iteritems():
                 for vel, val in vals.iteritems():
-                    upd_val += vel + ' = "' + str(val) + '", '
-            upd_val = upd_val[:-2]
-            qry = dev.value_update.format(table_name, upd_val, timestamp)
+                    values += vel + ' = "' + str(val) + '", '
+            values = values[:-2]
+            qry = dev.value_update.format(table_name, values, timestamp)
         # write values
         print qry
         c.execute(qry)
         conn.commit()
         # archive csv
-        # nothing for now, just read
+        shutil.move(args.l + csv_file, args.l + 'Archive')
+        print 'file archived ...'
+        json.write('[{0}]'.format(values))
+    json.write(']')
+    if csv_cnt < 1:
+        print 'no csv files to proccess'
+    else:
+        print 'processed ' + str(csv_cnt) + ' files'
     # finish changes
     conn.close()
 else:

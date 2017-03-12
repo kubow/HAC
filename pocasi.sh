@@ -26,7 +26,7 @@ echo ====================
 #forecast temporarily diabled
 python ${py_for_file} ${mainHTML} ${location}
 echo ==========================
-echo python write weather forecast
+echo python write proccessed data
 echo ==========================
 #weather_mo=${data_db}${YY}${MM}.db
 #weather_dy=${data_db}${YY}${MM}${DD}.db
