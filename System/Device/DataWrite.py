@@ -120,7 +120,7 @@ if __name__ == '__main__':
         # archive csv
         shutil.move(args.l + csv_file, args.l + 'Archive')
         print 'file archived ...'
-        json.write('[{0}]'.format(values))
+        json.write('[{0}]'.format(values).replace('"', ''))
     json.write(']')
     if csv_cnt < 1:
         print 'no csv files to proccess'
