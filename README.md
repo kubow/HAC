@@ -17,7 +17,7 @@ Prequisities:
 -python 2.x/3.x installed
 
 ## Multimedia
-Used for showing various media files:
+These applications depending:
 ### Database
 #### &nbsp;&nbsp;&nbsp;&nbsp; tk frontend python tables
 #### &nbsp;&nbsp;&nbsp;&nbsp; MySQL database (hosted on apache/nginx)
@@ -40,6 +40,12 @@ Bulding parts of system.
 ### HTML templates
 
 ## System Modules
+Used for reading and processing text to standard fromat.
+#### &nbsp;&nbsp;&nbsp;&nbsp; Log Reader
+Processing log files with excel sheet
+### Directory Control
+
+## Extra Modules
 Used for reading and processing text to standard fromat.
 #### &nbsp;&nbsp;&nbsp;&nbsp; Log Reader
 Processing log files with excel sheet
