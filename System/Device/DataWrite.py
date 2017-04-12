@@ -6,6 +6,7 @@ import sys
 import shutil
 import argparse
 import sqlite3
+import time
 import datetime
 #from collections import OrderedDict
 
@@ -41,6 +42,7 @@ def log_value(measure, velocity, c, ins_qry, timestamp):
         c.execute(ins_qry)
 
 if __name__ == '__main__':
+    start_time = time.clock()
     parser = argparse.ArgumentParser(description="Write weather data")
     parser.add_argument('-d', help='device name', type=str, default='')
     parser.add_argument('-l', help='location', type=str, default='')
@@ -128,6 +130,8 @@ if __name__ == '__main__':
         print 'processed ' + str(csv_cnt) + ' files'
     # finish changes
     conn.close()
+    elapsed_time = time.clock() - start_time
+    print "Time elapsed: {} seconds".format(elapsed_time)
 else:
     print 'What is this file name? - ' + __name__
     print 'Something is wrong ...'
