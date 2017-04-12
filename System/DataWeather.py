@@ -27,9 +27,9 @@ class OpenWeatherMap(key, loc):
 2. type of file to write (HTML, SQLite, All)
 """
 parser = argparse.ArgumentParser(description="weather@location")
-    parser.add_argument('-l', help='Location', type=str, default='')
-    parser.add_argument('-w', help='Write path', type=str, default='none')
-    args = parser.parse_args()
+parser.add_argument('-l', help='Location', type=str, default='')
+parser.add_argument('-w', help='Write path', type=str, default='none')
+args = parser.parse_args()
 # Determine if passed parguments for running over a directory
 if len(sys.argv)>2:
     # print sys.argv
@@ -53,8 +53,8 @@ w = obs.get_weather()
 #w.get_humidity()              # 87
 #w.get_temperature('celsius')  # {'temp_max': 10.5, 'temp': 9.7, 'temp_min': 9.0}
 
-htm=open(write_file_path, 'w+')
-print 'file '+write_file_path+' created...'
+htm=open(args.l, 'w+')
+print 'file '+args.l+' created...'
 htm.write('<HTML>\n<HEAD>\n<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">\n')
 htm.write('<TITLE>Weather at '+loc+'</TITLE>\n</HEAD>\n<BODY>\n<H1>')
 htm.write('Weather at '+loc+'</H1>\n<P>')
