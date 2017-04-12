@@ -10,7 +10,7 @@ last_run_file=${data_db}last.run
 
 settings_db=${PWD}/System/Device/settings.db
 py_dev_file=${PWD}/System/Device/DataWrite.py
-py_for_file=${PWD}/System/Data/Weather/WriteWeatherActual.py
+py_for_file=${PWD}/System/DataWeather.py
 
 echo ============================================
 echo "getting location in format ('city','country')"

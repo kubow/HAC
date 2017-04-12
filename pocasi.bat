@@ -6,8 +6,8 @@ SET mainHTML=%~dp0index.html
 SET data_db=%~dp0Multimedia\Measured\
 SET settings_db=%~dp0System\Device\settings.db
 SET py_data_file=%~dp0System\Device\DataWrite.py
-SET py_forecast_file=%~dp0System\Data\Weather\WriteWeatherActual.py
-SET sqlite=C:\_Run\App\Textoviny\SQL\SQLite\
+SET py_forecast_file=%~dp0System\DataWeather.py
+SET sqlite=C:\_Run\App\Database\SQLite\
 ECHO ============================================
 ECHO getting location in format ('city','country')
 ECHO ============================================
