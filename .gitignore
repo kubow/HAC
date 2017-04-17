@@ -8,8 +8,9 @@
 /Multimedia/Measured/*.txt
 /Multimedia/RestMenu/*.htm
 /Multimedia/Measured/*
-/System/Device/Control.pyc
-/System/Data/Coverter/*.json
-/System/Data/Coverter/*.sqlite
-/System/Data/Reader/Directory/*.htm
+/System/*.htm
+/System/*.pyc
+/System/Device/*.pyc
+/System/Covert/*.json
+/System/Covert/*.sqlite
 /System/Installer/*.log
