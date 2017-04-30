@@ -29,6 +29,7 @@ class Device(object):
     get_table_name = 'SELECT table_name FROM setting;'
     value_exist = 'SELECT timestamp FROM {0} WHERE timestamp = "{1}";'
     value_select = 'SELECT {0} FROM {1} WHERE timestamp = "{2}";'
+    column_select = 'SELECT {0} FROM {1};'
     value_insert = 'INSERT INTO {0} VALUES ({1});'
     value_update = 'UPDATE {0} SET {1} WHERE timestamp = "{2}";'
     date_format = '%Y/%m/%d %H:%M:%S'

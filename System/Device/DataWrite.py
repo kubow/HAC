@@ -40,6 +40,30 @@ def log_value(measure, velocity, c, ins_qry, timestamp):
             c.execute(dev.value_update.format(table_name, 'temp', already[0]+1, now))
     else:
         c.execute(ins_qry)
+        
+def json_write(location, cols, c):
+    print cols
+    columns = cols.split(',')
+    for column in columns:
+        col = column.split(' ')[0]
+        # avoid some column names
+        if col in ('measured', None):
+            continue
+        # determine if column contains data
+        
+        
+        # prepare JSON file to HTML graphs
+        get_ts = dev.column_select.format('timestamp, ' + col, 'measured')
+        #print get_ts
+        json = open(location + col + '.json','w')
+        json.write('[')
+        # fetch dataset
+        for ts in c.execute(get_ts).fetchall():
+            # write values
+            json.write('[' + ts[0] + ',' + ts[1] + '],')
+        
+        # finish JSON file
+        json.write(']')
 
 if __name__ == '__main__':
     start_time = time.clock()
@@ -67,10 +91,6 @@ if __name__ == '__main__':
     # check if Archive directory present
     if not os.path.exists(args.l + 'Archive'):
         os.makedirs(args.l + 'Archive')
-        
-    # prepare JSON file to HTML graphs
-    json = open(args.l + 'data.json','w')
-    json.write('[')
     
     # iterate csv files in given directory
     csv_cnt = 0 # counter for iterated files
@@ -78,7 +98,6 @@ if __name__ == '__main__':
         if csv_file.split('.')[-1].lower() <> 'csv':
             continue
             # only csv files
-        csv_cnt += 1
         # create connection to new database file
         base_name = args.l + csv_file[:6]
         conn = sqlite3.connect(base_name + '.sqlite')
@@ -93,6 +112,7 @@ if __name__ == '__main__':
             print '!!!!file was not proccessed ...'
             continue
         print 'file read: ' + args.l + csv_file
+        csv_cnt += 1
         # timestamp = dictionary index 0
         for key, value in ts.iteritems():
             timestamp = key
@@ -121,13 +141,18 @@ if __name__ == '__main__':
         conn.commit()
         # archive csv
         shutil.move(args.l + csv_file, args.l + 'Archive')
-        print 'file archived ...'
-        json.write('[{0}],'.format(values).replace('"', ''))
-    json.write(']')
+        print 'file archived ..'
+        
     if csv_cnt < 1:
-        print 'no csv files to proccess'
+        print 'no csv files to proccess, running update'
+        #json will be called here
     else:
         print 'processed ' + str(csv_cnt) + ' files'
+    
+    # todo: move below function to each cycle with sqlite database
+    #write json
+    json_write(args.l, col_list, c)
+    
     # finish changes
     conn.close()
     elapsed_time = time.clock() - start_time

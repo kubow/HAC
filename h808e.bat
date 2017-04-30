@@ -1,5 +1,5 @@
 @ECHO OFF
-SET enc_path=C:\_Run\Web\ENC\
+SET enc_path=C:\_Run\Web\
 SET py_script_path=C:\_Run\Script\System\
 
 :MENU
@@ -57,11 +57,15 @@ CALL C:\_Run\Shortcut\Batch\SQLite.bat
 GOTO MENU
 
 :DirSync
-SET python_script=%py_script_path%Data\Reader\Directory\FileWatcherRegistry.py
+SET python_script=%py_script_path%DirWatch.py
 FOR /d %%a in ("%enc_path%*") do (
-  FOR %%* in ("%%a\.") do ECHO %%a
+  rem FOR %%* in ("%%a\.") do ECHO %%a
   rem python %python_script% %%a 
   rem C:\_Run\Web\ENC\41
+  cd %%a
+  echo %%a
+  tree /f
+  pause
 )
 rem will be a loop over all encyklopedia folders
 PAUSE
@@ -76,7 +80,7 @@ GOTO MENU
 
 :UniPy
 :UniPy
-SET python_script=%py_script_path%DirBrowser.py
+SET python_script=%py_script_path%DirBrowse.py
 ECHO will use tkinter and make a system to input data
 python %python_script%
 PAUSE
