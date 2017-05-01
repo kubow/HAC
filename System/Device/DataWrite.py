@@ -42,7 +42,7 @@ def log_value(measure, velocity, c, ins_qry, timestamp):
         c.execute(ins_qry)
         
 def json_write(location, cols, c):
-    print cols
+    # print cols
     columns = cols.split(',')
     for column in columns:
         col = column.split(' ')[0]
@@ -60,6 +60,7 @@ def json_write(location, cols, c):
         # fetch dataset
         for ts in c.execute(get_ts).fetchall():
             # write values
+            print ts
             json.write('[' + ts[0] + ',' + ts[1] + '],')
         
         # finish JSON file
