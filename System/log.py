@@ -3,9 +3,9 @@ import argparse
 import datetime
 
 def file_write(logfile, module, text):
-    logfile = open(logfile, 'w+')
+    logfile = open(logfile, 'a') #w+
     now = datetime.datetime.now()
-    line_text = str(now) + ' - ' + module + ' - ' + text
+    line_text = str(now) + ' - ' + module + ' - ' + text + '\n'
     try:
         logfile.write(line_text)
     except:

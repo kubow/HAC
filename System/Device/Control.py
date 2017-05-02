@@ -30,6 +30,7 @@ class Device(object):
     value_exist = 'SELECT timestamp FROM {0} WHERE timestamp = "{1}";'
     value_select = 'SELECT {0} FROM {1} WHERE timestamp = "{2}";'
     column_select = 'SELECT {0} FROM {1};'
+    group_select = 'SELECT length({0}) AS {1} FROM measured GROUP BY {2};'
     value_insert = 'INSERT INTO {0} VALUES ({1});'
     value_update = 'UPDATE {0} SET {1} WHERE timestamp = "{2}";'
     date_format = '%Y/%m/%d %H:%M:%S'

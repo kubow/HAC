@@ -1,13 +1,10 @@
 /index.html
 /*.log
 /Multimedia/*.html
+/Multimedia/*.log
 /Multimedia/image/*.jpg
-/Multimedia/Measured/*.db
-/Multimedia/Measured/*.sqlite
-/Multimedia/Measured/*.csv
-/Multimedia/Measured/*.txt
-/Multimedia/RestMenu/*.htm
 /Multimedia/Measured/*
+/Multimedia/RestMenu/*.htm
 /System/*.htm
 /System/*.pyc
 /System/Device/*.pyc

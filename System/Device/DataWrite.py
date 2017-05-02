@@ -47,11 +47,16 @@ def json_write(location, cols, c):
     for column in columns:
         col = column.split(' ')[0]
         # avoid some column names
-        if col in ('measured', None):
+        if col in ('timestamp', None) or not col:
             continue
         # determine if column contains data
-        
-        
+        loc = c.execute(dev.group_select.format(col, col, col)).fetchall()
+        col_data = '(%s)' % ', '.join(map(str, loc))
+        bypass = column + ' : ' + col_data
+        if 'None' in col_data:
+            print bypass + ' - bypassing, found None data'
+            continue
+        print bypass
         # prepare JSON file to HTML graphs
         get_ts = dev.column_select.format('timestamp, ' + col, 'measured')
         #print get_ts
@@ -61,7 +66,7 @@ def json_write(location, cols, c):
         for ts in c.execute(get_ts).fetchall():
             # write values
             print ts
-            json.write('[' + ts[0] + ',' + ts[1] + '],')
+            json.write('[' + ts[0] + ',' + str(ts[1]) + '],')
         
         # finish JSON file
         json.write(']')
