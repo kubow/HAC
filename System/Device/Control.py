@@ -2,8 +2,8 @@
 File contains class for controlling Device through sqlite settings
 function get_time to round (aggregate) timestamp
 function get_time_from_file to build date and time from file name
-function to read CSV file content to a dictionary
-function to write CSV file from downloaded data
+function to read CSV/JSON file content to a dictionary
+function to write CSV/JSON file from downloaded data
 and a logger module - currently not implemented
 """
 import os
@@ -152,8 +152,9 @@ def readJSON(file):
     with open(file, 'rb') as fh:
         first = next(fh).decode()
 
-        fh.seek(-512, 2)
-        last = fh.readlines()[-1].decode()
+        #fh.seek(-512, 2)
+        last = fh.readlines()
+        #last = fh.readlines()[-1].decode()
     return (first, last)
 
 def writeJSON(location, cols, c):
@@ -165,7 +166,7 @@ def writeJSON(location, cols, c):
         if col in ('timestamp', None) or not col:
             continue
         # determine if column contains data
-        loc = c.execute(dev.group_select.format(col, col, col)).fetchall()
+        loc = c.execute(Device.group_select.format(col, col, col)).fetchall()
         col_data = '(%s)' % ', '.join(map(str, loc))
         bypass = column + ' : ' + col_data
         if 'None' in col_data:
@@ -173,7 +174,11 @@ def writeJSON(location, cols, c):
             continue
         print bypass
         # prepare JSON file to HTML graphs
-        get_ts = dev.column_select.format('timestamp, ' + col, 'measured')
+        if os.path.isfile(location + col + '.json'):
+            print readJSON(location + col + '.json')
+        else:
+            print location + col + '/.json'
+        get_ts = Device.column_select.format('timestamp, ' + col, 'measured')
         #print get_ts
         json = open(location + col + '.json','w')
         json.write('[')
