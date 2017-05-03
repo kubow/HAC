@@ -5,6 +5,7 @@ YY=$(date +%Y)
 MM=$(date +%m)
 DD=$(date +%d)
 mainHTML=${PWD}/index.html
+log_dir=${PWD}/Multimedia/
 data_db=${PWD}/Multimedia/Measured/
 last_run_file=${data_db}last.run
 
@@ -34,4 +35,5 @@ platform=$(sqlite3 ${settings_db} 'select devicename from device_active;')
 echo Running on ${platform} - writing ${YY}${MM}"("${DD}").db"
 #python ${py_dev_file} -d ${weather_mo} -p ${platform}
 python ${py_dev_file} -d ${platform} -l ${data_db}
+python ${PWD}/System/log.py -l ${PWD}/Multimedia/logfile.log -m "weather" -t "agregated all data"
 touch ${last_run_file}
