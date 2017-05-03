@@ -157,7 +157,7 @@ if __name__ == '__main__':
     
     # todo: move below function to each cycle with sqlite database
     #write json
-    json_write(args.l, col_list, c)
+    dev.json_write(args.l, col_list, c)
     
     # finish changes
     conn.close()
