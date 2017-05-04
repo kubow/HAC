@@ -151,10 +151,10 @@ def readCSV(csvfile):
 def readJSON(file):
     with open(file, 'rb') as fh:
         first = next(fh).decode()
-
-        #fh.seek(-512, 2)
-        last = fh.readlines()
-        #last = fh.readlines()[-1].decode()
+        print 'got first line' + first
+        fh.seek(-512, 2)
+        #last = fh.readlines()
+        last = fh.readlines()[-1].decode()
     return (first, last)
 
 def writeJSON(location, cols, c):
@@ -174,10 +174,12 @@ def writeJSON(location, cols, c):
             continue
         print bypass
         # prepare JSON file to HTML graphs
+        print '-------------------'
         if os.path.isfile(location + col + '.json'):
             print readJSON(location + col + '.json')
         else:
             print location + col + '/.json'
+        print '-------------------'
         get_ts = Device.column_select.format('timestamp, ' + col, 'measured')
         #print get_ts
         json = open(location + col + '.json','w')
