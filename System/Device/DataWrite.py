@@ -40,36 +40,6 @@ def log_value(measure, velocity, c, ins_qry, timestamp):
             c.execute(dev.value_update.format(table_name, 'temp', already[0]+1, now))
     else:
         c.execute(ins_qry)
-        
-def json_write(location, cols, c):
-    # print cols
-    columns = cols.split(',')
-    for column in columns:
-        col = column.split(' ')[0]
-        # avoid some column names
-        if col in ('timestamp', None) or not col:
-            continue
-        # determine if column contains data
-        loc = c.execute(dev.group_select.format(col, col, col)).fetchall()
-        col_data = '(%s)' % ', '.join(map(str, loc))
-        bypass = column + ' : ' + col_data
-        if 'None' in col_data:
-            print bypass + ' - bypassing, found None data'
-            continue
-        print bypass
-        # prepare JSON file to HTML graphs
-        get_ts = dev.column_select.format('timestamp, ' + col, 'measured')
-        #print get_ts
-        json = open(location + col + '.json','w')
-        json.write('[')
-        # fetch dataset
-        for ts in c.execute(get_ts).fetchall():
-            # write values
-            print ts
-            json.write('[' + ts[0] + ',' + str(ts[1]) + '],')
-        
-        # finish JSON file
-        json.write(']')
 
 if __name__ == '__main__':
     start_time = time.clock()
