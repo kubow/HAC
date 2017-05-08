@@ -24,6 +24,19 @@ class Numbers:
         return x / y
        else:
         return None
+        
+    def pwr2(x):
+        """Returns second power of a number"""
+        return x ** 2
+        
+    def fact(x):
+        """ Return factorial of a number"""
+        if x < 0:
+            return None
+        elif x > 0:
+            return x * (x-1)
+        else:
+            return 1
 
 """Interactive part for standalone running"""
 print("Select operation.")

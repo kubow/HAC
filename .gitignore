@@ -1,6 +1,7 @@
 /index.html
 /*.log
 /Multimedia/*.html
+/Multimedia/log*
 /Multimedia/*.log
 /Multimedia/image/*.jpg
 /Multimedia/Measured/*

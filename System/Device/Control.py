@@ -149,9 +149,12 @@ def readCSV(csvfile):
         return None
 
 def readJSON(file):
-    with open(file, 'rb') as fh:
-        first = next(fh).decode()
+    print 'file: ' + file
+    with open(file, 'r') as fh:
+        #first = next(fh).decode()
+        first = fh.readline()
         print 'got first line' + first
+        print '*****************'
         fh.seek(-512, 2)
         #last = fh.readlines()
         last = fh.readlines()[-1].decode()
@@ -188,7 +191,7 @@ def writeJSON(location, cols, c):
         for ts in c.execute(get_ts).fetchall():
             # write values
             print ts
-            json.write('[' + ts[0] + ',' + str(ts[1]) + '],')
+            json.write('[' + ts[0] + ',' + str(ts[1]) + '],\n')
         
         # finish JSON file
         json.write(']')
