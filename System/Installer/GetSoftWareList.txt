@@ -1,0 +1,3 @@
+﻿# type desired SW names separate by comma (,) record has to be on line 3. Otherwise it wont work.
+# Example: adobe,spotify,outlook
+MIKE URBAN,MIKE CUSTOMIZED,ArcGIS,Total Commander,USB over IP,NERO,LightScribe,GIMP,Inkscape,Irfan,Album Shaper,pdfsam,Epanet,ET Geowizards,DraftSight,phpPgAdmin,PostgreSQL,PostGIS,Office SharePoint Designer,OneNote,Network Licence
