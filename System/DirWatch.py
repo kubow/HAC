@@ -11,6 +11,7 @@ import log
 
 
 class dirWatch(object):
+    """SQL to command directory warcher"""
     exist = """SELECT EXISTS(
         SELECT 1 FROM {0}
         WHERE {1}
@@ -39,7 +40,7 @@ def tab_exist(t, c):
         return True
         
 def val_exist(v, col, t, c):
-    # build where condition
+    # 1 build where condition
     where = ''
     if isinstance(v, str) and isinstance(col, str):
         where = col + ' = "' + v + '"'
@@ -48,9 +49,8 @@ def val_exist(v, col, t, c):
             where += col[i] + ' = "' + v[i] + '" AND '
         where = where[:-5]
         print where
-    # build whole sql
+    # 2 build whole sql & execute
     row_exist = dw.exist.format(t, where)
-    # print row_exist
     if not c.execute(row_exist).fetchone()[0]:
         return False
     else:
