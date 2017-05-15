@@ -1,6 +1,4 @@
-""" 1st argument - device reading data
-2nd argument - sensor location
-3rd argument - where to write csv data"""
+"""Serial reading from a device"""
 import os
 import sys
 import time
@@ -14,33 +12,39 @@ import Control
 global times_run
 global last_run
 
-if __name__ == '__main__':
-    run_dir = os.path.dirname(os.path.realpath(__file__))
-    parser = argparse.ArgumentParser(description="Write weather data")
-    parser.add_argument('-d', help='device name', type=str, default='')
-    parser.add_argument('-s', help='sensor name', type=str, default='')
-    parser.add_argument('-l', help='location to write', type=str, default='')
-    args = parser.parse_args()
-    
-    #get settings
-    sdb = run_dir + '/settings.db'
+def set_up(db, device, sensor):
     conn = sqlite3.connect(sdb)
     c = conn.cursor()
-    #load querries
-    dev = Control.Device()
     #port = port with device
     sql = dev.get_driver_loc
-    sub_sql = dev.get_device_id.format(args.d)
-    sql = sql.format(sub_sql, args.s)
+    sub_sql = dev.get_device_id.format(device)
+    sql = sql.format(sub_sql, sensor)
     port = c.execute(sql).fetchone()[0]
     #br = baud rate
     sql = 'SELECT baud FROM setting;'
     br = c.execute(sql).fetchone()[0]
-    # log sql (debug) print sql
+    conn.close()
+    return port, br
+    
+
+if __name__ == '__main__':
+    argd = 'device name reading data'
+    argz = 'sensor name'
+    argl = 'where to write csv data'
+    run_dir = os.path.dirname(os.path.realpath(__file__))
+    parser = argparse.ArgumentParser(description="Write weather data")
+    parser.add_argument('-d', help=argd, type=str, default='')
+    parser.add_argument('-s', help=argz, type=str, default='')
+    parser.add_argument('-l', help=argl, type=str, default='')
+    args = parser.parse_args()
+    
     # create class for controlling device
     dev = Control.Device()
+    #get settings: port and baud rate
+    port, br = set_up(run_dir + '/settings.db', args.d, args.s)
+    # log sql (debug) print sql
     
-    print 'Reading serial input from: ' + str(port) + ' - at ' + str(br)
+    print 'Reading serial input from: {0} - at {1}'.format(str(port),str(br))
     ser = serial.Serial(port, br, timeout=0)
     #dictionary holding all/interval values
     data_vals = {}
@@ -73,6 +77,7 @@ if __name__ == '__main__':
             print ex.args[0].replace('\n', ' ')
             print 'now '+ str(now)
             print 'last_run' + str(last_run)
+            #if error found, do timeout
             #print data_vals
             #raw_input("Press enter to continue")
             #os.system("pause")
