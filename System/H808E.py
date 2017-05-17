@@ -41,6 +41,8 @@ def conh808e():
     return h808e
     
 he = conh808e()
+print he
+print '---------------------------------'
 # connect to database
 conn = sqlite3.connect('/home/kubow/Dokumenty/H808E.ctb')
 # prepare the insert query

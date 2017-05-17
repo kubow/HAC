@@ -32,6 +32,10 @@ class dirWatch(object):
 def get_file_size(_file):
     # return file size in kilobytes
     return '{0:.2f}'.format(os.path.getsize(_file)/1024)
+    
+def touch_file(path):
+    with open(path, 'a'):
+        os.utime(path, None)
 
 def tab_exist(t, c):
     if not c.execute(dw.table_exist.format(t)).fetchone()[0]:
@@ -91,6 +95,7 @@ def reg_dir(directory, c):
                 c.execute(dw.tab_ins.format(fln_val))
             i += 1
             #print filename
+    return True
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Watch dirs/files")
@@ -111,7 +116,7 @@ if __name__ == '__main__':
                 "Searching for new files... in {0}".format(args.w))
                 start_time = time.clock()
                 # walk_dir(args.w)
-                reg_dir(args.w, c)
+                flag = reg_dir(args.w, c)
                 conn.commit()
                 flag = False
                 elapsed_time = time.clock() - start_time
@@ -122,6 +127,12 @@ if __name__ == '__main__':
             flag = False
     else:
         # cannot log because of missing log file
+        basedir = os.path.dirname(args.l)
+        if not os.path.exists(os.path.dirname(basedir)):
+            print 'creating ' + basedir
+            os.makedirs(basedir)
+        touch_file(args.l)
+        print "cannot find log file, please run once more..."
         flag = False
 
     
