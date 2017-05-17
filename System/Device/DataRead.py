@@ -26,6 +26,54 @@ def set_up(db, device, sensor):
     conn.close()
     return port, br
     
+def read_serial(port, br, to, fname):
+    """function 
+    """
+    #dictionary holding all/interval values
+    data_vals = {}
+    data_int = {} # clear the dictionary
+    int_shift = 2 # shift of intervals in minutes
+    last_run = Control.get_time(datetime.datetime.now(), int_shift)
+    csv = ''
+    ser = serial.Serial(port, br, timeout=to)
+    ser.flushInput()
+    ser.flushOutput()
+    try:
+        time.sleep(to)
+        print 'running with timeout {0} seconds.'.format(to)
+        #recieved = ser.readline().replace('\r\n', ' ') #not used - instead
+        to_read = ser.inWaiting()
+        recieved = ser.read(to_read)
+        # parse data
+        if len(recieved) >= 1:
+            vel_val = recieved.split(':')
+            just_now = datetime.datetime.now()
+            now = Control.get_time(just_now, int_shift)
+            csv_fname = now.strftime(dev.date_file_format)+'.csv'
+            # checking interval shifts
+            if now > last_run:
+                Control.writeCSV(csv, data_vals, just_now, 'RPi')
+                data_vals = {} # clear the dictionaries 
+                data_int = {} 
+                last_run = now
+            csv = args.l + csv_fname
+            print recieved + str(just_now.strftime(dev.date_format))
+            #building dictionary
+            data_int[vel_val[0]] = vel_val[-1]
+            data_vals[just_now.strftime(dev.date_format)] = data_int 
+            return 
+        else:
+            print 'received no text !!!!'
+            return None
+    except Exception as ex:
+        print ex.args[0].replace('\n', ' ')
+        print 'now '+ str(now)
+        print 'last_run' + str(last_run)
+        #if error found, do timeout
+        #print data_vals
+        #raw_input("Press enter to continue")
+        #os.system("pause")
+        return None
 
 if __name__ == '__main__':
     argd = 'device name reading data'
@@ -45,40 +93,8 @@ if __name__ == '__main__':
     # log sql (debug) print sql
     
     print 'Reading serial input from: {0} - at {1}'.format(str(port),str(br))
-    ser = serial.Serial(port, br, timeout=0)
-    #dictionary holding all/interval values
-    data_vals = {}
-    data_int = {} # clear the dictionary
-    int_shift = 2 # shift of intervals in minutes
-    last_run = Control.get_time(datetime.datetime.now(), int_shift)
-    csv = ''
-    
     while 1:
-        try:
-            recieved = ser.readline().replace('\r\n', ' ')
-            if len(recieved) >= 1:
-                vel_val = recieved.split(':')
-                just_now = datetime.datetime.now()
-                now = Control.get_time(just_now, int_shift)
-                csv_fname = now.strftime(dev.date_file_format)+'.csv'
-                # checking interval shifts
-                if now > last_run:
-                    Control.writeCSV(csv, data_vals, just_now, 'RPi')
-                    data_vals = {} # clear the dictionaries 
-                    data_int = {} 
-                    last_run = now
-                csv = args.l + csv_fname
-                print recieved + str(just_now.strftime(dev.date_format))
-                #building dictionary
-                data_int[vel_val[0]] = vel_val[-1]
-                data_vals[just_now.strftime(dev.date_format)] = data_int 
-            time.sleep(1)
-        except Exception as ex:
-            print ex.args[0].replace('\n', ' ')
-            print 'now '+ str(now)
-            print 'last_run' + str(last_run)
-            #if error found, do timeout
-            #print data_vals
-            #raw_input("Press enter to continue")
-            #os.system("pause")
-            #time.sleep(1)
+        read_serial(port, br, 0, )
+        
+    
+    
