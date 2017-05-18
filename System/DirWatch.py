@@ -11,7 +11,7 @@ import log
 
 
 class dirWatch(object):
-    """SQL to command directory warcher"""
+    """SQL to command directory watcher"""
     exist = """SELECT EXISTS(
         SELECT 1 FROM {0}
         WHERE {1}
