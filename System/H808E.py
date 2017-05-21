@@ -6,6 +6,10 @@ import sqlite3
 
 class h808e(object):
     
+    folders = property(get_folder)
+    print 'aaaaaaaaaaaaaaaaaaaaaaa'
+    tables = property(get_table)
+    
     def construct(self):
         """constructor of h808e
         in dictionary..main structure:
@@ -43,48 +47,55 @@ class h808e(object):
             h808e.append(h808e_dict)
         return h808e
         
-        def get_folder(self):
-            folders = (Null, )
-            # all folders within enc table
-            return folders
-            
-        def get_table(self):
-            tables = (Null, )
-            # all tables within enc table
-            return tables
-            
-        folders = property(get_folder)
-        tables = property(get_table)
+    def get_folder(self):
+        folders = (Null, )
+        # all folders within enc table
+        return folders
+        
+    def get_table(self):
+        tables = (Null, )
+        # all tables within enc table
+        return tables
     
-he = h808e().construct()
-print he
-print '---------------------------------'
-# connect to database
-try:
-    conn = sqlite3.connect('/home/kubow/Dokumenty/H808E.ctb')
-except:
-    conn = sqlite3.connect('c:/_Run/H808E.ctb')
-# prepare the insert query
-# insert = 'INSERT INTO veci (hmotne, oblast, uroven) VALUES ({0}, "{1}", {2});'
-# browse encyklopedia node (en) + subnode (esn), subsubnode (essn)
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="construct h808e")
+    parser.add_argument('-c', help='ctb file', type=str, default='')
+    parser.add_argument('-d', help='directory', type=str, default='')
+    args = parser.parse_args()
+    h_e = h808e()
+    print '------------------------'
+    he = h_e.construct()
+    print he
+    print '---------------------------------'
+    # connect to database
+    try:
+        conn = sqlite3.connect('/home/kubow/Dokumenty/H808E.ctb')
+    except:
+        conn = sqlite3.connect('c:/_Run/H808E.ctb')
+    # prepare the insert query
+    # insert = 'INSERT INTO veci (hmotne, oblast, uroven) VALUES ({0}, "{1}", {2});'
+    # browse encyklopedia node (en) + subnode (esn), subsubnode (essn)
 
-for root, directories, files in os.walk(directory):
-    if not root in he.folders:
-        print 'no corresponding directory found...'
-        continue
-    for filename in files:
-        # locate table CTB
-        print 'table read!, chcek if registered'
+    for root, directories, files in os.walk(args.d):
+        print '**********'
+        print he.folders
+        print '**********'
+        if not root in he.folders:
+            print 'no corresponding directory found...'
+            continue
+        for filename in files:
+            # locate table CTB
+            print 'table read!, chcek if registered'
 
-for en in he:
-    # 1 
-    print str(en['code']) + '/' + str(en['level'])
-    print insert.format(en['code'], en['real'], en['level'])
-    # conn.execute(insert.format(en['real'], en['code'], en['level']))
-    for esn in en['child']:
-        print str(esn['code']) + '/' + str(esn['level'])
-        for essn in esn['child']:
-            print str(essn['code']) + '/' + str(essn['level'])
-    break
+    for en in he:
+        # 1 
+        print str(en['code']) + '/' + str(en['level'])
+        print insert.format(en['code'], en['real'], en['level'])
+        # conn.execute(insert.format(en['real'], en['code'], en['level']))
+        for esn in en['child']:
+            print str(esn['code']) + '/' + str(esn['level'])
+            for essn in esn['child']:
+                print str(essn['code']) + '/' + str(essn['level'])
+        break
 
-tbl = conn.execute('SELECT * FROM veci;')
+    tbl = conn.execute('SELECT * FROM veci;')

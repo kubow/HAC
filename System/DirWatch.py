@@ -52,17 +52,24 @@ def val_exist(v, col, t, c):
         for i in range(len(col)):
             where += col[i] + ' = "' + v[i] + '" AND '
         where = where[:-5]
-        print where
+        #print where # debug purposes
     # 2 build whole sql & execute
     row_exist = dw.exist.format(t, where)
     if not c.execute(row_exist).fetchone()[0]:
         return False
     else:
         return True
+        
+def is_register(directory):
     
-def walk_dir(directory):
+    
+def walk_dir(directory, c):
+    if not tab_exist('dirlist', c):
+        print 'missing db file, run reg_dir first'
+        return False
     for root, directories, files in os.walk(directory):
-        print root
+        #print root
+        
         for filename in files:
             print filename
 
@@ -78,20 +85,21 @@ def reg_dir(directory, c):
         fld_val = dw.ins_val.format(i, root, '', 'date date date', 0)
         # print fld_val
         # print dw.tab_ins #.format(fld_val)
-        if val_exist(root, 'reg_name', 'dirlist', c):
-            print 'value already exist...'
-        else:
-            c.execute(dw.tab_ins.format(fld_val))
+        #if val_exist(root, 'reg_name', 'dirlist', c):
+        #    print 'directory {0} is already registered.'.format(root)
+        #else:
+        #    c.execute(dw.tab_ins.format(fld_val))
         i += 1
         # iterate files in directory
         for filename in files:
             fln_val = dw.ins_val.format(i, filename, root, 'date date date',
             get_file_size(root+'/'+filename))
             v = (filename, root)
-            print v
+            # print v
             if val_exist(v, col, 'dirlist', c):
-                print 'file exist, check size...'
+                msg = '---file {0} registered, checking size.'.format(filename)
             else:
+                msg = '---file {0} registering.'.format(filename)
                 c.execute(dw.tab_ins.format(fln_val))
             i += 1
             #print filename
@@ -101,7 +109,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Watch dirs/files")
     parser.add_argument('-w', help='Watch directory', type=str, default='')
     parser.add_argument('-l', help='log file', type=str, default='')
-    parser.add_argument('-d', help='database file', type=str, default='')
+    parser.add_argument('-d', help='output db file', type=str, default='')
     args = parser.parse_args()
     dw = dirWatch()
     if os.path.isfile(args.l):
@@ -111,16 +119,24 @@ if __name__ == '__main__':
             flag = True
             conn = sqlite3.connect(args.d)
             c = conn.cursor()
+            register = is_register(args.d)
+            start_time, last_run_time = time.clock()
             while flag:
-                log.file_write(args.l, "watch", 
-                "Searching for new files... in {0}".format(args.w))
-                start_time = time.clock()
-                # walk_dir(args.w)
-                flag = reg_dir(args.w, c)
-                conn.commit()
-                flag = False
+                if register:
+                    log.file_write(args.l, "watch", 
+                    """directory Registered, 
+                    check for new files... in {0}""".format(args.w))
+                    # walk_dir(args.w)
+                    flag = reg_dir(args.w, c)
+                else:
+                    log.file_write(args.l, "watch", 
+                    "Searching for new files... in {0}".format(args.w))
+                
                 elapsed_time = time.clock() - start_time
+                conn.commit()
                 print "Time elapsed: {} seconds".format(elapsed_time)
+                
+                flag = False
         else:
             log.file_write(args.l, "watch",
             'please submit proper directory - {0}'.format(args.w))

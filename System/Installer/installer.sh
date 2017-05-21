@@ -4,4 +4,4 @@
 set -- $(<py_packages.txt)
 echo checking if installed: $@
 # put all of them as an argument
-python installer.py $@
+python installer.py $@ > logfile.log
