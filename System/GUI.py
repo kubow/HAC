@@ -9,6 +9,7 @@ import webbrowser
 import Tkinter as tk
 import tkFileDialog
 
+import H808E
 import GUIform as tkform
 
 
@@ -19,19 +20,31 @@ class ExampleForm(tkform.Form):
     """
 
     def __init__(self, width=700, height=800, parent=None):
+        # prepare H808E
+        h_e = H808E.h808e()
+        he = h_e.construct()
+        # print he
+        # run teh form
         tkform.Form.__init__(self, parent, width, height)
 
-        self.title('Reorderable List Example')
-        self.push_text("Reorderable List Example", 30)
+        self.title('H808E')
+        self.push_text('H808E Area', 30)
         self.push_line()
-        self.push_spacer()
-        self.push_text(u"Drag \u2630 to reorder filenames")
-        self.push_custom_loader('filenames_and_labels', '+ files')
-        self.push_spacer(2)
-        self.push_text("Output", 16)
+        self.push_text('Priroda, Clovek, Vedy, Technologie', 20)  
         self.push_line()
-        self.push_submit()
-        self.push_output()
+        self.push_spacer()        
+        
+        self.list = Listbox(self, selectmode=EXTENDED)
+        self.list.pack(fill=BOTH, expand=1)
+        self.current = None
+        self.poll()
+        # self.push_text(u"Drag \u2630 to reorder filenames")
+        # self.push_custom_loader('filenames_and_labels', '+ files')
+        # self.push_spacer(2)
+        # self.push_text("Output", 16)
+        # self.push_line()
+        # self.push_submit()
+        # self.push_output()
 
     def push_custom_loader(self, param_id, button_text):
         self.reorderable_list = tkform.ReorderableList(self.interior)

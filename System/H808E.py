@@ -6,9 +6,9 @@ import sqlite3
 
 class h808e(object):
     
-    folders = property(get_folder)
-    print 'aaaaaaaaaaaaaaaaaaaaaaa'
-    tables = property(get_table)
+    # folders = property(self.get_folder)
+    # print 'aaaaaaaaaaaaaaaaaaaaaaa'
+    # tables = property(self.get_table)
     
     def construct(self):
         """constructor of h808e
