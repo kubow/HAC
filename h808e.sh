@@ -1,9 +1,9 @@
 #!/bin/bash
 # same menu as in batch
+python /home/kubow/Dokumenty/Script/System/GUI2.py -d /home/kubow/Dokumenty/Web/64/Astrologie/
 # decide if dialog installed (debian, ubuntu)
-runflag=1
+# runflag=1
 # Loop forever (until break is issued)
-python /home/kubow/Dokumenty/Script/System/GUI2.py -d /home/kubow/Dokumenty/Web/64
 #while true; do
     #if [ "$runflag" -eq "0" ]; then
     #    echo "must quit..."
@@ -45,5 +45,5 @@ python /home/kubow/Dokumenty/Script/System/GUI2.py -d /home/kubow/Dokumenty/Web/
             #esac
         #done
     #fi
-done
+#done
 

@@ -1,8 +1,10 @@
-#https://www.youtube.com/watch?v=eL_sy9TqCBE
-#http://www.sharpertradingimage.com/python-listbox-delete-text/
-from Tkinter import *
 import os
 import argparse
+# https://www.youtube.com/watch?v=eL_sy9TqCBE
+# http://www.sharpertradingimage.com/python-listbox-delete-text/
+from Tkinter import *
+# for other image support
+from PIL import Image #, ImageTk
 
 def get_image():
     mlt_img['image'] = mlt_lib[lb.get('active')]
@@ -14,9 +16,15 @@ def get_mlt_lib(directory):
     mlt_lib = {}
     for mlt_file in os.listdir(directory):
         # for now just images
-        if not '.gif' in mlt_file:
+        if '.gif' in mlt_file or '.png' in mlt_file:
+            mlt_lib[mlt_file] = PhotoImage(file=directory+mlt_file)
+        elif '.jpg' in mlt_file:
+            print 'jpeg image file'
+            #image = Image.open(directory+mlt_file)
+            #mlt_lib[mlt_file] = PhotoImage(image)
+        else:
+            # XLS, HTML, EPUB, DOC ... in future
             continue
-        mlt_lib[mlt_file] = PhotoImage(file=directory+mlt_file)
     return mlt_lib
 
 def onselect(evt):
@@ -49,13 +57,14 @@ if __name__ == '__main__':
     parser.add_argument('-d', help='directory', type=str, default='')
     args = parser.parse_args()
     # temporarily run over one dir, will be browser further
-    #implement max image size
+    # implement max image size
+    print args.d
     root = Tk()
     #img = PhotoImage(file=filename)
-    if os.path.isdir('c:\\Users\\JAV\\Dropbox\\Web\\64\\Astrologie\\'):
-        mlt_lib = get_mlt_lib('c:\\Users\\JAV\\Dropbox\\Web\\64\\Astrologie\\')
+    if os.path.isdir(args.d):
+        mlt_lib = get_mlt_lib(args.d)
     else:
-        mlt_lib = get_mlt_lib('/home/kubow/Dropbox/Web/64/Astrologie/')
+        print 'cannot found the directory {0}'.format(args.d)
         
     txtng = 'showing picture in list'
     mlt_img = Label(root, image=mlt_lib[next(iter(mlt_lib))])
