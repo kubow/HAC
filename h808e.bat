@@ -79,8 +79,7 @@ PAUSE
 GOTO MENU
 
 :UniPy
-:UniPy
-SET python_script=%py_script_path%DirBrowse.py
+SET python_script=%py_script_path%GUI.py -d c:\_Run\Web\64\Astrologie\
 ECHO will use tkinter and make a system to input data
 python %python_script%
 PAUSE
@@ -98,4 +97,4 @@ ECHO -------------------------------------
 ECHO ======PRESS ANY KEY TO CONTINUE======
 
 PAUSE>NUL
-EXIT
+REM EXIT

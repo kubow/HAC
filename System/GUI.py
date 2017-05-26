@@ -1,82 +1,83 @@
-#!/usr/bin/env python
-# -*- coding: iso-8859-1 -*-
-
-
 import os
-import json
-import webbrowser
-
-import Tkinter as tk
-import tkFileDialog
-
+import argparse
+# https://www.youtube.com/watch?v=eL_sy9TqCBE
+# http://www.sharpertradingimage.com/python-listbox-delete-text/
+from Tkinter import *
+# for other image support
+#from PIL import Image #, ImageTk
 import H808E
-import GUIform as tkform
 
 
-class ExampleForm(tkform.Form):
+def get_image():
+    """get values that user clicked on"""
+    mlt_img['image'] = mlt_lib[lb.get('active')]
 
+def get_mlt_lib(directory):
+    """return multimedia library in format:
+    mlt_lib = {'filename': PhotoImage(file='*.gif')}
     """
-    Example tkform with Reorderable List
-    """
+    mlt_lib = {}
+    for mlt_file in os.listdir(directory):
+        # for now just images
+        if '.gif' in mlt_file:
+            mlt_lib[mlt_file] = PhotoImage(file=directory+mlt_file)
+        elif '.jpg' in mlt_file or '.png' in mlt_file:
+            print 'jpeg image file'
+            #image = Image.open(directory+mlt_file)
+            #mlt_lib[mlt_file] = PhotoImage(image)
+        else:
+            # XLS, HTML, EPUB, DOC ... in future
+            continue
+    return mlt_lib
 
-    def __init__(self, width=700, height=800, parent=None):
-        # prepare H808E
-        h_e = H808E.h808e()
-        he = h_e.construct()
-        # print he
-        # run teh form
-        tkform.Form.__init__(self, parent, width, height)
+def onselect(evt):
+    w = evt.widget
+    print w.curselection()
+    index = int(w.curselection()[0])
+    value = w.get(index)
+    print 'You selected item %d: "%s"' % (index, value)
+    mlt_img['image'] = mlt_lib[value]
 
-        self.title('H808E')
-        self.push_text('H808E Area', 30)
-        self.push_line()
-        self.push_text('Priroda, Clovek, Vedy, Technologie', 20)  
-        self.push_line()
-        self.push_spacer()        
+def push_layout():
+    # list of multimedia files (gif images)
+    lb = Listbox(root, height=7)
+    lb.bind('<<ListboxSelect>>', onselect)
+    for img in mlt_lib.keys():
+        lb.insert('end', img)
+    
+    yscroll = Scrollbar(root, orient=VERTICAL)
+    lb['yscrollcommand'] = yscroll.set
+    yscroll['command'] = lb.yview
+
+    mlt_img.grid(row=0, column=0, sticky="wn")
+    
+    lb.grid(row=2, column=3, rowspan=2, sticky=N+S)
+    yscroll.grid(row=0, column=1, rowspan=2, sticky=N+S+E)
+    
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="run over dir")
+    parser.add_argument('-d', help='directory', type=str, default='')
+    args = parser.parse_args()
+    # temporarily run over one dir, will be browser further
+    # implement max image size
+    print args.d
+    #construct encyklopedia
+    h_e = H808E.h808e()
+    he = h_e.construct()
+    root = Tk()
+    #img = PhotoImage(file=filename)
+    if os.path.isdir(args.d):
+        mlt_lib = get_mlt_lib(args.d)
+    else:
+        print 'cannot found the directory {0}'.format(args.d)
         
-        self.list = Listbox(self, selectmode=EXTENDED)
-        self.list.pack(fill=BOTH, expand=1)
-        self.current = None
-        self.poll()
-        # self.push_text(u"Drag \u2630 to reorder filenames")
-        # self.push_custom_loader('filenames_and_labels', '+ files')
-        # self.push_spacer(2)
-        # self.push_text("Output", 16)
-        # self.push_line()
-        # self.push_submit()
-        # self.push_output()
-
-    def push_custom_loader(self, param_id, button_text):
-        self.reorderable_list = tkform.ReorderableList(self.interior)
-        self.datas = []
-
-        def load_peptagram():
-            fnames = tkFileDialog.askopenfilenames(title=button_text)
-            try:
-                self.print_output('Loading %d filenames... ' % len(fnames))
-            except:
-                self.print_exception()
-
-            for fname in fnames:
-                basename = os.path.basename(fname)
-                self.reorderable_list.add_entry_label(fname, basename)
-
-        load_button = tk.Button(
-            self.interior,
-            text=button_text,
-            command=load_peptagram)
-        self.push_row(load_button)
-
-        self.push_row(self.reorderable_list)
-        self.mouse_widgets.append(self.reorderable_list)
-        self.param_entries[param_id] = self.reorderable_list
-
-    def run(self, params):
-
-        self.print_output('\nForm parameters:\n')
-
-        self.print_output(json.dumps(params, indent=2))
-        self.print_output('\n\n')
-
-
-ExampleForm(800, -150).mainloop()
+    txtng = 'showing picture in list'
+    mlt_img = Label(root, image=mlt_lib[next(iter(mlt_lib))])
+    #button = Button(root, text=txtng, command=get_image)
+    #button.grid(row=1, column=0)
+    bar = Menu(root, background='red', relief='flat')
+    
+    push_layout()
+    
+    root.mainloop()

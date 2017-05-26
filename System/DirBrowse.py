@@ -69,31 +69,33 @@ def autoscroll(sbar, first, last):
         sbar.grid()
     sbar.set(first, last)
 
-root = Tkinter.Tk()
 
-vsb = ttk.Scrollbar(orient="vertical")
-hsb = ttk.Scrollbar(orient="horizontal")
+if __name__ == '__main__':
+    root = Tkinter.Tk()
 
-tree = ttk.Treeview(columns=("fullpath", "type", "size"),
-    displaycolumns="size", yscrollcommand=lambda f, l: autoscroll(vsb, f, l),
-    xscrollcommand=lambda f, l:autoscroll(hsb, f, l))
+    vsb = ttk.Scrollbar(orient="vertical")
+    hsb = ttk.Scrollbar(orient="horizontal")
 
-vsb['command'] = tree.yview
-hsb['command'] = tree.xview
+    tree = ttk.Treeview(columns=("fullpath", "type", "size"),
+        displaycolumns="size", yscrollcommand=lambda f, l: autoscroll(vsb, f, l),
+        xscrollcommand=lambda f, l:autoscroll(hsb, f, l))
 
-tree.heading("#0", text="Directory Structure", anchor='w')
-tree.heading("size", text="File Size", anchor='w')
-tree.column("size", stretch=0, width=100)
+    vsb['command'] = tree.yview
+    hsb['command'] = tree.xview
 
-populate_roots(tree)
-tree.bind('<<TreeviewOpen>>', update_tree)
-tree.bind('<Double-Button-1>', change_dir)
+    tree.heading("#0", text="Directory Structure", anchor='w')
+    tree.heading("size", text="File Size", anchor='w')
+    tree.column("size", stretch=0, width=100)
 
-# Arrange the tree and its scrollbars in the toplevel
-tree.grid(column=0, row=0, sticky='nswe')
-vsb.grid(column=1, row=0, sticky='ns')
-hsb.grid(column=0, row=1, sticky='ew')
-root.grid_columnconfigure(0, weight=1)
-root.grid_rowconfigure(0, weight=1)
+    populate_roots(tree)
+    tree.bind('<<TreeviewOpen>>', update_tree)
+    tree.bind('<Double-Button-1>', change_dir)
 
-root.mainloop()
+    # Arrange the tree and its scrollbars in the toplevel
+    tree.grid(column=0, row=0, sticky='nswe')
+    vsb.grid(column=1, row=0, sticky='ns')
+    hsb.grid(column=0, row=1, sticky='ew')
+    root.grid_columnconfigure(0, weight=1)
+    root.grid_rowconfigure(0, weight=1)
+
+    root.mainloop()
