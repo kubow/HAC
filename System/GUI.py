@@ -39,7 +39,12 @@ def onselect(evt):
     mlt_img['image'] = mlt_lib[value]
 
 def push_layout():
-    # list of multimedia files (gif images)
+    
+    bar = Menu(root, background='red', relief='flat')
+    
+    # canvas
+    cnv = Canvas(root, bd=0, highlightthickness=0, width=200, height=100)
+    # part holding list of multimedia files 
     lb = Listbox(root, height=7)
     lb.bind('<<ListboxSelect>>', onselect)
     for img in mlt_lib.keys():
@@ -48,11 +53,15 @@ def push_layout():
     yscroll = Scrollbar(root, orient=VERTICAL)
     lb['yscrollcommand'] = yscroll.set
     yscroll['command'] = lb.yview
-
-    mlt_img.grid(row=0, column=0, sticky="wn")
     
-    lb.grid(row=2, column=3, rowspan=2, sticky=N+S)
-    yscroll.grid(row=0, column=1, rowspan=2, sticky=N+S+E)
+    # positioning
+    mlt_img.grid(row=0, column=0, sticky="wn")
+    cnv.grid(row=0, column=1)
+    lb.grid(row=1, column=1, rowspan=2, sticky=N+S)
+    yscroll.grid(row=1, column=1, rowspan=2, sticky=N+S+E)
+    
+    #button = Button(root, text=txtng, command=get_image)
+    #button.grid(row=1, column=0)
     
 
 if __name__ == '__main__':
@@ -73,11 +82,10 @@ if __name__ == '__main__':
         print 'cannot found the directory {0}'.format(args.d)
         
     txtng = 'showing picture in list'
-    mlt_img = Label(root, image=mlt_lib[next(iter(mlt_lib))])
-    #button = Button(root, text=txtng, command=get_image)
-    #button.grid(row=1, column=0)
-    bar = Menu(root, background='red', relief='flat')
     
+    
+    # part holding multimedia content
+    mlt_img = Label(root, image=mlt_lib[next(iter(mlt_lib))])
     push_layout()
     
     root.mainloop()
