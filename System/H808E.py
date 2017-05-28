@@ -19,6 +19,7 @@ class h808e(object):
         will be a module after.."""
         h808e = []
         # only nodes from 400 to 700
+        # todo: match names
         a_max = 3
         # starting from first level
         lev = 1

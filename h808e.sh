@@ -1,6 +1,6 @@
 #!/bin/bash
 # same menu as in batch
-python /home/kubow/Dokumenty/Script/System/GUI2.py -d /home/kubow/Dokumenty/Web/64/Astrologie/
+python /home/kubow/Dokumenty/Script/System/GUI.py -d /home/kubow/Dokumenty/Web/64/Astrologie/
 # decide if dialog installed (debian, ubuntu)
 # runflag=1
 # Loop forever (until break is issued)

@@ -1,4 +1,6 @@
-''' Program make a simple calculator that can add, subtract, multiply and divide using functions '''
+''' Commands to deal with mathematic operations,
+both algebra and geometry,
+use alone to run simple calculator '''
 
 # Math functions
 class Numbers:

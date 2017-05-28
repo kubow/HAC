@@ -2,9 +2,17 @@
 Simple calendar using ttk Treeview together with calendar and datetime
 classes.
 """
+import argparse
+import datetime
 import calendar
-import Tkinter
-import tkFont
+
+try:
+    import Tkinter
+    import tkFont
+except ImportError: # py3k
+    import tkinter as Tkinter
+    import tkinter.font as tkFont
+
 import ttk
 
 def get_calendar(locale, fwday):
@@ -13,6 +21,19 @@ def get_calendar(locale, fwday):
         return calendar.TextCalendar(fwday)
     else:
         return calendar.LocaleTextCalendar(fwday, locale)
+
+def build_simple_calendar(year, month):
+    # assign the month's calendar to a multiline string
+    heading = calendar.month(year, month)
+    # create the window form and call it root (typical)
+    root = Tkinter.Tk()
+    root.title("Monthly Calendar")
+    # pick a fixed font like courier so spaces behave right
+    label1 = Tkinter.Label(root, text=heading, font=('courier', 14, 'bold'), bg='yellow')
+    label1.pack(padx=3, pady=5)
+    # run the event loop (needed)
+    root.mainloop()
+
 
 class Calendar(ttk.Frame):
     # XXX ToDo: cget and configure
@@ -23,6 +44,7 @@ class Calendar(ttk.Frame):
     def __init__(self, master=None, **kw):
         """
         WIDGET-SPECIFIC OPTIONS
+
             locale, firstweekday, year, month, selectbackground,
             selectforeground
         """
@@ -227,4 +249,19 @@ def test():
     root.mainloop()
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="show calendar")
+    parser.add_argument('-y', help='year', type=str, default='')
+    parser.add_argument('-m', help='month', type=str, default='')
+    parser.add_argument('-d', help='day', type=str, default='')
+    args = parser.parse_args()
+    
+    
+    # run simple view calendar
+    if args.y and args.m:
+        build_simple_calendar(args.y, args.m)
+    else:
+        now = datetime.datetime.now()
+        build_simple_calendar(now.year, now.month)
+    
+    # run complex calendar
     test()
