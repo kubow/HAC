@@ -2,6 +2,12 @@
 SET enc_path=C:\_Run\Web\
 SET py_script_path=C:\_Run\Script\System\
 
+:START
+ECHO ************************************
+python %py_script_path%H808E.py -d %enc_path%64\Astrologie\
+PAUSE
+GOTO START
+
 :MENU
 CLS
 
@@ -79,9 +85,11 @@ PAUSE
 GOTO MENU
 
 :UniPy
-SET python_script=%py_script_path%GUI.py -d c:\_Run\Web\64\Astrologie\
+REM SET python_script=%py_script_path%GUI.py -d c:\_Run\Web\64\Astrologie\
 ECHO will use tkinter and make a system to input data
-python %python_script%
+REM python %python_script%
+SET python_script=%py_script_path%H808E.py
+python %python_script% -d c:\_Run\Web\ -c C:\_Run\H808E.ctb
 PAUSE
 GOTO MENU
 

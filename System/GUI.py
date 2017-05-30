@@ -20,6 +20,7 @@ def get_mlt_lib(directory):
     mlt_lib = {}
     for mlt_file in os.listdir(directory):
         # for now just images
+        print 'running over ' + directory
         if '.gif' in mlt_file:
             mlt_lib[mlt_file] = PhotoImage(file=directory+mlt_file)
         elif '.jpg' in mlt_file or '.png' in mlt_file:
@@ -47,37 +48,28 @@ def fill(image, color):
     hexcode = '#%02x%02x%02x' % (r,b,g)
     horizontal_line = '{' + ' '.join([hexcode]*width) + '}'
     image.put(' '.join([horizontal_line]*width))
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="run over dir")
-    parser.add_argument('-d', help='directory', type=str, default='')
-    args = parser.parse_args()
-    # temporarily run over one dir, will be browser further
     
-    # construct encyklopedia
-    h_e = H808E.h808e()
-    he = h_e.construct()
-    for node in he:
-        print node
-    # build root holder
+def build_window(directory):
     root = Tk()
     root.title('Hvězdná encyklopedie')
     root.resizable(0, 0)
     root.geometry('900x600')
+    
     #img = PhotoImage(file=filename)
-    if os.path.isdir(args.d):
-        mlt_lib = get_mlt_lib(args.d)
+    # build directory multimedia list
+    global mlt_lib
+    if os.path.isdir(directory):
+        mlt_lib = get_mlt_lib(directory)
     else:
-        print 'cannot found the directory {0}'.format(args.d)
-        
-    txtng = 'showing picture in list'
+        print 'cannot found the directory {0}'.format(directory)
     
     # content = Frame(root)
     # frame = Frame(content, borderwidth=5, relief="sunken", width=800, height=400)
-    photo = PhotoImage(width=32, height=32)
-    fill(photo, (255,0,0))
-    photo.grid(row=0, column=0)
+    #photo = PhotoImage(width=32, height=32)
+    #fill(photo, (255,0,0))
+    #photo.grid(row=0, column=0)
     # part holding multimedia content
+    global mlt_img
     mlt_img = Label(root, image=mlt_lib[next(iter(mlt_lib))])
     bar = Menu(root, background='red', relief='flat')
     # implement max image size
@@ -98,7 +90,27 @@ if __name__ == '__main__':
     lb.grid(row=1, column=1, rowspan=2, sticky=N+S)
     yscroll.grid(row=1, column=1, rowspan=2, sticky=N+S+E)
     
+    txtng = 'showing picture in list'
     # button = Button(root, text=txtng, command=get_image)
     # button.grid(row=1, column=0)
     
     root.mainloop()
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="run over dir")
+    parser.add_argument('-d', help='directory', type=str, default='')
+    args = parser.parse_args()
+    # temporarily run over one dir, will be browser further
+    
+    # construct encyklopedia
+    h_e = H808E.h808e()
+    he = h_e.construct()
+    for node in he:
+        print node
+    
+    # build root
+    build_window(args.d)
+    
+    
+    
+    
