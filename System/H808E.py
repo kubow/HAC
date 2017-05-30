@@ -57,6 +57,9 @@ class h808e(object):
         tables = (Null, )
         # all tables within enc table
         return tables
+
+def build_menu():
+    #find how to build python menu, will be platform independent
     
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="construct h808e")

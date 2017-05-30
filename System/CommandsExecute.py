@@ -1,4 +1,4 @@
-import os, syss
+import os, sys
 import argparse
 import sqlite3
 import log
@@ -12,6 +12,13 @@ def get_table_name(sql, qry_type):
     elif qry == 'DCL':
         print 'GRANT/REVOKE'
     return table_name
+
+def fetch_one_from_tab(c, sql):
+    result = c.execute(sql).fetch_one()
+    if not result:
+        return result[0]
+    else:
+        return None
 
 def execute_connected(c, sql, logfile, module, debug=False):
     """execute a command withon already connected database
@@ -34,7 +41,7 @@ def execute_connected(c, sql, logfile, module, debug=False):
         qry_type = 'DML'
         table_name = get_table_name(sql, qry_type)
     else:
-        print 'some bad happened'
+        print 'some bad happened, cannot find qery type'
     c.execute()
     if debug:
         log.file_write(logfile, module, 'executed SQL: {0}'.format(sql))
