@@ -39,7 +39,8 @@ def onselect(evt):
     value = w.get(index)
     print 'You selected item %d: "%s"' % (index, value)
     # mlt_img['image'] = mlt_lib[value]
-    canvas.create_image(355, 355, image=mlt_lib[value], anchor="nw")
+    canvas.delete('all')
+    canvas.create_image(0, 0, image=mlt_lib[value], anchor="nw")
     #root.update_idletasks()
     
 def fill(image, color):
@@ -74,11 +75,12 @@ def build_window(directory):
     # global mlt_img
     # mlt_img = Label(root, image=mlt_lib[next(iter(mlt_lib))])
     # bar = Menu(root, background='red', relief='flat')
-    bar = Label(root, text=' Main Menu ...')
+    bar_main = Label(root, text=' Main Menu ...')
+    bar_node = Label(root, text=' show location...')
     # implement max image size
     global canvas
     canvas = Canvas(root, bd=0, highlightthickness=0, width=700, height=700)
-    canvas.create_image(0, 0, image=mlt_lib[next(iter(mlt_lib))])
+    #canvas.create_image(0, 0, image=mlt_lib[next(iter(mlt_lib))])
     canvas.create_line(55, 85, 155, 85, 105, 180, 55, 85)
     canvas.create_text(20, 30, anchor=W, font="Purisa", text="Most relationships seem so transitory")
     
@@ -96,7 +98,8 @@ def build_window(directory):
     canvas.grid(row=1, column=0, rowspan=2, columnspan=2, sticky=N+S)
     lb.grid(row=1, column=1, rowspan=2, columnspan=2, sticky=N+S+E)
     yscroll.grid(row=1, column=1, rowspan=2, sticky=N+S+E)
-    bar.grid(row=0, column=0)
+    bar_main.grid(row=0, column=0)
+    bar_node.grid(row=0, column=1)
     
     txtng = 'showing picture in list'
     # button = Button(root, text=txtng, command=get_image)

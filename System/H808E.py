@@ -23,9 +23,9 @@ class h808e(object):
         key name - names will be filled after matching
         key child - reference all children
         will be a module after.."""
+        # todo: match names
         h808e = []
         # only nodes from 400 to 700
-        # todo: match names
         a_max = 3
         # starting from first level
         lev = 1
@@ -64,9 +64,28 @@ class h808e(object):
         tables = (None, '')
         # all tables within enc table
         return tables
+    
+    def build_categories(parent_node):
+        for root_node in he:
+            GUI.insert_menu_item(1, root_node)
+            if root_node == get_nth_node(1, parent_node):
+                for sub_node in root_node:
+                    GUI.insert_menu_item(2, root_node)
+                    if sub_node == get_nth_node(2, parent_node):
+                        for sub_sub_node in sub_node:
+                            GUI.insert_menu_item(3, root_node)
+                
+    def get_nth_node(nth, parent_node):
+        if parent_node.isdigit():
+            return get_nth_number(nth, parent_node) * 100
+        else:
+            return 800
+            #not defined node, return max
+        
+    def get_nth_number(nth, node_number):
+        return int(str(node_number)[nth-1:nth])
 
 def build_text_menu():
-    #find how to build python menu, will be platform independent
     keep_alive = True
     while keep_alive:
         print("""       ============= -H_808_E- =============
