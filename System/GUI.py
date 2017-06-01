@@ -18,13 +18,13 @@ def get_mlt_lib(directory):
     mlt_lib = {'filename': PhotoImage(file='*.gif')}
     """
     mlt_lib = {}
+    print 'running over ' + directory
     for mlt_file in os.listdir(directory):
         # for now just images
-        print 'running over ' + directory
         if '.gif' in mlt_file:
             mlt_lib[mlt_file] = PhotoImage(file=directory+mlt_file)
-        elif '.jpg' in mlt_file or '.png' in mlt_file:
-            print 'jpeg image file'
+        # elif '.jpg' in mlt_file or '.png' in mlt_file:
+            # print 'jpeg image file'
             #image = Image.open(directory+mlt_file)
             #mlt_lib[mlt_file] = PhotoImage(image)
         else:
@@ -38,7 +38,9 @@ def onselect(evt):
     index = int(w.curselection()[0])
     value = w.get(index)
     print 'You selected item %d: "%s"' % (index, value)
-    mlt_img['image'] = mlt_lib[value]
+    # mlt_img['image'] = mlt_lib[value]
+    canvas.create_image(355, 355, image=mlt_lib[value], anchor="nw")
+    #root.update_idletasks()
     
 def fill(image, color):
     """Fill image with a color=(r,b,g)"""
@@ -53,7 +55,7 @@ def build_window(directory):
     root = Tk()
     root.title('Hvězdná encyklopedie')
     root.resizable(0, 0)
-    root.geometry('900x600')
+    root.geometry('900x700')
     
     #img = PhotoImage(file=filename)
     # build directory multimedia list
@@ -69,26 +71,32 @@ def build_window(directory):
     #fill(photo, (255,0,0))
     #photo.grid(row=0, column=0)
     # part holding multimedia content
-    global mlt_img
-    mlt_img = Label(root, image=mlt_lib[next(iter(mlt_lib))])
-    bar = Menu(root, background='red', relief='flat')
+    # global mlt_img
+    # mlt_img = Label(root, image=mlt_lib[next(iter(mlt_lib))])
+    # bar = Menu(root, background='red', relief='flat')
+    bar = Label(root, text=' Main Menu ...')
     # implement max image size
-    # canvas
-    cnv = Canvas(root, bd=0, highlightthickness=0, width=200, height=100)
+    global canvas
+    canvas = Canvas(root, bd=0, highlightthickness=0, width=700, height=700)
+    canvas.create_image(0, 0, image=mlt_lib[next(iter(mlt_lib))])
+    canvas.create_line(55, 85, 155, 85, 105, 180, 55, 85)
+    canvas.create_text(20, 30, anchor=W, font="Purisa", text="Most relationships seem so transitory")
+    
     # part holding list of multimedia files 
     lb = Listbox(root, height=7)
     lb.bind('<<ListboxSelect>>', onselect)
     for img in mlt_lib.keys():
         lb.insert('end', img)
-    
     yscroll = Scrollbar(root, orient=VERTICAL)
     lb['yscrollcommand'] = yscroll.set
     yscroll['command'] = lb.yview
+    
     # positioning
-    mlt_img.grid(row=1, column=0, rowspan=3, sticky="wn")
-    cnv.grid(row=0, column=0, columnspan=2)
-    lb.grid(row=1, column=1, rowspan=2, sticky=N+S)
+    # mlt_img.grid(row=1, column=0, rowspan=3, sticky="wn")
+    canvas.grid(row=1, column=0, rowspan=2, columnspan=2, sticky=N+S)
+    lb.grid(row=1, column=1, rowspan=2, columnspan=2, sticky=N+S+E)
     yscroll.grid(row=1, column=1, rowspan=2, sticky=N+S+E)
+    bar.grid(row=0, column=0)
     
     txtng = 'showing picture in list'
     # button = Button(root, text=txtng, command=get_image)

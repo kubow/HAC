@@ -31,6 +31,7 @@ class h808e(object):
         lev = 1
         for a in range(4):
             a_max += 1
+            print 'main row: ' + str(a_max) + 'xx'
             sub_categories = []
             for b in range(a_max):
                 lev += 1
@@ -68,21 +69,21 @@ def build_text_menu():
     #find how to build python menu, will be platform independent
     keep_alive = True
     while keep_alive:
-        print("""============= -H_808_E- =============
--------------------------------------
-1.  Open encyklopedia cherrytree
-2.  Open encyklopedia sqlite browser
-3.  Directory synchronizer
-4.  Generate structure from db
-5.  A
-6.  B
-7.  C
--------------------------------------
-8.  Universal python project
--------------------------------------
-9.  Browse pages in (FF/CH/IE)
--------------------------------------
-==========PRESS 'Q' TO QUIT==========""")
+        print("""       ============= -H_808_E- =============
+        -------------------------------------
+        1.  Open encyklopedia cherrytree
+        2.  Open encyklopedia sqlite browser
+        3.  Directory synchronizer
+        4.  Generate structure from db
+        5.  A
+        6.  B
+        7.  C
+        -------------------------------------
+        8.  Universal python project
+        -------------------------------------
+        9.  Browse pages in (FF/CH/IE)
+        -------------------------------------
+        ==========PRESS 'Q' TO QUIT==========""")
         keep_alive=raw_input("Please run:")
         if keep_alive=="1": 
             print("\n Opening cherrytree ...") 
