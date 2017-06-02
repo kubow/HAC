@@ -52,7 +52,32 @@ def fill(image, color):
     horizontal_line = '{' + ' '.join([hexcode]*width) + '}'
     image.put(' '.join([horizontal_line]*width))
     
-def build_window(directory):
+def build_categories(he):
+        for root_node in he:
+            print root_node['code']
+            insert_menu_item(1, root_node['code'])
+            if root_node == get_nth_node(1, parent_node):
+                for sub_node in root_node:
+                    insert_menu_item(2, root_node['code'])
+                    if sub_node == get_nth_node(2, parent_node):
+                        for sub_sub_node in sub_node:
+                            insert_menu_item(3, root_node['code'])
+    
+def insert_menu_item(level, node):
+    label = Label(root, text=str(node))
+    
+def get_nth_node(nth, parent_node):
+    if parent_node.isdigit():
+        return get_nth_number(nth, parent_node) * 100
+    else:
+        return 800
+        #not defined node, return max
+    
+def get_nth_number(nth, node_number):
+    return int(str(node_number)[nth-1:nth])
+    
+def build_window(directory, he):
+    global root
     root = Tk()
     root.title('Hvězdná encyklopedie')
     root.resizable(0, 0)
@@ -77,6 +102,7 @@ def build_window(directory):
     # bar = Menu(root, background='red', relief='flat')
     bar_main = Label(root, text=' Main Menu ...')
     bar_node = Label(root, text=' show location...')
+    build_categories(he)
     # implement max image size
     global canvas
     canvas = Canvas(root, bd=0, highlightthickness=0, width=700, height=700)
@@ -120,7 +146,7 @@ if __name__ == '__main__':
         print node
     
     # build root
-    build_window(args.d)
+    build_window(args.d, he)
     
     
     
