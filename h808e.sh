@@ -47,4 +47,6 @@ python /home/kubow/Dokumenty/Script/System/GUI.py -d /home/kubow/Dokumenty/Web/6
         #done
     #fi
 #done
+#vsechno to tady smazat
+
 
