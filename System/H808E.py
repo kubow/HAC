@@ -7,31 +7,23 @@ import sqlite3
 import GUI
 
 class h808e(object):
-    """
-    # folders = property(self.get_folder)
-    # print 'aaaaaaaaaaaaaaaaaaaaaaa'
-    # tables = property(self.get_table)
-    """
+
     def __init__(self):
-        self.folders = self.get_folder()
+        self.enc = self.create_structure()
+        self.folders = self.get_main_directories()
         self.tables = self.get_table()
-    
-    def construct(self):
+
+    def create_structure(self):
         """constructor of h808e - list of dictionaries
-        in dictionary..main structure:
         key code - number code to define area
         key name - names will be filled after matching
         key child - reference all children
         will be a module after.."""
-        # todo: match names
         h808e = []
-        # only nodes from 400 to 700
-        a_max = 3
-        # starting from first level
-        lev = 1
+        a_max = 3 # only nodes from 400 to 700
+        lev = 1 # starting from first level
         for a in range(4):
             a_max += 1
-            print 'main row: ' + str(a_max) + 'xx'
             sub_categories = []
             for b in range(a_max):
                 lev += 1
@@ -43,27 +35,46 @@ class h808e(object):
                         real = True
                     lev += 1
                     sub_sub = {'code': (a_max * 100) + ((b + 1) * 10) + (c + 1),
-                    'real': real, 'name': '', 'level': lev}
+                               'real': real, 'name': '', 'level': lev}
                     sub_sub_categories.append(sub_sub)
                     lev -= 1
                 sub = {'code': (a_max * 100) + ((b + 1) * 10), 'real': real,
-                 'name': '', 'level': lev, 'child': sub_sub_categories}
+                       'name': '', 'level': lev, 'child': sub_sub_categories}
                 lev -= 1
                 sub_categories.append(sub)
             h808e_dict = {'code': a_max * 100, 'real': real, 'name': '',
-             'level': lev, 'child': sub_categories}
+                          'level': lev, 'child': sub_categories}
             h808e.append(h808e_dict)
         return h808e
-        
-    def get_folder(self):
-        folders = (None, '')
+
+    def get_main_directories(self):
+        folders = []
+        for area in self.enc:
+            list_number = self.get_list_number_item(area['code'])
+            self.enc[list_number]['directory'] = int(str(area['code'])[:2])
+            for node in area['child']:
+                self.enc[list_number]['directory'] = int(str(area['code'])[:2])
+                folders.append(int(str(node['code'])[:2]))
         # all folders within enc table
         return folders
-        
+
     def get_table(self):
         tables = (None, '')
         # all tables within enc table
         return tables
+
+    def get_nth_node(self, nth, parent_node):
+        if parent_node.isdigit():
+            return self.get_nth_number(nth, parent_node) * 100
+        else:
+            return 800
+            # not defined node, return max
+
+    def get_nth_number(self, nth, node_number):
+        return int(str(node_number)[nth - 1:nth])
+
+    def get_list_number_item(self, number):
+        return self.get_nth_number(1, number) - 4
                 
 class SQL(object):
     selectFatherNodes = """SELECT children.father_id, COUNT(node.node_id) 
@@ -162,8 +173,7 @@ if __name__ == '__main__':
     parser.add_argument('-c', help='ctb file', type=str, default='')
     parser.add_argument('-d', help='directory', type=str, default='')
     args = parser.parse_args()
-    h_e = h808e()
-    he = h_e.construct()
+    he = h808e()
     # connect to database
     try:
         conn = sqlite3.connect(args.c)
@@ -177,6 +187,8 @@ if __name__ == '__main__':
     # prepare the insert query
     # insert = 'INSERT INTO veci (hmotne, oblast, uroven) VALUES ({0}, "{1}", {2});'
     # browse encyklopedia node (en) + subnode (esn), subsubnode (essn)
+    
+    #browse_through(directory, what_to_do)
     
     # for root, directories, files in os.walk(args.d):
         # print '**********'

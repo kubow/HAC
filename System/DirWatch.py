@@ -61,7 +61,7 @@ def val_exist(v, col, t, c):
         return True
         
 def is_register(directory):
-    
+    print 'aaa'
     
 def walk_dir(directory, c):
     if not tab_exist('dirlist', c):

@@ -140,8 +140,8 @@ if __name__ == '__main__':
     # temporarily run over one dir, will be browser further
     
     # construct encyklopedia
-    h_e = H808E.h808e()
-    he = h_e.construct()
+    he = H808E.h808e()
+    
     for node in he:
         print node
     

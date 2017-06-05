@@ -13,6 +13,12 @@ def get_table_name(sql, qry_type):
         print 'GRANT/REVOKE'
     return table_name
 
+def execute_not_connected(database, sql)
+    """execute command and return dataset"""
+    conn = sqlite3.connect(database)
+    curs = conn.execute(sql)
+    #log.file_write(logfile, module, 'executed SQL: {0}'.format(sql))
+
 def fetch_one_from_tab(c, sql):
     result = c.execute(sql).fetch_one()
     if not result:
@@ -45,3 +51,4 @@ def execute_connected(c, sql, logfile, module, debug=False):
     c.execute()
     if debug:
         log.file_write(logfile, module, 'executed SQL: {0}'.format(sql))
+        
