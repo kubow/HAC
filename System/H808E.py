@@ -65,7 +65,24 @@ class h808e(object):
         # all tables within enc table
         return tables
                 
-    
+class SQL(object):
+    selectFatherNodes = """SELECT children.father_id, COUNT(node.node_id) 
+    FROM node
+    INNER JOIN children ON node.node_id = children.node_id
+    GROUP BY father_id"""
+    selectRootNodes = """SELECT children.father_id, node.level, node.name,
+    node.txt, node.node_id, children.sequence, enc.code FROM children
+    INNER JOIN node ON children.node_id = node.node_id
+    INNER JOIN enc ON enc.node_id = node.node_id
+    WHERE (children.father_id = 0 )
+    ORDER BY children.sequence"""
+    selectSubRootNodes = """SELECT node.node_id, node.name, node.txt,
+    children.sequence, enc.code
+    FROM children
+    INNER JOIN node ON children.node_id = node.node_id
+    INNER JOIN enc ON children.node_id = enc.node_id
+    WHERE children.father_id =:father
+    ORDER BY children.sequence"""
 
 def build_text_menu(he):
     keep_alive = True
@@ -95,6 +112,7 @@ def build_text_menu(he):
             # dropbox synchronizer
         elif keep_alive=="4":
             print 'generate structure'
+            
         elif keep_alive=="8":
             # running Tkinter GUI
             print 'universal python in ' + args.d
