@@ -1,6 +1,6 @@
 #!/bin/bash
 # calling batch menu (platform independent)
-python /home/kubow/Dokumenty/Script/System/GUI.py -d /home/kubow/Dokumenty/Web/64/Astrologie/
+python /home/kubow/Dokumenty/Script/System/H808E.py -d /home/kubow/Dokumenty/Web/64/Astrologie/
 #advanced logics, not necessary
 # decide if dialog installed (debian, ubuntu)
 # runflag=1

@@ -180,31 +180,21 @@ if __name__ == '__main__':
     # connect to database
     try:
         conn = sqlite3.connect(args.c)
+        # show the text menu
+        build_text_menu(he)
     except:
         print 'cannot find main db file! > ' + args.c + ' ?'
         # make connection to a temporary database?
         # conn = sqlite3.connect(args.d + 'H808E.ctb')
-    # show the text menu
-    build_text_menu(he)
+    
 
     # prepare the insert query
     # insert = 'INSERT INTO veci (hmotne, oblast, uroven) VALUES ({0}, "{1}", {2});'
     # browse encyklopedia node (en) + subnode (esn), subsubnode (essn)
 
     # browse_through(directory, what_to_do)
-
-    # for root, directories, files in os.walk(args.d):
-    # print '**********'
-    # print he.folders
-    # print '**********'
-    # if not root in he.folders:
-    # print 'no corresponding directory found...'
-    # continue
-    # for filename in files:
-    # locate table CTB
-    # print 'table read!, chcek if registered'
-
-    for en in he:
+    
+    for en in he.enc:
         # 1
         print str(en['code']) + '/' + str(en['level'])
         # print insert.format(en['code'], en['real'], en['level'])
@@ -215,4 +205,4 @@ if __name__ == '__main__':
                 print str(essn['code']) + '/' + str(essn['level'])
         break
 
-        # tbl = conn.execute('SELECT * FROM veci;')
+    # tbl = conn.execute('SELECT * FROM veci;')

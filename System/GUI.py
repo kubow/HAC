@@ -156,9 +156,6 @@ if __name__ == '__main__':
     # construct encyklopedia
     he = H808E.h808e()
 
-    for node in he:
-        print node
-
     # build root
     build_window(args.d, he)
 
