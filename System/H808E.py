@@ -2,12 +2,11 @@
 import os
 import argparse
 import sqlite3
-#sys.setdefaultencoding('utf-8')
+# sys.setdefaultencoding('utf-8')
 # H808E modules
 import GUI
 
 class h808e(object):
-
     def __init__(self):
         self.enc = self.create_structure()
         self.folders = self.get_main_directories()
@@ -20,8 +19,8 @@ class h808e(object):
         key child - reference all children
         will be a module after.."""
         h808e = []
-        a_max = 3 # only nodes from 400 to 700
-        lev = 1 # starting from first level
+        a_max = 3  # only nodes from 400 to 700
+        lev = 1  # starting from first level
         for a in range(4):
             a_max += 1
             sub_categories = []
@@ -51,9 +50,10 @@ class h808e(object):
         folders = []
         for area in self.enc:
             list_number = self.get_list_number_item(area['code'])
-            self.enc[list_number]['directory'] = int(str(area['code'])[:2])
+            self.enc[list_number]['directory'] = None
             for node in area['child']:
-                self.enc[list_number]['directory'] = int(str(area['code'])[:2])
+                sublist_number = self.get_list_number_item(node['code'])
+                self.enc[list_number]['child'][sublist_number]['directory'] = int(str(node['code'])[:2])
                 folders.append(int(str(node['code'])[:2]))
         # all folders within enc table
         return folders
@@ -75,9 +75,9 @@ class h808e(object):
 
     def get_list_number_item(self, number):
         return self.get_nth_number(1, number) - 4
-                
+
 class SQL(object):
-    selectFatherNodes = """SELECT children.father_id, COUNT(node.node_id) 
+    selectFatherNodes = """SELECT children.father_id, COUNT(node.node_id)
     FROM node
     INNER JOIN children ON node.node_id = children.node_id
     GROUP BY father_id"""
@@ -94,6 +94,7 @@ class SQL(object):
     INNER JOIN enc ON children.node_id = enc.node_id
     WHERE children.father_id =:father
     ORDER BY children.sequence"""
+
 
 def build_text_menu(he):
     keep_alive = True
@@ -113,26 +114,27 @@ def build_text_menu(he):
         9.  Browse pages in (FF/CH/IE)
         -------------------------------------
         ==========PRESS 'Q' TO QUIT==========""")
-        keep_alive=raw_input("Please run:")
-        if keep_alive=="1": 
-            print("\n Opening cherrytree ...") 
-        elif keep_alive=="2":
-            print("\n Opening sqlite browser") 
-        elif keep_alive=="3":
+        keep_alive = raw_input("Please run:")
+        if keep_alive == "1":
+            print("\n Opening cherrytree ...")
+        elif keep_alive == "2":
+            print("\n Opening sqlite browser")
+        elif keep_alive == "3":
             print("\n Synchronize directories")
             # dropbox synchronizer
-        elif keep_alive=="4":
+        elif keep_alive == "4":
             print 'generate structure'
-            
-        elif keep_alive=="8":
+
+        elif keep_alive == "8":
             # running Tkinter GUI
             print 'universal python in ' + args.d
             GUI.build_window(args.d, he)
-        elif str(keep_alive).lower()=="q":
-            print("\n Goodbye") 
+        elif str(keep_alive).lower() == "q":
+            print("\n Goodbye")
             keep_alive = False
-        elif keep_alive !="":
-            print("\n Not Valid Choice Try again") 
+        elif keep_alive != "":
+            print("\n Not Valid Choice Try again")
+
 
 def register_dir(directory, he):
     # register directory within sqlite database
@@ -146,28 +148,29 @@ def register_dir(directory, he):
         size int
         ); """)
     i = 1
-    tab_ins = """INSERT INTO h808e 
-        (reg_name, file_dir) 
+    tab_ins = """INSERT INTO h808e
+        (reg_name, file_dir)
         VALUES ({0});"""
-    col =  ('reg_name', 'file_dir')
+    col = ('reg_name', 'file_dir')
     for root, directories, files in os.walk(directory):
         curs_mem.execute(tab_ins.format('"", ' + root))
         i += 1
         # iterate files in directory
         for filename in files:
             fln_val = dw.ins_val.format(i, filename, root, 'date date date',
-            get_file_size(root+'/'+filename))
+                                        get_file_size(root + '/' + filename))
             v = (filename, root)
             # print v
             if val_exist(v, col, 'dirlist', c):
                 msg = '---file {0} registered, checking size.'.format(filename)
             else:
                 msg = '---file {0} registering.'.format(filename)
-            #    c.execute(dw.tab_ins.format(fln_val))
+            # c.execute(dw.tab_ins.format(fln_val))
             i += 1
-            #print filename
+            # print filename
     return c
-    
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="construct h808e")
     parser.add_argument('-c', help='ctb file', type=str, default='')
@@ -180,31 +183,31 @@ if __name__ == '__main__':
     except:
         print 'cannot find main db file! > ' + args.c + ' ?'
         # make connection to a temporary database?
-        #conn = sqlite3.connect(args.d + 'H808E.ctb')
+        # conn = sqlite3.connect(args.d + 'H808E.ctb')
     # show the text menu
     build_text_menu(he)
-    
+
     # prepare the insert query
     # insert = 'INSERT INTO veci (hmotne, oblast, uroven) VALUES ({0}, "{1}", {2});'
     # browse encyklopedia node (en) + subnode (esn), subsubnode (essn)
-    
-    #browse_through(directory, what_to_do)
-    
+
+    # browse_through(directory, what_to_do)
+
     # for root, directories, files in os.walk(args.d):
-        # print '**********'
-        # print he.folders
-        # print '**********'
-        # if not root in he.folders:
-            # print 'no corresponding directory found...'
-            # continue
-        # for filename in files:
-            # locate table CTB
-            # print 'table read!, chcek if registered'
+    # print '**********'
+    # print he.folders
+    # print '**********'
+    # if not root in he.folders:
+    # print 'no corresponding directory found...'
+    # continue
+    # for filename in files:
+    # locate table CTB
+    # print 'table read!, chcek if registered'
 
     for en in he:
-        # 1 
+        # 1
         print str(en['code']) + '/' + str(en['level'])
-       # print insert.format(en['code'], en['real'], en['level'])
+        # print insert.format(en['code'], en['real'], en['level'])
         # conn.execute(insert.format(en['real'], en['code'], en['level']))
         for esn in en['child']:
             print str(esn['code']) + '/' + str(esn['level'])
@@ -212,4 +215,4 @@ if __name__ == '__main__':
                 print str(essn['code']) + '/' + str(essn['level'])
         break
 
-    # tbl = conn.execute('SELECT * FROM veci;')
+        # tbl = conn.execute('SELECT * FROM veci;')
