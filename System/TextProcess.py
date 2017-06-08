@@ -22,6 +22,13 @@ def replace_line_endings(block_text):
     # and finally put back new line characters
     block_text=re.sub(r'~~~', r'\n\n', block_text)
     return block
+    
+def filter_lines(textfile, with_filter):
+    stream = ''
+    for line in textfile:
+        if re.search('Dumpfile name', line) or re.search('DUMP is complete', line) or re.search('Dump phase number 1 completed', line):
+            stream += line
+    return stream
 
 def load_text_from(filename):
     with open(filename, 'rb') as input_file:
@@ -30,6 +37,14 @@ def load_text_from(filename):
             # print m
     return text
 
+def create_file_if_neccesary(file)
+    if os.isfile(file):
+        print ' -> '+file+' - exists ...'
+    else:
+        print ' -> '+file+' - creating new file ...'
+        with open(file, 'a'):
+            os.utime(file, None)
+    
 def export_text_to(filename, text):
     with open(filename, 'w+') as output_file:
         output_file.write(text)
@@ -60,9 +75,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Text proccess")
     parser.add_argument('-i', help='Input file', type=str, default='')
     parser.add_argument('-o', help='Output file', type=str, default='')
+    parser.add_argument('-l', help='Logic', type=str, default='')
     args = parser.parse_args()
     
-    if os.isfile():
-        print args.i+' -> '+args.o+' - exists - appending ...' r
-    export_text_to(args.o, replace_line_endings(load_text_from(args.i)))
-
+    if os.isfile(args.i):
+        create_file_if_neccesary(args.o)
+        export_text_to(args.o, replace_line_endings(load_text_from(args.i)))
+    else:
+        print args.i+' -> input file does not exist ...'
