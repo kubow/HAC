@@ -6,6 +6,7 @@ import sqlite3
 # H808E modules
 import GUI
 
+
 class h808e(object):
     def __init__(self):
         self.enc = self.create_structure()
@@ -75,6 +76,7 @@ class h808e(object):
 
     def get_list_number_item(self, number):
         return self.get_nth_number(1, number) - 4
+
 
 class SQL(object):
     selectFatherNodes = """SELECT children.father_id, COUNT(node.node_id)
@@ -176,24 +178,23 @@ if __name__ == '__main__':
     parser.add_argument('-c', help='ctb file', type=str, default='')
     parser.add_argument('-d', help='directory', type=str, default='')
     args = parser.parse_args()
+    global he
     he = h808e()
     # connect to database
     try:
         conn = sqlite3.connect(args.c)
         # show the text menu
-        build_text_menu(he)
     except:
         print 'cannot find main db file! > ' + args.c + ' ?'
         # make connection to a temporary database?
         # conn = sqlite3.connect(args.d + 'H808E.ctb')
-    
-
+    build_text_menu(he)
     # prepare the insert query
     # insert = 'INSERT INTO veci (hmotne, oblast, uroven) VALUES ({0}, "{1}", {2});'
     # browse encyklopedia node (en) + subnode (esn), subsubnode (essn)
 
     # browse_through(directory, what_to_do)
-    
+
     for en in he.enc:
         # 1
         print str(en['code']) + '/' + str(en['level'])
@@ -205,4 +206,4 @@ if __name__ == '__main__':
                 print str(essn['code']) + '/' + str(essn['level'])
         break
 
-    # tbl = conn.execute('SELECT * FROM veci;')
+        # tbl = conn.execute('SELECT * FROM veci;')

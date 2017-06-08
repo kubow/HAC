@@ -1,6 +1,9 @@
 #!/bin/bash
+parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
+
+cd "$parent_path"
 # calling batch menu (platform independent)
-python /home/kubow/Dokumenty/Script/System/H808E.py -d /home/kubow/Dokumenty/Web/64/Astrologie/
+python ./System/H808E.py -d ../Web/64/Astrologie/
 #advanced logics, not necessary
 # decide if dialog installed (debian, ubuntu)
 # runflag=1

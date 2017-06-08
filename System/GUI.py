@@ -25,12 +25,13 @@ def get_mlt_lib(directory):
         # for now just images
         if '.gif' in mlt_file:
             mlt_lib[mlt_file] = PhotoImage(file=directory + mlt_file)
-            # elif '.jpg' in mlt_file or '.png' in mlt_file:
+        # elif '.jpg' in mlt_file or '.png' in mlt_file:
             # print 'jpeg image file'
             # image = Image.open(directory+mlt_file)
             # mlt_lib[mlt_file] = PhotoImage(image)
         else:
             # XLS, HTML, EPUB, DOC ... in future
+            mlt_lib[mlt_file] = create_text(text=read_file(directory + mlt_file))
             continue
     return mlt_lib
 
@@ -69,7 +70,10 @@ def build_categories(he, parent_node):
 
 
 def insert_menu_item(level, node):
-    label = Label(root, text=str(node))
+    #label = Label(root, text=str(node))
+    label = Button(root, text = node)
+    label["command"] = 'goto direcotry'
+    label.grid(row = 0, column = level, pady = 1)
 
 
 def get_nth_node(nth, parent_node):
@@ -102,7 +106,7 @@ def build_window(directory, he):
     if os.path.isdir(directory):
         mlt_lib = get_mlt_lib(directory)
     else:
-        print 'cannot found the directory {0}'.format(directory)
+        print 'cannot find the directory {0}'.format(directory)
 
     # content = Frame(root)
     # frame = Frame(content, borderwidth=5, relief="sunken", width=800, height=400)
@@ -135,8 +139,8 @@ def build_window(directory, he):
     # positioning
     # mlt_img.grid(row=1, column=0, rowspan=3, sticky="wn")
     canvas.grid(row=1, column=0, rowspan=2, columnspan=2, sticky=N + S)
-    lb.grid(row=1, column=1, rowspan=2, columnspan=2, sticky=N + S + E)
-    yscroll.grid(row=1, column=1, rowspan=2, sticky=N + S + E)
+    lb.grid(row=1, column=2, rowspan=2, columnspan=2, sticky=N + S + E)
+    yscroll.grid(row=1, column=2, rowspan=2, sticky=N + S + E)
     bar_main.grid(row=0, column=0)
     bar_node.grid(row=0, column=1)
 
@@ -151,14 +155,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="run over dir")
     parser.add_argument('-d', help='directory', type=str, default='')
     args = parser.parse_args()
-    # temporarily run over one dir, will be browser further
 
     # construct encyklopedia
     he = H808E.h808e()
 
-    # build root
+    # temporarily run over one dir, will be browser further
     build_window(args.d, he)
-
-
-
 
