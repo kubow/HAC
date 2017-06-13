@@ -6,7 +6,7 @@ import argparse
 from Tkinter import *
 
 # for other image support
-from PIL import Image  # , ImageTk
+from PIL import Image, ImageTk
 import H808E
 
 
@@ -25,10 +25,10 @@ def get_mlt_lib(directory):
         # for now just images
         if '.gif' in mlt_file:
             mlt_lib[mlt_file] = PhotoImage(file=directory + mlt_file)
-        # elif '.jpg' in mlt_file or '.png' in mlt_file:
+        elif '.jpg' in mlt_file or '.png' in mlt_file:
             # print 'jpeg image file'
             # image = Image.open(directory+mlt_file)
-            # mlt_lib[mlt_file] = PhotoImage(image)
+            mlt_lib[mlt_file] = ImageTk.PhotoImage(Image.open(directory + mlt_file))
         else:
             # XLS, HTML, EPUB, DOC ... in future
             mlt_lib[mlt_file] = create_text(text=read_file(directory + mlt_file))
@@ -44,6 +44,7 @@ def onselect(evt):
     print 'You selected item %d: "%s"' % (index, value)
     # mlt_img['image'] = mlt_lib[value]
     canvas.delete('all')
+
     canvas.create_image(0, 0, image=mlt_lib[value], anchor="nw")
     # root.update_idletasks()
 
@@ -70,10 +71,10 @@ def build_categories(he, parent_node):
 
 
 def insert_menu_item(level, node):
-    #label = Label(root, text=str(node))
-    label = Button(root, text = node)
+    # label = Label(root, text=str(node))
+    label = Button(root, text=node)
     label["command"] = 'goto direcotry'
-    label.grid(row = 0, column = level, pady = 1)
+    label.grid(row=0, column=level, pady=1)
 
 
 def get_nth_node(nth, parent_node):
