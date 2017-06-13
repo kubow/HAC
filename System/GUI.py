@@ -31,8 +31,7 @@ def get_mlt_lib(directory):
             mlt_lib[mlt_file] = ImageTk.PhotoImage(Image.open(directory + mlt_file))
         else:
             # XLS, HTML, EPUB, DOC ... in future
-            mlt_lib[mlt_file] = create_text(text=read_file(directory + mlt_file))
-            continue
+            mlt_lib[mlt_file] = Label(text=read_file(directory + mlt_file))
     return mlt_lib
 
 
@@ -44,7 +43,7 @@ def onselect(evt):
     print 'You selected item %d: "%s"' % (index, value)
     # mlt_img['image'] = mlt_lib[value]
     canvas.delete('all')
-
+    if any('')
     canvas.create_image(0, 0, image=mlt_lib[value], anchor="nw")
     # root.update_idletasks()
 
@@ -92,6 +91,11 @@ def get_nth_node(nth, parent_node):
 
 def get_nth_number(nth, node_number):
     return int(str(node_number)[nth - 1:nth])
+
+def read_file(filename):
+    with open(filename, 'r') as content_file:
+        content = content_file.read()
+    return content
 
 
 def build_window(directory, he):
