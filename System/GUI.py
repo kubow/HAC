@@ -22,7 +22,8 @@ def get_mlt_lib(directory):
     mlt_lib = {}
     print 'running over ' + directory
     for mlt_file in os.listdir(directory):
-        # for now just images
+        if os.path.isdir(directory + mlt_file):
+            continue
         if '.gif' in mlt_file:
             mlt_lib[mlt_file] = PhotoImage(file=directory + mlt_file)
         elif '.jpg' in mlt_file or '.png' in mlt_file:
@@ -31,7 +32,7 @@ def get_mlt_lib(directory):
             mlt_lib[mlt_file] = ImageTk.PhotoImage(Image.open(directory + mlt_file))
         else:
             # XLS, HTML, EPUB, DOC ... in future
-            mlt_lib[mlt_file] = Label(text=read_file(directory + mlt_file))
+            mlt_lib[mlt_file] = Label(text=directory + mlt_file)
     return mlt_lib
 
 
@@ -43,8 +44,10 @@ def onselect(evt):
     print 'You selected item %d: "%s"' % (index, value)
     # mlt_img['image'] = mlt_lib[value]
     canvas.delete('all')
-    if any('')
-    canvas.create_image(0, 0, image=mlt_lib[value], anchor="nw")
+    if 'jpg' in value or 'png' in value or 'gif' in value:
+        canvas.create_image(0, 0, image=mlt_lib[value], anchor="nw")
+    else:
+        canvas.create_text(0, 0, text=read_file(mlt_lib[value]))
     # root.update_idletasks()
 
 
@@ -143,11 +146,11 @@ def build_window(directory, he):
 
     # positioning
     # mlt_img.grid(row=1, column=0, rowspan=3, sticky="wn")
-    canvas.grid(row=1, column=0, rowspan=2, columnspan=2, sticky=N + S)
+    canvas.grid(row=1, column=0, rowspan=2, columnspan=2, sticky=N + S + W)
     lb.grid(row=1, column=2, rowspan=2, columnspan=2, sticky=N + S + E)
-    yscroll.grid(row=1, column=2, rowspan=2, sticky=N + S + E)
+    yscroll.grid(row=1, column=2, rowspan=2, columnspan=2, sticky=N + S + E)
     bar_main.grid(row=0, column=0)
-    bar_node.grid(row=0, column=1)
+    bar_node.grid(row=0, column=0)
 
     txtng = 'showing picture in list'
     # button = Button(root, text=txtng, command=get_image)
