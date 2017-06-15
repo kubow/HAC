@@ -98,7 +98,7 @@ class SQL(object):
     ORDER BY children.sequence"""
 
 
-def build_text_menu(he):
+def build_text_menu(directory):
     keep_alive = True
     while keep_alive:
         print("""       ============= -H_808_E- =============
@@ -130,7 +130,7 @@ def build_text_menu(he):
         elif keep_alive == "8":
             # running Tkinter GUI
             print 'universal python in ' + args.d
-            GUI.build_window(args.d, he)
+            GUI.build_window(args.d)
         elif str(keep_alive).lower() == "q":
             print("\n Goodbye")
             keep_alive = False

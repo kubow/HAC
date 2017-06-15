@@ -10,9 +10,57 @@ from PIL import Image, ImageTk
 import H808E
 
 
-def get_image():
-    """get values that user clicked on"""
-    mlt_img['image'] = mlt_lib[lb.get('active')]
+def build_window(directory):
+    global root
+    root = Tk()
+
+    he = H808E.h808e()
+
+    root.title('Hvězdná encyklopedie')
+    root.resizable(0, 0)
+    root.geometry('900x700')
+
+    # upper menu
+    bar_main = Label(root, text=' Main Menu ...')
+    bar_node = Label(root, text=' show location...')
+    build_categories(he, 410)
+    # implement max image size
+    global canvas
+    canvas = Canvas(root, bd=0, highlightthickness=0, width=700, height=700)
+    # canvas.create_image(0, 0, image=mlt_lib[next(iter(mlt_lib))])
+    canvas.create_line(55, 85, 155, 85, 105, 180, 55, 85)
+    canvas.create_text(20, 30, anchor=W, font="Purisa", text="Most relationships seem so transitory")
+
+    # build directory multimedia list
+    global mlt_lib
+    mlt_lib = get_mlt_lib(navigate_to(directory))
+
+    # part holding list of multimedia files
+    lb = Listbox(root, height=7)
+    lb.bind('<<ListboxSelect>>', on_select)
+    refresh_list_box(mlt_lib, lb)
+
+    yscroll = Scrollbar(root, orient=VERTICAL)
+    lb['yscrollcommand'] = yscroll.set
+    yscroll['command'] = lb.yview
+
+    # positioning
+    # mlt_img.grid(row=1, column=0, rowspan=3, sticky="wn")
+    canvas.grid(row=1, column=0, rowspan=2, columnspan=2, sticky=N + S + W)
+    lb.grid(row=1, column=2, rowspan=2, columnspan=2, sticky=N + S + E)
+    yscroll.grid(row=1, column=2, rowspan=2, columnspan=2, sticky=N + S + E)
+    bar_main.grid(row=0, column=0)
+    bar_node.grid(row=0, column=0)
+
+    txtng = 'showing picture in list'
+    # button = Button(root, text=txtng, command=get_image)
+    # button.grid(row=1, column=0)
+
+    root.mainloop()
+
+
+def refresh_window(directory):
+    refresh_list_box(get_mlt_lib(navigate_to(directory)), root.lb)
 
 
 def get_mlt_lib(directory):
@@ -28,17 +76,16 @@ def get_mlt_lib(directory):
             mlt_lib[mlt_file] = PhotoImage(file=directory + mlt_file)
         elif '.jpg' in mlt_file or '.png' in mlt_file:
             # print 'jpeg image file'
-            # image = Image.open(directory+mlt_file)
             mlt_lib[mlt_file] = ImageTk.PhotoImage(Image.open(directory + mlt_file))
         else:
             # XLS, HTML, EPUB, DOC ... in future
-            mlt_lib[mlt_file] = Label(text=directory + mlt_file)
+            mlt_lib[mlt_file] = directory + mlt_file
     return mlt_lib
 
 
-def onselect(evt):
+def on_select(evt):
     w = evt.widget
-    print w.curselection()
+    # print w.curselection()
     index = int(w.curselection()[0])
     value = w.get(index)
     print 'You selected item %d: "%s"' % (index, value)
@@ -47,9 +94,13 @@ def onselect(evt):
     if 'jpg' in value or 'png' in value or 'gif' in value:
         canvas.create_image(0, 0, image=mlt_lib[value], anchor="nw")
     else:
-        canvas.create_text(0, 0, text=read_file(mlt_lib[value]))
+        canvas.create_text(20, 20, text=read_file(mlt_lib[value]))
     # root.update_idletasks()
 
+
+def on_button_click(evt):
+    w = evt.widget
+    refresh_window(w.config('text')[-1])
 
 def fill(image, color):
     """Fill image with a color=(r,b,g)"""
@@ -74,7 +125,7 @@ def build_categories(he, parent_node):
 
 def insert_menu_item(level, node):
     # label = Label(root, text=str(node))
-    label = Button(root, text=node)
+    label = Button(root, text=node, command=on_button_click)
     label["command"] = 'goto direcotry'
     label.grid(row=0, column=level, pady=1)
 
@@ -95,68 +146,31 @@ def get_nth_node(nth, parent_node):
 def get_nth_number(nth, node_number):
     return int(str(node_number)[nth - 1:nth])
 
+
 def read_file(filename):
     with open(filename, 'r') as content_file:
         content = content_file.read()
     return content
 
+def get_image():
+    """get values that user clicked on"""
+    mlt_img['image'] = mlt_lib[lb.get('active')]
 
-def build_window(directory, he):
-    global root
-    root = Tk()
-    root.title('Hvězdná encyklopedie')
-    root.resizable(0, 0)
-    root.geometry('900x700')
 
-    # img = PhotoImage(file=filename)
-    # build directory multimedia list
-    global mlt_lib
-    if os.path.isdir(directory):
-        mlt_lib = get_mlt_lib(directory)
-    else:
-        print 'cannot find the directory {0}'.format(directory)
-
-    # content = Frame(root)
-    # frame = Frame(content, borderwidth=5, relief="sunken", width=800, height=400)
-    # photo = PhotoImage(width=32, height=32)
-    # fill(photo, (255,0,0))
-    # photo.grid(row=0, column=0)
-    # part holding multimedia content
-    # global mlt_img
-    # mlt_img = Label(root, image=mlt_lib[next(iter(mlt_lib))])
-    # bar = Menu(root, background='red', relief='flat')
-    bar_main = Label(root, text=' Main Menu ...')
-    bar_node = Label(root, text=' show location...')
-    build_categories(he, 410)
-    # implement max image size
-    global canvas
-    canvas = Canvas(root, bd=0, highlightthickness=0, width=700, height=700)
-    # canvas.create_image(0, 0, image=mlt_lib[next(iter(mlt_lib))])
-    canvas.create_line(55, 85, 155, 85, 105, 180, 55, 85)
-    canvas.create_text(20, 30, anchor=W, font="Purisa", text="Most relationships seem so transitory")
-
-    # part holding list of multimedia files
-    lb = Listbox(root, height=7)
-    lb.bind('<<ListboxSelect>>', onselect)
+def refresh_list_box(mlt_lib, lb):
+    lb.delete(0, END)
     for img in mlt_lib.keys():
         lb.insert('end', img)
-    yscroll = Scrollbar(root, orient=VERTICAL)
-    lb['yscrollcommand'] = yscroll.set
-    yscroll['command'] = lb.yview
 
-    # positioning
-    # mlt_img.grid(row=1, column=0, rowspan=3, sticky="wn")
-    canvas.grid(row=1, column=0, rowspan=2, columnspan=2, sticky=N + S + W)
-    lb.grid(row=1, column=2, rowspan=2, columnspan=2, sticky=N + S + E)
-    yscroll.grid(row=1, column=2, rowspan=2, columnspan=2, sticky=N + S + E)
-    bar_main.grid(row=0, column=0)
-    bar_node.grid(row=0, column=0)
 
-    txtng = 'showing picture in list'
-    # button = Button(root, text=txtng, command=get_image)
-    # button.grid(row=1, column=0)
+def navigate_to(directory):
+    if os.path.isdir(directory):
+        checked_directory = directory
+    else:
+        checked_directory = os.path.basename(__file__)
+        print 'cannot find the directory {0}, using {1}'.format(directory, checked_directory)
 
-    root.mainloop()
+    return checked_directory
 
 
 if __name__ == '__main__':
@@ -165,8 +179,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # construct encyklopedia
+    global he
     he = H808E.h808e()
 
-    # temporarily run over one dir, will be browser further
-    build_window(args.d, he)
+    build_window(args.d)
 
