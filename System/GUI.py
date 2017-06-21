@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
 import os
 import argparse
-# https://www.youtube.com/watch?v=eL_sy9TqCBE
-# http://www.sharpertradingimage.com/python-listbox-delete-text/
 from Tkinter import *
-
-# for other image support
 from PIL import Image, ImageTk
+# local project imports
 import H808E
+import ProcessText
 
 
 def build_window(directory):
     global root
     root = Tk()
 
+    # construct encyklopedia
+    global he
     he = H808E.h808e()
 
     root.title('Hvězdná encyklopedie')
@@ -50,7 +50,7 @@ def build_window(directory):
     lb.grid(row=1, column=2, rowspan=2, columnspan=2, sticky=N + S + E)
     yscroll.grid(row=1, column=2, rowspan=2, columnspan=2, sticky=N + S + E)
     bar_main.grid(row=0, column=0)
-    bar_node.grid(row=0, column=0)
+    bar_node.grid(row=0, column=1)
 
     txtng = 'showing picture in list'
     # button = Button(root, text=txtng, command=get_image)
@@ -94,13 +94,15 @@ def on_select(evt):
     if 'jpg' in value or 'png' in value or 'gif' in value:
         canvas.create_image(0, 0, image=mlt_lib[value], anchor="nw")
     else:
+        print 'passing file content : ' + read_file(mlt_lib[value])
         canvas.create_text(20, 20, text=read_file(mlt_lib[value]))
     # root.update_idletasks()
 
 
-def on_button_click(evt):
-    w = evt.widget
-    refresh_window(w.config('text')[-1])
+def on_button_click():
+    print 'You clicked button: '
+    #w = evt.widget
+    #refresh_window(w.config('text')[-1])
 
 def fill(image, color):
     """Fill image with a color=(r,b,g)"""
@@ -127,7 +129,7 @@ def insert_menu_item(level, node):
     # label = Label(root, text=str(node))
     label = Button(root, text=node, command=on_button_click)
     label["command"] = 'goto direcotry'
-    label.grid(row=0, column=level, pady=1)
+    label.grid(row=0, column=level + 1, pady=1)
 
 
 def get_nth_node(nth, parent_node):
@@ -150,6 +152,8 @@ def get_nth_number(nth, node_number):
 def read_file(filename):
     with open(filename, 'r') as content_file:
         content = content_file.read()
+    if 'htm' in filename.split()[-1]:
+        content = ProcessText.htm_to_plain_txt(content)
     return content
 
 def get_image():
@@ -159,8 +163,8 @@ def get_image():
 
 def refresh_list_box(mlt_lib, lb):
     lb.delete(0, END)
-    for img in mlt_lib.keys():
-        lb.insert('end', img)
+    for mlt_file in mlt_lib.keys():
+        lb.insert('end', mlt_file)
 
 
 def navigate_to(directory):
@@ -177,10 +181,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="run over dir")
     parser.add_argument('-d', help='directory', type=str, default='')
     args = parser.parse_args()
-
-    # construct encyklopedia
-    global he
-    he = H808E.h808e()
 
     build_window(args.d)
 
