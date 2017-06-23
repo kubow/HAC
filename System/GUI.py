@@ -12,7 +12,7 @@ import TextProcess
 class MainWindow:
     def __init__(self, master):
         self.master = master
-        self.frame = Frame(self.master)
+        self.frame = Frame(self.master, background="yellow")
         self.directory = directory
 
         # upper menu
@@ -21,8 +21,19 @@ class MainWindow:
         self.bar_main.grid(row=0, column=0, sticky=W)
         self.bar_node.grid(row=0, column=1, sticky=E)
 
+        # buttons upper right
+        self.one_up = Button(self.master, text='one level up', command=self.on_up_select)
+        self.one_up.grid(row=0, column=2, sticky=W)
+
+        # related data table down right
+        self.rel_data = SimpleTable(self, 5, 3)
+        self.rel_data.grid(row=2, column=2, sticky=N + S + E)
+        self.rel_data.set(0, 0, 'gggg')
+
         # multimedia view window
         self.canvas = Canvas(self.master, bd=0, highlightthickness=0, width=600, height=600, background="white")
+        self.canvas.create_line(55, 85, 155, 85, 105, 180, 55, 85)
+        self.canvas.create_text(20, 30, anchor=W, font="Purisa", text="Most relationships seem so transitory")
         self.canvas.grid(row=1, column=0, rowspan=2, columnspan=2, sticky=N + S + W, pady=(10, 10), padx=(10, 10))
 
         # multimedia file list
@@ -49,13 +60,10 @@ class MainWindow:
         self.mlt_lib = get_content(self.directory)
         self.refresh_list_items()
 
-        # buttons upper right
-        self.one_up = Button(self.master, text='one level up', command=self.go_one_up)
-        self.one_up.grid(row=0, column=2, sticky=W)
-
     def refresh_list_items(self):
         self.file_list.delete(0, END)
         self.dir_list.delete(0, END)
+        self.bar_node['text'] = 'Location : {0}'.format(self.directory)
         for mlt_file in self.mlt_lib.keys():
             if os.path.isdir(self.mlt_lib[mlt_file]):
                 self.dir_list.insert('end', mlt_file)
@@ -64,14 +72,23 @@ class MainWindow:
             else:
                 print 'item {0} does not fit ({1})'.format(mlt_file, self.mlt_lib[mlt_file])
 
-    def go_one_up(self):
-        # should be same as self.directory
+    def on_up_select(self):
         directory = get_directory_from_file(self.mlt_lib[next(iter(self.mlt_lib))])
-        # go one level up
-        self.directory = '/'.join(directory.split('/')[0:-1])
+        separator = get_separator_from(directory)
+        # TODO: check if not jumping outsine main dir
+        self.directory = separator.join(directory.split(separator)[0:-1])
+        print 'navigate one level up to: {0}'.format(self.directory)
         self.mlt_lib = get_content(self.directory)
-        #self.directory = new_directory
-        self.refresh_list_items
+        self.refresh_list_items()
+
+    def on_dir_select(self, evt):
+        w = evt.widget
+        index = int(w.curselection()[0])
+        value = w.get(index)
+        print 'navigate to %d: "%s"' % (index, value)
+        self.directory = get_proper_dir_path(self.directory) + value
+        self.mlt_lib = get_content(self.directory)
+        self.refresh_list_items()
 
     def on_file_select(self, evt):
         w = evt.widget
@@ -81,47 +98,53 @@ class MainWindow:
         self.canvas.delete('all')
         if 'gif' in value or '.jpg' in value or '.png' in value:
             if 'gif' in value:
-                image = PhotoImage(file=self.mlt_lib[value])
+                image_obj = PhotoImage(file=self.mlt_lib[value])
             elif '.jpg' in value or '.png' in value:
-                image = ImageTk.PhotoImage(Image.open(self.mlt_lib[value]))
+                image_obj = ImageTk.PhotoImage(Image.open(self.mlt_lib[value]))
             else:
-                image = PhotoImage(file=self.mlt_lib[value])
-            if self.mlt_lib[value]._PhotoImage__size[0] > 200:
-                if self.mlt_lib[value]._PhotoImage__size[0] > 600:
+                image_obj = PhotoImage(file=self.mlt_lib[value])
+            if image_obj._PhotoImage__size[0] > 200:
+                if image_obj._PhotoImage__size[0] > 600:
                     x = 0  # must resize picture
                     y = 0
                 else:
                     x = 0
                     y = 0
             else:
-                x = (600 / 2) - (self.mlt_lib[value]._PhotoImage__size[0] / 2)
-                y = (600 / 2) - (self.mlt_lib[value]._PhotoImage__size[1] / 2)
-            self.canvas.create_image(x, y, image=image, anchor="nw")
+                x = (600 / 2) - (image_obj._PhotoImage__size[0] / 2)
+                y = (600 / 2) - (image_obj._PhotoImage__size[1] / 2)
+            self.canvas.image = image_obj
+            self.canvas.create_image(x, y, image=image_obj, anchor="nw")
         else:
-            self.canvas.create_text(50, 50, text=read_file(self.mlt_lib[value]))
+            self.canvas.create_text(50, 150, text=read_file(self.mlt_lib[value]))
+            self.canvas.create_line(55, 85, 155, 85, 105, 180, 55, 85)
             # self.master.update_idletasks()
 
-    def on_dir_select(self, evt):
-        w = evt.widget
-        index = int(w.curselection()[0])
-        value = w.get(index)
-        print 'navigate to %d: "%s"' % (index, value)
-        self.directory = self.directory + value
-        self.bar_node = Label(self.master, text='Location : {0}'.format(directory))
-        self.refresh_list_items
 
-    def on_button_click(self):
-        print 'You clicked button: '
-        # w = evt.widget
-        # refresh_window(w.config('text')[-1])
-
-    def rebuild_window(self, master):
+class SimpleTable(Frame):
+    def __init__(self, master, rows=5, columns=3):
+        # use black background so it "peeks through" to form grid lines
         self.master = master
-        # self.directory = get_directory_from_file(mlt_lib[next(iter(mlt_lib))])
-        self.refresh_list_items
+        Frame.__init__(self, self.master.master, background="black")
+        self._widgets = []
+        for row in range(rows):
+            current_row = []
+            for column in range(columns):
+                label = Label(self, text="%s/%s" % (row+2, column+2),
+                                 borderwidth=0, width=10)
+                label.grid(row=row+2, column=column+2, sticky="nsew", padx=1, pady=1)
+                current_row.append(label)
+            self._widgets.append(current_row)
+
+        for column in range(columns):
+            self.grid_columnconfigure(column+2, weight=1)
+
+    def set(self, row, column, value):
+        widget = self._widgets[row][column]
+        widget.configure(text=value)
 
 
-def build_window(dirz, he):
+def build_window(init_directory):
     root = Tk()
 
     root.title('Hvězdná encyklopedie')
@@ -129,7 +152,7 @@ def build_window(dirz, he):
     root.geometry('900x750')
 
     global directory
-    directory = dirz
+    directory = init_directory
     # global mlt_lib
     # mlt_lib = get_mlt_lib(navigate_to(directory))
 
@@ -137,17 +160,18 @@ def build_window(dirz, he):
     root.mainloop()
 
 
-def get_content(directory):
+def get_content(path_to):
     """return multimedia library in format:
     mlt_lib = {'filename': '/path/to/filename'}
     mlt_lib = {'/dirname': '/path/to/dir'}
     """
+    path_to = get_proper_dir_path(path_to)
     mlt_lib = {}
-    for mlt_file in os.listdir(directory):
-        if os.path.isdir(directory + mlt_file):
-            mlt_lib[mlt_file] = directory + mlt_file
+    for mlt_file in os.listdir(path_to):
+        if os.path.isdir(path_to + mlt_file):
+            mlt_lib[mlt_file] = path_to + mlt_file
         else:
-            mlt_lib[mlt_file] = directory + mlt_file
+            mlt_lib[mlt_file] = path_to + mlt_file
     return mlt_lib
 
 
@@ -155,6 +179,13 @@ def get_sub_dirs(directory):
     sub_dir_lib = {}
     for sub_dir in directory:
         sub_dir_lib[sub_dir] = 'aaaa - build full pathh to file'
+
+
+def get_proper_dir_path(path):
+    separator = get_separator_from(path)
+    if not path.endswith(separator):
+        path += separator
+    return path
 
 
 def fill(image, color):
@@ -165,15 +196,6 @@ def fill(image, color):
     hexcode = '#%02x%02x%02x' % (r, b, g)
     horizontal_line = '{' + ' '.join([hexcode] * width) + '}'
     image.put(' '.join([horizontal_line] * width))
-
-
-def one_up():
-    directory = get_directory_from_file(mlt_lib[next(iter(mlt_lib))])
-    separator = get_separator_from(directory)
-    # go one level up
-    new_directory = separator.join(directory.split(separator)[0:-1])
-    print 'should switch to: ' + new_directory
-    # refresh_window(navigate_to(new_directory))
 
 
 def get_directory_from_file(path):
