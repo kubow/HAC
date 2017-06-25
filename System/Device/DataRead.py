@@ -12,7 +12,7 @@ import Control
 global times_run
 global last_run
 
-def set_up(db, device, sensor):
+def set_up(sdb, device, sensor):
     conn = sqlite3.connect(sdb)
     c = conn.cursor()
     #port = port with device
@@ -41,12 +41,12 @@ def read_serial(port, br, to, fname):
     try:
         time.sleep(to)
         print 'running with timeout {0} seconds.'.format(to)
-        #recieved = ser.readline().replace('\r\n', ' ') #not used - instead
+        #received = ser.readline().replace('\r\n', ' ') #not used - instead
         to_read = ser.inWaiting()
-        recieved = ser.read(to_read)
+        received = ser.read(to_read)
         # parse data
-        if len(recieved) >= 1:
-            vel_val = recieved.split(':')
+        if len(received) >= 1:
+            vel_val = received.split(':')
             just_now = datetime.datetime.now()
             now = Control.get_time(just_now, int_shift)
             csv_fname = now.strftime(dev.date_file_format)+'.csv'
@@ -57,7 +57,7 @@ def read_serial(port, br, to, fname):
                 data_int = {} 
                 last_run = now
             csv = args.l + csv_fname
-            print recieved + str(just_now.strftime(dev.date_format))
+            print received + str(just_now.strftime(dev.date_format))
             #building dictionary
             data_int[vel_val[0]] = vel_val[-1]
             data_vals[just_now.strftime(dev.date_format)] = data_int 
