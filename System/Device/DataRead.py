@@ -94,7 +94,7 @@ if __name__ == '__main__':
     
     print 'Reading serial input from: {0} - at {1}'.format(str(port),str(br))
     while 1:
-        read_serial(port, br, 0, )
+        read_serial(port, br, 0, "")
         
     
     
