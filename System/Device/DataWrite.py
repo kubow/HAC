@@ -15,6 +15,21 @@ import datetime
 # returns None on error, or the temperature as a float
 import Control
 
+def prepare_table_spec(sdb, ):
+    conn = sqlite3.connect(sdb)
+    c = conn.cursor()
+    # # build table structure
+    col_list = '' # columns - string to create table
+    col_vals = {} # columns - default values to insert query
+    for row in c.execute(dev.get_structure).fetchall():
+        col_list += row[1] + ' ' + row[2] + ','
+        col_vals[row[1]] = row[4]
+    # name of table being saved
+    table_name = c.execute(dev.get_table_name).fetchone()[0]
+    conn.close
+    return table_name, col_list
+    
+    
 def log_value(measure, velocity, c, ins_qry, timestamp):
     """store the value in the database
     measure - value which was measured
@@ -52,17 +67,7 @@ if __name__ == '__main__':
     dev = Control.Device()
     # load settings from settings db
     sdb = os.path.dirname(os.path.realpath(__file__)) + '/settings.db'
-    conn = sqlite3.connect(sdb)
-    c = conn.cursor()
-    # # build table structure
-    col_list = '' # columns - string to create table
-    col_vals = {} # columns - default values to insert query
-    for row in c.execute(dev.get_structure).fetchall():
-        col_list += row[1] + ' ' + row[2] + ','
-        col_vals[row[1]] = row[4]
-    # name of table being saved
-    table_name = c.execute(dev.get_table_name).fetchone()[0]
-    conn.close()
+    table_name, col_list = prepare_table_spec(sdb)
     
     # check if Archive directory present
     if not os.path.exists(args.l + 'Archive'):
@@ -133,6 +138,3 @@ if __name__ == '__main__':
     conn.close()
     elapsed_time = time.clock() - start_time
     print "Time elapsed: {} seconds".format(elapsed_time)
-else:
-    print 'What is this file name? - ' + __name__
-    print 'Something is wrong ...'

@@ -12,7 +12,7 @@ import Control
 global times_run
 global last_run
 
-def set_up(sdb, device, sensor):
+def get_device_setup(sdb, device, sensor):
     conn = sqlite3.connect(sdb)
     c = conn.cursor()
     #port = port with device
@@ -89,7 +89,7 @@ if __name__ == '__main__':
     # create class for controlling device
     dev = Control.Device()
     #get settings: port and baud rate
-    port, br = set_up(run_dir + '/settings.db', args.d, args.s)
+    port, br = get_device_setup(run_dir + '/settings.db', args.d, args.s)
     # log sql (debug) print sql
     
     print 'Reading serial input from: {0} - at {1}'.format(str(port),str(br))
