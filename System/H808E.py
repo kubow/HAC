@@ -120,13 +120,14 @@ def build_text_menu(directory):
         if keep_alive == "1":
             print("\n Opening cherrytree ...")
         elif keep_alive == "2":
-            print("\n Opening sqlite browser")
+            print("\n Opening sqlite browser\n")
+            
         elif keep_alive == "3":
             print("\n Synchronize directories")
             # dropbox synchronizer
         elif keep_alive == "4":
             print 'generate structure'
-
+            
         elif keep_alive == "8":
             # running Tkinter GUI
             print 'universal python in ' + args.d
