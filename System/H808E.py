@@ -4,6 +4,7 @@ import argparse
 import sqlite3
 # sys.setdefaultencoding('utf-8')
 # H808E modules
+import Directory
 import GUI
 import TextProcess
 
@@ -13,6 +14,9 @@ class h808e(object):
         self.enc = self.create_structure()
         self.folders = self.get_main_directories()
         self.tables = self.get_table()
+        self.dir_active = Directory.get_current_dir()
+        self.db_path = ''
+        # self.db_data = None
 
     def create_structure(self):
         """constructor of h808e - list of dictionaries
@@ -59,10 +63,43 @@ class h808e(object):
                 folders.append(int(str(node['code'])[:2]))
         # all folders within enc table
         return folders
+        
+    def get_sub_directories(self, main_node):
+        sub_folders = []
+        for main_folder in self.folders:
+            if main_folder == main_node:
+                print 'get all directories for {0}'.format(main_node)
+
+    def iterate_enc_structure(self, directory):
+        self.set_dir_active(directory)
+        for en in he.enc:
+            # 1. level
+            print '--' * int(en['level']) + str(en['code'])
+            refresh_file(directory + '/' + str(en['code']) + '.html', 
+            get_node_content(str(en['code'])))
+            
+            for esn in en['child']:
+                print '--' * int(esn['level']) + str(esn['code'])
+                refresh_file(directory + '/' + str(esn['code']) + '.html', 
+                get_node_content(str(esn['code'])))
+                
+                for essn in esn['child']:
+                    print '--' * int(essn['level']) + str(essn['code'])
+                    refresh_file(directory + '/' + str(essn['code']) + '.html', 
+                    get_node_content(str(essn['code'])))
+
+    def iterate_enc_db_structure():
+        conn.execute(q.select_father_nodes()).fetchall()
+        main_fathers = [father[0] for father in fathers]
+        root_nodes = conn.execute(c.select_root_nodes).fetchall()
+        for root_node in root_nodes:
+            print root_node[2].encode('utf8') + ' root node / id ' + str(
+            root_node[4]) + ' / sqn ' + str(root_node[5]) + ' level 1'
+
 
     def get_table(self):
         tables = (None, '')
-        # all tables within enc table
+        # all tables within enc table - must run sql
         return tables
 
     def get_nth_node(self, nth, parent_node):
@@ -77,20 +114,24 @@ class h808e(object):
 
     def get_list_number_item(self, number):
         return self.get_nth_number(1, number) - 4
+        
+    def set_dir_active(self, directory):
+        self.dir_active = directory
+
 
 
 class SQL(object):
-    selectFatherNodes = """SELECT children.father_id, COUNT(node.node_id)
+    select_father_nodes = """SELECT children.father_id, COUNT(node.node_id)
     FROM node
     INNER JOIN children ON node.node_id = children.node_id
     GROUP BY father_id"""
-    selectRootNodes = """SELECT children.father_id, node.level, node.name,
+    select_root_nodes = """SELECT children.father_id, node.level, node.name,
     node.txt, node.node_id, children.sequence, enc.code FROM children
     INNER JOIN node ON children.node_id = node.node_id
     INNER JOIN enc ON enc.node_id = node.node_id
     WHERE (children.father_id = 0 )
     ORDER BY children.sequence"""
-    selectSubRootNodes = """SELECT node.node_id, node.name, node.txt,
+    select_sub_nodes = """SELECT node.node_id, node.name, node.txt,
     children.sequence, enc.code
     FROM children
     INNER JOIN node ON children.node_id = node.node_id
@@ -128,7 +169,7 @@ def build_text_menu(directory):
             # dropbox synchronizer
         elif keep_alive == "4":
             print 'generate structure'
-            iterate_enc_structure(args.d)
+            he.iterate_enc_structure(args.d)
             
         elif keep_alive == "8":
             # running Tkinter GUI
@@ -140,42 +181,18 @@ def build_text_menu(directory):
             keep_alive = False
         elif keep_alive != "":
             print("\n Not Valid Choice Try again")
-
-
-def iterate_enc_structure(directory):
-    for en in he.enc:
-        # 1
-        print str(en['code']) + '/' + str(en['level'])
-        # print insert.format(en['code'], en['real'], en['level'])
-        # conn.execute(insert.format(en['real'], en['code'], en['level']))
-        refresh_file(directory + '/' + str(en['code']) + '.html', get_node_content(str(en['code'])))
-        
-        for esn in en['child']:
-            print str(esn['code']) + '/' + str(esn['level'])
-            refresh_file(directory + '/' + str(esn['code']) + '.html', get_node_content(str(en['code'])))
-            
-            for essn in esn['child']:
-                print str(essn['code']) + '/' + str(essn['level'])
-                refresh_file(directory + '/' + str(essn['code']) + '.html', get_node_content(str(en['code'])))
-                
-    # conn.execute(q.selectFatherNodes()).fetchall()
-    # main_fathers = [father[0] for father in fathers]
-    # root_nodes = conn.execute(c.selectRootNodes).fetchall()
-    # for root_node in root_nodes:
-        # print root_node[2].encode('utf8') + ' root node / id ' + str(
-        # root_node[4]) + ' / sqn ' + str(root_node[5]) + ' level 1'
     
         
 def refresh_file(filename, text):
-    print 'refreshing filename: ' + filename + ' with text: ' + text
+    # print 'refreshing filename: ' + filename + ' with text: ' + text
     if os.path.isfile(filename):
         print 'can do..'
     else:
-        print 'file not exist, must create'
+        print 'file {0} not exist, must create'.format(filename)
         
             
 def get_node_content(node):
-    print 'load node content from id: ' + str(node)
+    # print 'load node content from id: ' + str(node)
     return 'some text'
             
 def register_dir(directory, he):
@@ -213,29 +230,32 @@ def register_dir(directory, he):
     return c
 
 
+def temp_connect_database(database):
+    # connect to database
+    try:
+        conn = sqlite3.connect(database)
+        # show the text menu
+    except:
+        print 'cannot find main db file! > ' + database + ' ?'
+        # make connection to a temporary database?
+        conn = sqlite3.connect(':memory:')
+    finally:
+        conn.close()
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="construct h808e")
     parser.add_argument('-c', help='ctb file', type=str, default='')
     parser.add_argument('-d', help='directory', type=str, default='')
     args = parser.parse_args()
-    #global he
+    # he class
     he = h808e()
+    
+    # SQL queries class
     q = SQL()
-    # connect to database
-    try:
-        conn = sqlite3.connect(args.c)
-        # show the text menu
-    except:
-        print 'cannot find main db file! > ' + args.c + ' ?'
-        # make connection to a temporary database?
-        # conn = sqlite3.connect(args.d + 'H808E.ctb')
-    build_text_menu(he)
+    
     # prepare the insert query
     # insert = 'INSERT INTO veci (hmotne, oblast, uroven) VALUES ({0}, "{1}", {2});'
     # browse encyklopedia node (en) + subnode (esn), subsubnode (essn)
-
-    # browse_through(directory, what_to_do)
     
-    # tbl = conn.execute('SELECT * FROM veci;')
-    conn.close()
+    build_text_menu(he)
     
