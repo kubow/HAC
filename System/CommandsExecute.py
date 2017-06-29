@@ -3,21 +3,27 @@ import argparse
 import sqlite3
 import log
 
+
 def get_table_name(sql, qry_type):
     """get table name from SQL text"""
     if qry_type == 'DDL':
         print 'CREATE/DROP/ALTER/RENAME TABLE'
-    elif qry == 'DML':
+    elif qry_type == 'DML':
         print 'INSERT/UPDATE/DELETE/SELECT TABLE'
-    elif qry == 'DCL':
+    elif qry_type == 'DCL':
         print 'GRANT/REVOKE'
-    return table_name
+    return 'sql result'
 
-def execute_not_connected(database, sql)
+
+def execute_not_connected(database, sql):
     """execute command and return dataset"""
     conn = sqlite3.connect(database)
     curs = conn.execute(sql)
-    #log.file_write(logfile, module, 'executed SQL: {0}'.format(sql))
+    res_set = curs.fetchall()
+    # log.file_write(logfile, module, 'executed SQL: {0}'.format(sql))
+    conn.close()
+    return res_set[0]
+
 
 def fetch_one_from_tab(c, sql):
     result = c.execute(sql).fetch_one()
@@ -25,6 +31,7 @@ def fetch_one_from_tab(c, sql):
         return result[0]
     else:
         return None
+
 
 def execute_connected(c, sql, logfile, module, debug=False):
     """execute a command withon already connected database
@@ -51,4 +58,4 @@ def execute_connected(c, sql, logfile, module, debug=False):
     c.execute()
     if debug:
         log.file_write(logfile, module, 'executed SQL: {0}'.format(sql))
-        
+

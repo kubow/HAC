@@ -10,13 +10,16 @@ import datetime
 import TextProcess
 
 import ttk
+
 try:
     import Tkinter as tk
 except ImportError:
     import tkinter as tk
 
+
 class Window(object):
     """Class for maintain widgets related to directory"""
+
     def populate_tree(tree, node):
         if tree.set(node, "type") != 'directory':
             return
@@ -30,8 +33,10 @@ class Window(object):
         for p in special_dirs + os.listdir(path):
             ptype = None
             p = os.path.join(path, p).replace('\\', '/')
-            if os.path.isdir(p): ptype = "directory"
-            elif os.path.isfile(p): ptype = "file"
+            if os.path.isdir(p):
+                ptype = "directory"
+            elif os.path.isfile(p):
+                ptype = "file"
 
             fname = os.path.split(p)[1]
             id = tree.insert(node, "end", text=fname, values=[p, ptype])
@@ -44,17 +49,16 @@ class Window(object):
                 size = os.stat(p).st_size
                 tree.set(id, "size", "%d bytes" % size)
 
-
-    def populate_roots(tree):
+    def populate_roots(self, tree):
         dir = os.path.abspath('.').replace('\\', '/')
         node = tree.insert('', 'end', text=dir, values=[dir, "directory"])
-        populate_tree(tree, node)
+        self.populate_tree(tree, node)
 
-    def update_tree(event):
+    def update_tree(self, event):
         tree = event.widget
-        populate_tree(tree, tree.focus())
+        self.populate_tree(tree, tree.focus())
 
-    def change_dir(event):
+    def change_dir(self, event):
         tree = event.widget
         node = tree.focus()
         if tree.parent(node):
@@ -62,7 +66,7 @@ class Window(object):
             if os.path.isdir(path):
                 os.chdir(path)
                 tree.delete(tree.get_children(''))
-                populate_roots(tree)
+                self.populate_roots(tree)
 
     def autoscroll(sbar, first, last):
         """Hide and show scrollbar as needed."""
@@ -72,19 +76,20 @@ class Window(object):
         else:
             sbar.grid()
         sbar.set(first, last)
-    
+
+
 class app_browser(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
-        
+
         w = Window()
 
         vsb = ttk.Scrollbar(orient="vertical")
         hsb = ttk.Scrollbar(orient="horizontal")
 
         tree = ttk.Treeview(columns=("fullpath", "type", "size"),
-            displaycolumns="size", yscrollcommand=lambda f, l: w.autoscroll(vsb, f, l),
-            xscrollcommand=lambda f, l:w.autoscroll(hsb, f, l))
+                            displaycolumns="size", yscrollcommand=lambda f, l: w.autoscroll(vsb, f, l),
+                            xscrollcommand=lambda f, l: w.autoscroll(hsb, f, l))
 
         vsb['command'] = tree.yview
         hsb['command'] = tree.xview
@@ -104,17 +109,18 @@ class app_browser(tk.Frame):
         hsb.grid(column=0, row=1, sticky='ew')
         root.grid_columnconfigure(0, weight=1)
         root.grid_rowconfigure(0, weight=1)
-    
+
+
 def directory_lister(directory, output, list_files=False):
     template_loc = append_dir(one_dir_up(get_current_dir()), 'Structure') + 'HTML_DirectoryList.txt'
     print template_loc
     template = TextProcess.load_text_from(template_loc)
     template = template.replace('XXX', directory)
-    
+
     head = '<table><tr class="Head"><td>List Generated on {0} / Total Folder Size - {1} / {2} Subfolders </td></tr>'
     table_head = '<table><tr class="Head">{0}<td>{1}</table>'
     table_row = '<tr class="{0}"><td>{1}</td><td>{2}</td></tr>'
-    
+
     htmContent = ''
     total_size = 0
     folder_count = 0
@@ -125,34 +131,38 @@ def directory_lister(directory, output, list_files=False):
         file_count = 0
         tmpContent = ''
         for filename in files:
-            folder_size = folder_size+(os.path.getsize(root+'/'+filename)/1024)
+            folder_size = folder_size + (os.path.getsize(root + '/' + filename) / 1024)
             if list_files:
-                filesize = str('{0:.2f}'.format(os.path.getsize(root+'/'+filename)/1024))+' kb'
-                tmpContent = tmpContent+table_row.format('File', filename, filesize)+'\n'
+                filesize = str('{0:.2f}'.format(os.path.getsize(root + '/' + filename) / 1024)) + ' kb'
+                tmpContent = tmpContent + table_row.format('File', filename, filesize) + '\n'
             file_count += 1
-        ref = '<a href="file:///'+root+'">'+root+'</a> ('+str(file_count)+' files in folder)'
-        htmContent = htmContent+'\n'+table_row.format('Fldr', ref, str(folder_size)+' kb')+'\n'+tmpContent
-        total_size = total_size+folder_size
+        ref = '<a href="file:///' + root + '">' + root + '</a> (' + str(file_count) + ' files in folder)'
+        htmContent = htmContent + '\n' + table_row.format('Fldr', ref, str(folder_size) + ' kb') + '\n' + tmpContent
+        total_size = total_size + folder_size
         folder_count += 1
-    
-    content = head.format(datetime.datetime.now(), str(total_size)+' kb', folder_count) + '\n' + htmContent
-    #print content
+
+    content = head.format(datetime.datetime.now(), str(total_size) + ' kb', folder_count) + '\n' + htmContent
+    # print content
     print template
-    htm=open(output, 'w+')
+    htm = open(output, 'w+')
     htm.write(template.replace('YYY', content))
     htm.close()
-    
+
+
 def get_current_dir():
     return os.path.dirname(os.path.realpath(__file__))
-    
+
+
 def one_dir_up(directory):
     separator = get_separator_from(directory)
     # strip filename from path
     return separator.join(directory.split(separator)[0:-1])
-    
+
+
 def append_dir(path, string):
     separator = get_separator_from(path)
     return path + separator + string + separator
+
 
 def get_separator_from(path):
     if '\\' in path:
@@ -160,7 +170,8 @@ def get_separator_from(path):
     elif '/' in path:
         separator = '/'
     return separator
-    
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="browse/list dirs")
     parser.add_argument('-b', help='browse dir', type=str, default='')

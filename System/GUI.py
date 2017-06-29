@@ -193,8 +193,8 @@ def fill(image, color):
     r, g, b = color
     width = image.width()
     height = image.height()
-    hexcode = '#%02x%02x%02x' % (r, b, g)
-    horizontal_line = '{' + ' '.join([hexcode] * width) + '}'
+    hex_code = '#%02x%02x%02x' % (r, b, g)
+    horizontal_line = '{' + ' '.join([hex_code] * width) + '}'
     image.put(' '.join([horizontal_line] * width))
 
 
@@ -203,12 +203,14 @@ def get_directory_from_file(path):
     # strip filename from path
     return separator.join(path.split(separator)[0:-1])
 
+
 def get_separator_from(path):
     if '\\' in path:
         separator = '\\'
     elif '/' in path:
         separator = '/'
     return separator
+
 
 def build_categories(he, parent_node):
     for root_node in he.enc:

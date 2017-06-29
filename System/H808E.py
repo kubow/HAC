@@ -16,6 +16,7 @@ class h808e(object):
         self.tables = self.get_table()
         self.dir_active = Directory.get_current_dir()
         self.db_path = ''
+        self.db_query = 'SELECT * FROM enc_nodes;'
         # self.db_data = None
 
     def create_structure(self):
@@ -119,7 +120,6 @@ class h808e(object):
         self.dir_active = directory
 
 
-
 class SQL(object):
     select_father_nodes = """SELECT children.father_id, COUNT(node.node_id)
     FROM node
@@ -169,7 +169,7 @@ def build_text_menu(directory):
             # dropbox synchronizer
         elif keep_alive == "4":
             print 'generate structure'
-            he.iterate_enc_structure(args.d)
+            he.iterate_enc_structure()
             
         elif keep_alive == "8":
             # running Tkinter GUI
@@ -249,7 +249,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     # he class
     he = h808e()
-    
+    he.set_dir_active(args.d)
     # SQL queries class
     q = SQL()
     
