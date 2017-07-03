@@ -4,6 +4,7 @@ import argparse
 import sqlite3
 # sys.setdefaultencoding('utf-8')
 # H808E modules
+import CommandsExecute
 import Directory
 import GUI
 import TextProcess
@@ -64,30 +65,29 @@ class h808e(object):
                 folders.append(int(str(node['code'])[:2]))
         # all folders within enc table
         return folders
-        
+
     def get_sub_directories(self, main_node):
         sub_folders = []
         for main_folder in self.folders:
             if main_folder == main_node:
                 print 'get all directories for {0}'.format(main_node)
 
-    def iterate_enc_structure(self, directory):
-        self.set_dir_active(directory)
+    def iterate_enc_structure(self):
+        directory = self.get_root_path(self.dir_active)
         for en in he.enc:
             # 1. level
             print '--' * int(en['level']) + str(en['code'])
-            refresh_file(directory + '/' + str(en['code']) + '.html', 
-            get_node_content(str(en['code'])))
-            
+            refresh_file(directory + str(en['code']) + '.html', self.get_node_content(str(en['code'])))
+
             for esn in en['child']:
+                # 2. level
                 print '--' * int(esn['level']) + str(esn['code'])
-                refresh_file(directory + '/' + str(esn['code']) + '.html', 
-                get_node_content(str(esn['code'])))
-                
+                refresh_file(directory + str(esn['code']) + '.html', self.get_node_content(str(esn['code'])))
+
                 for essn in esn['child']:
+                    # 3. level
                     print '--' * int(essn['level']) + str(essn['code'])
-                    refresh_file(directory + '/' + str(essn['code']) + '.html', 
-                    get_node_content(str(essn['code'])))
+                    refresh_file(directory + str(essn['code']) + '.html', self.get_node_content(str(essn['code'])))
 
     def iterate_enc_db_structure():
         conn.execute(q.select_father_nodes()).fetchall()
@@ -95,13 +95,17 @@ class h808e(object):
         root_nodes = conn.execute(c.select_root_nodes).fetchall()
         for root_node in root_nodes:
             print root_node[2].encode('utf8') + ' root node / id ' + str(
-            root_node[4]) + ' / sqn ' + str(root_node[5]) + ' level 1'
-
+                root_node[4]) + ' / sqn ' + str(root_node[5]) + ' level 1'
 
     def get_table(self):
         tables = (None, '')
         # all tables within enc table - must run sql
         return tables
+
+    def get_node_content(self, node):
+        # print 'load node content from id: ' + str(node)
+        query = q.select_node_text.format(node)
+        return CommandsExecute.execute_not_connected(self.db_path,query)
 
     def get_nth_node(self, nth, parent_node):
         if parent_node.isdigit():
@@ -115,7 +119,22 @@ class h808e(object):
 
     def get_list_number_item(self, number):
         return self.get_nth_number(1, number) - 4
-        
+
+    def get_root_path(self, directory):
+        separator = Directory.get_separator_from(directory)
+        path_list = directory.split(separator)
+        for item in path_list:
+            if str(item).lower() == 'web':
+                nth = int(path_list.index(item)) + 1
+                break
+        return separator.join(path_list[:nth]) + separator
+
+    def set_db_path(self, db_path):
+        if os.path.isfile(db_path):
+            self.db_path = db_path
+        else:
+            self.db_path = ':memory:'
+
     def set_dir_active(self, directory):
         self.dir_active = directory
 
@@ -138,6 +157,8 @@ class SQL(object):
     INNER JOIN enc ON children.node_id = enc.node_id
     WHERE children.father_id =:father
     ORDER BY children.sequence"""
+    select_node_text = """SELECT test FROM `enc` WHERE code = {0};"""
+    select_node_text2 = """SELECT txt FROM `enc_nodes` WHERE code = {0};"""
 
 
 def build_text_menu(directory):
@@ -163,38 +184,35 @@ def build_text_menu(directory):
             print("\n Opening cherrytree ...")
         elif keep_alive == "2":
             print("\n Opening sqlite browser\n")
-            
+
         elif keep_alive == "3":
             print("\n Synchronize directories")
             # dropbox synchronizer
         elif keep_alive == "4":
             print 'generate structure'
             he.iterate_enc_structure()
-            
+
         elif keep_alive == "8":
             # running Tkinter GUI
             print 'universal python in ' + args.d
             GUI.build_window(args.d)
-            
+
         elif str(keep_alive).lower() == "q":
             print("\n Goodbye")
             keep_alive = False
         elif keep_alive != "":
             print("\n Not Valid Choice Try again")
-    
-        
+
+
 def refresh_file(filename, text):
     # print 'refreshing filename: ' + filename + ' with text: ' + text
     if os.path.isfile(filename):
         print 'can do..'
     else:
         print 'file {0} not exist, must create'.format(filename)
-        
-            
-def get_node_content(node):
-    # print 'load node content from id: ' + str(node)
-    return 'some text'
-            
+
+
+
 def register_dir(directory, he):
     # register directory within sqlite database
     conn_mem = sqlite3.connect(":memory:")
@@ -242,6 +260,7 @@ def temp_connect_database(database):
     finally:
         conn.close()
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="construct h808e")
     parser.add_argument('-c', help='ctb file', type=str, default='')
@@ -250,12 +269,13 @@ if __name__ == '__main__':
     # he class
     he = h808e()
     he.set_dir_active(args.d)
+    he.set_db_path(args.c)
     # SQL queries class
     q = SQL()
-    
+
     # prepare the insert query
     # insert = 'INSERT INTO veci (hmotne, oblast, uroven) VALUES ({0}, "{1}", {2});'
     # browse encyklopedia node (en) + subnode (esn), subsubnode (essn)
-    
+
     build_text_menu(he)
-    
+
