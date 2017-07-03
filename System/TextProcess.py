@@ -12,6 +12,7 @@ from xml.dom.minidom import parseString
 import xml.etree.ElementTree as xml_tree
 from bs4 import BeautifulSoup
 
+import log
 
 # sys.setdefaultencoding('utf-8')
 
@@ -87,6 +88,13 @@ def htm_to_plain_txt(htm_txt):
     soup = BeautifulSoup(htm_txt, 'html.parser')
     # return soup.get_text()
     return soup.body.get_text()
+    
+    
+def test_utf_special_characters():
+    print os.getcwd()
+    veta=u"Žluťoučký kůň pěl ďábelské ódy."
+    print veta
+    log.file_write("aaa.log", "temp", veta)
 
 
 if __name__ == '__main__':

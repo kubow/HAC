@@ -1,7 +1,6 @@
 '''
-    Simple socket server using threads
+    Simple socket / networking server using threads
 '''
- 
 import socket
 import sys
  
