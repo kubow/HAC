@@ -3,7 +3,7 @@ both algebra and geometry,
 use alone to run simple calculator '''
 
 # Math functions
-class Numbers:
+class Operations:
     '''Basic numeric operations
     define precissness'''
     x = y = 0.00
@@ -27,9 +27,9 @@ class Numbers:
        else:
         return None
         
-    def pwr2(x):
-        """Returns second power of a number"""
-        return x ** 2
+    def pwr(x, y):
+        """Returns y power of a number"""
+        return x ** y
         
     def fact(x):
         """ Return factorial of a number"""
@@ -51,16 +51,18 @@ choice = input("Enter choice(1/2/3/4):")
 num1 = int(input("Enter first number: "))
 num2 = int(input("Enter second number: "))
 
+op = Operations()
+
 if choice == '1':
-   print(num1,"+",num2,"=", add(num1,num2))
+   print(num1,"+",num2,"=", op.add(num1,num2))
 
 elif choice == '2':
-   print(num1,"-",num2,"=", sbt(num1,num2))
+   print(num1,"-",num2,"=", op.sbt(num1,num2))
 
 elif choice == '3':
-   print(num1,"*",num2,"=", mlt(num1,num2))
+   print(num1,"*",num2,"=", op.mlt(num1,num2))
 
 elif choice == '4':
-   print(num1,"/",num2,"=", div(num1,num2))
+   print(num1,"/",num2,"=", op.div(num1,num2))
 else:
    print("Invalid input")
