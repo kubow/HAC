@@ -123,13 +123,13 @@ if __name__ == '__main__':
             start_time, last_run_time = time.clock()
             while flag:
                 if register:
-                    log.file_write(args.l, "watch", 
+                    log.log_operation(args.l, "watch", 
                     """directory Registered, 
                     check for new files... in {0}""".format(args.w))
                     # walk_dir(args.w)
                     flag = reg_dir(args.w, c)
                 else:
-                    log.file_write(args.l, "watch", 
+                    log.log_operation(args.l, "watch", 
                     "Searching for new files... in {0}".format(args.w))
                 
                 elapsed_time = time.clock() - start_time
@@ -138,7 +138,7 @@ if __name__ == '__main__':
                 
                 flag = False
         else:
-            log.file_write(args.l, "watch",
+            log.log_operation(args.l, "watch",
             'please submit proper directory - {0}'.format(args.w))
             flag = False
     else:

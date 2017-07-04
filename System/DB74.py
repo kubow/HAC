@@ -20,14 +20,19 @@ def execute_not_connected(database, sql):
     conn = sqlite3.connect(database)
     curs = conn.execute(sql)
     res_set = curs.fetchall()
-    # log.file_write(logfile, module, 'executed SQL: {0}'.format(sql))
+    # log.log_operation(logfile, module, 'executed SQL: {0}'.format(sql))
     conn.close()
-    return res_set[0]
+    if res_set:
+        print res_set
+        return res_set[0]
+    else:
+        print 'no node connected'
+        return None
 
 
 def fetch_one_from_tab(c, sql):
     result = c.execute(sql).fetch_one()
-    if not result:
+    if result:
         return result[0]
     else:
         return None
@@ -41,12 +46,12 @@ def execute_connected(c, sql, logfile, module, debug=False):
     logfile - that logs the stament
     """
     if debug:
-        log.file_write(logfile, module, 'executing SQL: {0}'.format(sql))
+        log.log_operation(logfile, module, 'executing SQL: {0}'.format(sql))
     # main logic to distinguish between query types
     if 'CREATE TABLE' in sql or 'DROP TABLE' in sql:
         qry_type = 'DDL'
         table_name = get_table_name(sql, qry_type)
-        log.file_write(logfile, module, 'modyfing table: {0}'.format(table_name))
+        log.log_operation(logfile, module, 'modyfing table: {0}'.format(table_name))
     elif 'INSERT' in sql or 'UPDATE' in sql or 'DELETE' in sql:
         qry_type = 'DML'
         table_name = get_table_name(sql, qry_type)
@@ -57,7 +62,7 @@ def execute_connected(c, sql, logfile, module, debug=False):
         print 'some bad happened, cannot find qery type'
     c.execute()
     if debug:
-        log.file_write(logfile, module, 'executed SQL: {0}'.format(sql))
+        log.log_operation(logfile, module, 'executed SQL: {0}'.format(sql))
 
 def temp_connect_database(database):
     # connect to database

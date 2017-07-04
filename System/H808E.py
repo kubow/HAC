@@ -8,19 +8,21 @@ import DB74
 import OS74
 import UI74
 import TX74
-
+from Template import HTML
 
 class h808e(object):
     def __init__(self):
         self.enc = self.create_structure()
         self.folders = self.get_main_directories()
-        self.tables = self.get_table()
+        self.node = self.set_active_node(800)
         self.dir_active = OS74.get_current_dir()
         self.db_path = ''
+        self.db_tables = self.get_table()
         self.db_query = 'SELECT * FROM enc_nodes;'
         # self.db_data = None
 
-    def create_structure(self):
+    @staticmethod
+    def create_structure():
         """constructor of h808e - list of dictionaries
         key code - number code to define area
         key name - names will be filled after matching
@@ -77,20 +79,26 @@ class h808e(object):
         for en in he.enc:
             # 1. level
             print '--' * int(en['level']) + str(en['code'])
-            refresh_file(directory + str(en['code']) + '.html', self.get_node_content(str(en['code'])))
+            self.set_active_node(en['code'])
+            self.set_db_data(self.get_node_content(str(en['code'])))
+            refresh_file(directory + str(en['code']) + '.html', self.db_data)
 
             for esn in en['child']:
                 # 2. level
                 print '--' * int(esn['level']) + str(esn['code'])
-                refresh_file(directory + str(esn['code']) + '.html', self.get_node_content(str(esn['code'])))
+                self.set_active_node(esn['code'])
+                self.set_db_data(self.get_node_content(str(esn['code'])))
+                refresh_file(directory + str(esn['code']) + '.html', self.db_data)
 
                 for essn in esn['child']:
                     # 3. level
                     print '--' * int(essn['level']) + str(essn['code'])
-                    refresh_file(directory + str(essn['code']) + '.html', self.get_node_content(str(essn['code'])))
+                    self.set_active_node(essn['code'])
+                    self.set_db_data(self.get_node_content(str(essn['code'])))
+                    refresh_file(directory + str(essn['code']) + '.html', self.db_data)
 
-    def iterate_enc_db_structure():
-        conn.execute(q.select_father_nodes()).fetchall()
+    def iterate_enc_db_structure(self):
+        fathers = conn.execute(q.select_father_nodes()).fetchall()
         main_fathers = [father[0] for father in fathers]
         root_nodes = conn.execute(c.select_root_nodes).fetchall()
         for root_node in root_nodes:
@@ -104,10 +112,12 @@ class h808e(object):
 
     def get_node_content(self, node):
         # print 'load node content from id: ' + str(node)
-        query = q.select_node_text
-        #query = q.select_node_text.format(node)
-        print self.db_path + ' : ' + query
-        return DB74.execute_not_connected(self.db_path,query)
+        query = q.select_node_text.format(node)
+        if self.db_path:
+            print self.db_path + ' : ' + query
+            return DB74.execute_not_connected(self.db_path, query)
+        else:
+            print 'cannot execute {0} in memory database.'.format(query)
 
     def get_nth_node(self, nth, parent_node):
         if parent_node.isdigit():
@@ -132,15 +142,29 @@ class h808e(object):
         return separator.join(path_list[:nth]) + separator
 
     def set_db_path(self, db_path):
-        print '? - ' + db_path
+        # print '? - ' + db_path
         if os.path.isfile(db_path):
             self.db_path = db_path
         else:
             self.db_path = ':memory:'
+            
+    def set_db_data(self, text):
+        html_content = HTML.pageTemplateBegin.format(self.node, 'toolkit')
+        html_content += '{0}' + HTML.pageTemplateMiddle
+        html_content += HTML.pageTemplateEnd.format('footer')
+        if text:
+            html_content = html_content.format(TX74.xml_to_html(''.join(text).encode('utf8')))
+        else:
+            html_content = html_content.format('')
+            
+        self.db_data = html_content
 
     def set_dir_active(self, directory):
         self.dir_active = directory
 
+    def set_active_node(self, node):
+        self.node = node
+     
 
 class SQL(object):
     select_father_nodes = """SELECT children.father_id, COUNT(node.node_id)
@@ -160,9 +184,8 @@ class SQL(object):
     INNER JOIN enc ON children.node_id = enc.node_id
     WHERE children.father_id =:father
     ORDER BY children.sequence"""
-    select_node_text = """select * from node;"""
-    select_node_text3 = """SELECT test FROM "enc" WHERE code = {0};"""
-    select_node_text2 = """SELECT txt FROM "enc_nodes" WHERE code = {0};"""
+    select_node_text2 = """SELECT test FROM "enc" WHERE code = {0};"""
+    select_node_text = """SELECT txt FROM "enc_nodes" WHERE code = {0};"""
 
 
 def build_text_menu(directory):
@@ -199,7 +222,7 @@ def build_text_menu(directory):
         elif keep_alive == "8":
             # running Tkinter GUI
             print 'universal python in ' + args.d
-            GUI.build_window(args.d)
+            UI74.build_window(args.d)
 
         elif str(keep_alive).lower() == "q":
             print("\n Goodbye")
@@ -210,10 +233,14 @@ def build_text_menu(directory):
 
 def refresh_file(filename, text):
     # print 'refreshing filename: ' + filename + ' with text: ' + text
-    if os.path.isfile(filename):
-        print 'can do..'
+    if text:
+        if not os.path.isfile(filename):
+            print 'file {0} not exist, must create'.format(filename)
+            OS74.touch_file(filename)
+        OS74.file_write(filename, text)
+
     else:
-        print 'file {0} not exist, must create'.format(filename)
+        print 'no text to write, skipping file {0}'.format(filename)
 
 
 def register_dir(directory, he):

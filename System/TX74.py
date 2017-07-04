@@ -75,12 +75,15 @@ def xml_to_html(xml_text):
     for element in xml_tree.fromstring(xml_text)._children:
         if element.text <> None:
             if len(element.attrib) > 0:
-                if element.attrib['scale'] == 'h1':
-                    html_text += c.heading.format('1', element.text.encode('utf8'))
-                elif element.attrib['scale'] == 'h2':
-                    html_text += c.heading.format('2', element.text.encode('utf8'))
+                if 'scale' in element:
+                    if element.attrib['scale'] == 'h1':
+                        html_text += c.heading.format('1', element.text.encode('utf8'))
+                    elif element.attrib['scale'] == 'h2':
+                        html_text += c.heading.format('2', element.text.encode('utf8'))
+                    else:
+                        html_text += c.paragraph.format('2', element.text.encode('utf8'))
                 else:
-                    html_text += c.paragraph.format('2', element.text.encode('utf8'))
+                    html_text += c.paragraph.format(element.text.encode('utf8'))
             else:
                 for par_text in element.text.split('\n'):
                     html_text += c.paragraph.format(par_text.encode('utf8'))

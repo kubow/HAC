@@ -113,12 +113,11 @@ class app_browser(tk.Frame):
         root.grid_columnconfigure(0, weight=1)
         root.grid_rowconfigure(0, weight=1)
 
-        
+
 class Platform():
     def __init__(self):
         self.main = which_platform()
-    
-    
+
     def which_platform():
         if _platform == 'linux' or _platform == 'linux2':
             return 'lnx'
@@ -126,19 +125,18 @@ class Platform():
             return 'mac'
         elif _platform == 'win32' or _platform == 'win64':
             return 'win'
-        else :
+        else:
             return _platform
-    
-    
+
     def get_release():
         return platform.release()
-    
-    
+
     def print_system_description(self):
         # this is not working
         # return platform.version()
         # for debug purposes
         print 'system - {0} / release - {1}'.format(self.which_platform(), self.get_release())
+
 
 def directory_lister(directory, output, list_files=False):
     template_loc = append_dir(one_dir_up(get_current_dir()), 'Structure') + 'HTML_DirectoryList.txt'
@@ -200,7 +198,7 @@ def get_separator_from(path):
         separator = '/'
     return separator
 
-    
+
 def read_file(filename):
     with open(filename, 'r') as content_file:
         content = content_file.read()
@@ -208,6 +206,20 @@ def read_file(filename):
         content = TX74.htm_to_plain_txt(content)
     return content
 
+
+def file_write(filename, content):
+    with open(filename, 'w+') as target_file:
+        target_file.write(content)
+
+
+def get_file_size(_file):
+    # return file size in kilobytes
+    return '{0:.2f}'.format(os.path.getsize(_file) / 1024)
+
+
+def touch_file(path):
+    with open(path, 'a'):
+        os.utime(path, None)
 
 
 if __name__ == '__main__':
