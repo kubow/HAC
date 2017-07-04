@@ -6,7 +6,7 @@ from Tkinter import *
 from PIL import Image, ImageTk
 # local project imports
 import H808E
-import TextProcess
+import TX74
 
 
 class MainWindow:
@@ -57,7 +57,7 @@ class MainWindow:
         self.dir_scroll.grid(row=1, column=4, rowspan=1, columnspan=1, sticky=N + S + E)
 
         # refresh list widgets
-        self.mlt_lib = get_content(self.directory)
+        self.mlt_lib = get_directory_content(self.directory)
         self.refresh_list_items()
 
     def refresh_list_items(self):
@@ -78,7 +78,7 @@ class MainWindow:
         # TODO: check if not jumping outsine main dir
         self.directory = separator.join(directory.split(separator)[0:-1])
         print 'navigate one level up to: {0}'.format(self.directory)
-        self.mlt_lib = get_content(self.directory)
+        self.mlt_lib = get_directory_content(self.directory)
         self.refresh_list_items()
 
     def on_dir_select(self, evt):
@@ -87,7 +87,7 @@ class MainWindow:
         value = w.get(index)
         print 'navigate to %d: "%s"' % (index, value)
         self.directory = get_proper_dir_path(self.directory) + value
-        self.mlt_lib = get_content(self.directory)
+        self.mlt_lib = get_directory_content(self.directory)
         self.refresh_list_items()
 
     def on_file_select(self, evt):
@@ -160,7 +160,7 @@ def build_window(init_directory):
     root.mainloop()
 
 
-def get_content(path_to):
+def get_directory_content(path_to):
     """return multimedia library in format:
     mlt_lib = {'filename': '/path/to/filename'}
     mlt_lib = {'/dirname': '/path/to/dir'}
@@ -251,7 +251,7 @@ def read_file(filename):
     with open(filename, 'r') as content_file:
         content = content_file.read()
     if 'htm' in filename.split()[-1]:
-        content = TextProcess.htm_to_plain_txt(content)
+        content = TX74.htm_to_plain_txt(content)
     return content
 
 

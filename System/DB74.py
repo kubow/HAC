@@ -59,3 +59,14 @@ def execute_connected(c, sql, logfile, module, debug=False):
     if debug:
         log.file_write(logfile, module, 'executed SQL: {0}'.format(sql))
 
+def temp_connect_database(database):
+    # connect to database
+    try:
+        conn = sqlite3.connect(database)
+        # show the text menu
+    except:
+        print 'cannot find main db file! > ' + database + ' ?'
+        # make connection to a temporary database?
+        conn = sqlite3.connect(':memory:')
+    finally:
+        conn.close()

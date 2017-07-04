@@ -7,7 +7,10 @@ import argparse
 import glob
 import datetime
 
-import TextProcess
+import platform
+from sys import platform as _platform
+
+import TX74
 
 import ttk
 
@@ -110,11 +113,37 @@ class app_browser(tk.Frame):
         root.grid_columnconfigure(0, weight=1)
         root.grid_rowconfigure(0, weight=1)
 
+        
+class Platform():
+    def __init__(self):
+        self.main = which_platform()
+    
+    
+    def which_platform():
+        if _platform == 'linux' or _platform == 'linux2':
+            return 'lnx'
+        elif _platform == 'darwin':
+            return 'mac'
+        elif _platform == 'win32' or _platform == 'win64':
+            return 'win'
+        else :
+            return _platform
+    
+    
+    def get_release():
+        return platform.release()
+    
+    
+    def print_system_description(self):
+        # this is not working
+        # return platform.version()
+        # for debug purposes
+        print 'system - {0} / release - {1}'.format(self.which_platform(), self.get_release())
 
 def directory_lister(directory, output, list_files=False):
     template_loc = append_dir(one_dir_up(get_current_dir()), 'Structure') + 'HTML_DirectoryList.txt'
     print template_loc
-    template = TextProcess.load_text_from(template_loc)
+    template = TX74.load_text_from(template_loc)
     template = template.replace('XXX', directory)
 
     head = '<table><tr class="Head"><td>List Generated on {0} / Total Folder Size - {1} / {2} Subfolders </td></tr>'
@@ -170,6 +199,15 @@ def get_separator_from(path):
     elif '/' in path:
         separator = '/'
     return separator
+
+    
+def read_file(filename):
+    with open(filename, 'r') as content_file:
+        content = content_file.read()
+    if 'htm' in filename.split()[-1]:
+        content = TX74.htm_to_plain_txt(content)
+    return content
+
 
 
 if __name__ == '__main__':

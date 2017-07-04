@@ -4,10 +4,10 @@ import argparse
 import sqlite3
 # sys.setdefaultencoding('utf-8')
 # H808E modules
-import CommandsExecute
-import Directory
-import GUI
-import TextProcess
+import DB74
+import OS74
+import UI74
+import TX74
 
 
 class h808e(object):
@@ -15,7 +15,7 @@ class h808e(object):
         self.enc = self.create_structure()
         self.folders = self.get_main_directories()
         self.tables = self.get_table()
-        self.dir_active = Directory.get_current_dir()
+        self.dir_active = OS74.get_current_dir()
         self.db_path = ''
         self.db_query = 'SELECT * FROM enc_nodes;'
         # self.db_data = None
@@ -104,8 +104,10 @@ class h808e(object):
 
     def get_node_content(self, node):
         # print 'load node content from id: ' + str(node)
-        query = q.select_node_text.format(node)
-        return CommandsExecute.execute_not_connected(self.db_path,query)
+        query = q.select_node_text
+        #query = q.select_node_text.format(node)
+        print self.db_path + ' : ' + query
+        return DB74.execute_not_connected(self.db_path,query)
 
     def get_nth_node(self, nth, parent_node):
         if parent_node.isdigit():
@@ -121,7 +123,7 @@ class h808e(object):
         return self.get_nth_number(1, number) - 4
 
     def get_root_path(self, directory):
-        separator = Directory.get_separator_from(directory)
+        separator = OS74.get_separator_from(directory)
         path_list = directory.split(separator)
         for item in path_list:
             if str(item).lower() == 'web':
@@ -130,6 +132,7 @@ class h808e(object):
         return separator.join(path_list[:nth]) + separator
 
     def set_db_path(self, db_path):
+        print '? - ' + db_path
         if os.path.isfile(db_path):
             self.db_path = db_path
         else:
@@ -157,8 +160,9 @@ class SQL(object):
     INNER JOIN enc ON children.node_id = enc.node_id
     WHERE children.father_id =:father
     ORDER BY children.sequence"""
-    select_node_text = """SELECT test FROM `enc` WHERE code = {0};"""
-    select_node_text2 = """SELECT txt FROM `enc_nodes` WHERE code = {0};"""
+    select_node_text = """select * from node;"""
+    select_node_text3 = """SELECT test FROM "enc" WHERE code = {0};"""
+    select_node_text2 = """SELECT txt FROM "enc_nodes" WHERE code = {0};"""
 
 
 def build_text_menu(directory):
@@ -212,7 +216,6 @@ def refresh_file(filename, text):
         print 'file {0} not exist, must create'.format(filename)
 
 
-
 def register_dir(directory, he):
     # register directory within sqlite database
     conn_mem = sqlite3.connect(":memory:")
@@ -246,20 +249,6 @@ def register_dir(directory, he):
             i += 1
             # print filename
     return c
-
-
-def temp_connect_database(database):
-    # connect to database
-    try:
-        conn = sqlite3.connect(database)
-        # show the text menu
-    except:
-        print 'cannot find main db file! > ' + database + ' ?'
-        # make connection to a temporary database?
-        conn = sqlite3.connect(':memory:')
-    finally:
-        conn.close()
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="construct h808e")

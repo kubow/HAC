@@ -8,9 +8,14 @@ import re
 import os
 import sys
 import argparse
+
 from xml.dom.minidom import parseString
 import xml.etree.ElementTree as xml_tree
-from bs4 import BeautifulSoup
+
+try:
+    from bs4 import BeautifulSoup
+except:
+    print 'using alternative html parser'
 
 import log
 
