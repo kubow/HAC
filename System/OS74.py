@@ -186,6 +186,25 @@ def one_dir_up(directory):
     return separator.join(directory.split(separator)[0:-1])
 
 
+def compare_directories(dir1, dir2):
+    if not os.path.isdir(dir1) or not os.path.isdir(dir2):
+        print 'one of submitted directories do not exist, quitting...'
+        break
+    found = True
+    for root, directories, files in os.walk(dir1):
+        corr = root.replace(dir1, dir2)
+        #print root + ' :x: ' + corr
+        if not os.path.isdir(corr):
+            print 'not found ' + dir2 + '/' + root
+            continue
+        for filename in files:
+            #print filename
+            corr_file = filename.replace(dir1, dir2)
+            if not os.path.exists(corr_file):
+                #print root + ' :x: ' + corr
+                #print 'not found ' + filename
+                found = False
+
 def append_dir(path, string):
     separator = get_separator_from(path)
     return path + separator + string + separator

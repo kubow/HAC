@@ -8,6 +8,7 @@ import re
 import os
 import sys
 import argparse
+import difflib
 
 from xml.dom.minidom import parseString
 import xml.etree.ElementTree as xml_tree
@@ -54,13 +55,25 @@ def load_text_from(filename):
     return text
 
 
-def create_file_if_neccesary(file):
+def file_content_difference(file1, file2):
+    diff = difflib.unified_diff(lines1, lines2,
+    fromfile=file1, tofile=file2, lineterm='', n=0)
+    lines = list(diff)[2:]
+    added = [line[1:] for line in lines if line[0] == '+']
+    removed = [line[1:] for line in lines if line[0] == '-']
+
+    print 'additions, ignoring position'
+    for line in added:
+        if line not in removed:
+            print line
+
+def create_file_if_neccesary(filename):
     if os.isfile(file):
-        print ' -> ' + file + ' - exists ...'
+        print ' -> ' + filename + ' - exists ...'
     else:
-        print ' -> ' + file + ' - creating new file ...'
-        with open(file, 'a'):
-            os.utime(file, None)
+        print ' -> ' + filename + ' - creating new file ...'
+        with open(filename, 'a'):
+            os.utime(filename, None)
 
 
 def export_text_to(filename, text):
@@ -103,7 +116,15 @@ def test_utf_special_characters():
     veta=u"Žluťoučký kůň pěl ďábelské ódy."
     print veta
     log.file_write("aaa.log", "temp", veta)
-
+    
+    
+def similar(seq1, seq2):
+    try:
+        return difflib.SequenceMatcher(a=seq1.lower(), 
+        b=seq2.lower()).ratio() #> 0.9
+    except:
+        return difflib.SequenceMatcher(a=str(seq1).lower(), 
+        b=str(seq2).lower()).ratio() #> 0.9
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Text proccess")
