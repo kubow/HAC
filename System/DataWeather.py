@@ -24,7 +24,7 @@ class OpenWeatherMap(key, loc):
 
 class WeatherUnderground(object):
     def __init__(self):
-        self.actual_data = self.
+        self.actual_data = self.get_actual(location)
         
 
 """ Passing space-separated command line arguments
