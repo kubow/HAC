@@ -114,10 +114,11 @@ class app_browser(tk.Frame):
         root.grid_rowconfigure(0, weight=1)
 
 
-class Platform():
+class Platform:
     def __init__(self):
-        self.main = which_platform()
+        self.main = self.which_platform()
 
+    @staticmethod
     def which_platform():
         if _platform == 'linux' or _platform == 'linux2':
             return 'lnx'
@@ -125,10 +126,11 @@ class Platform():
             return 'mac'
         elif _platform == 'win32' or _platform == 'win64':
             return 'win'
+            print 'must create _winreg import and read ...'
         else:
             return _platform
 
-    def get_release():
+    def get_release(self):
         return platform.release()
 
     def print_system_description(self):
@@ -148,7 +150,7 @@ def directory_lister(directory, output, list_files=False):
     table_head = '<table><tr class="Head">{0}<td>{1}</table>'
     table_row = '<tr class="{0}"><td>{1}</td><td>{2}</td></tr>'
 
-    htmContent = ''
+    htm_content = ''
     total_size = 0
     folder_count = 0
     # Walk the directory tree
@@ -156,19 +158,19 @@ def directory_lister(directory, output, list_files=False):
         print root
         folder_size = 0
         file_count = 0
-        tmpContent = ''
+        tmp_content = ''
         for filename in files:
-            folder_size = folder_size + (os.path.getsize(root + '/' + filename) / 1024)
+            folder_size += (os.path.getsize(root + '/' + filename) / 1024)
             if list_files:
-                filesize = str('{0:.2f}'.format(os.path.getsize(root + '/' + filename) / 1024)) + ' kb'
-                tmpContent = tmpContent + table_row.format('File', filename, filesize) + '\n'
+                file_size = str('{0:.2f}'.format(os.path.getsize(root + '/' + filename) / 1024)) + ' kb'
+                tmp_content = tmp_content + table_row.format('File', filename, file_size) + '\n'
             file_count += 1
         ref = '<a href="file:///' + root + '">' + root + '</a> (' + str(file_count) + ' files in folder)'
-        htmContent = htmContent + '\n' + table_row.format('Fldr', ref, str(folder_size) + ' kb') + '\n' + tmpContent
+        htm_content = htm_content + '\n' + table_row.format('Fldr', ref, str(folder_size) + ' kb') + '\n' + tmp_content
         total_size = total_size + folder_size
         folder_count += 1
 
-    content = head.format(datetime.datetime.now(), str(total_size) + ' kb', folder_count) + '\n' + htmContent
+    content = head.format(datetime.datetime.now(), str(total_size) + ' kb', folder_count) + '\n' + htm_content
     # print content
     print template
     htm = open(output, 'w+')
@@ -189,21 +191,22 @@ def one_dir_up(directory):
 def compare_directories(dir1, dir2):
     if not os.path.isdir(dir1) or not os.path.isdir(dir2):
         print 'one of submitted directories do not exist, quitting...'
-        break
-    found = True
-    for root, directories, files in os.walk(dir1):
-        corr = root.replace(dir1, dir2)
-        #print root + ' :x: ' + corr
-        if not os.path.isdir(corr):
-            print 'not found ' + dir2 + '/' + root
-            continue
-        for filename in files:
-            #print filename
-            corr_file = filename.replace(dir1, dir2)
-            if not os.path.exists(corr_file):
-                #print root + ' :x: ' + corr
-                #print 'not found ' + filename
-                found = False
+    else:
+        found = True
+        for root, directories, files in os.walk(dir1):
+            corr = root.replace(dir1, dir2)
+            # print root + ' :x: ' + corr
+            if not os.path.isdir(corr):
+                print 'not found ' + dir2 + '/' + root
+                continue
+            for filename in files:
+                # print filename
+                corr_file = filename.replace(dir1, dir2)
+                if not os.path.exists(corr_file):
+                    # print root + ' :x: ' + corr
+                    # print 'not found ' + filename
+                    found = False
+
 
 def append_dir(path, string):
     separator = get_separator_from(path)
@@ -215,6 +218,8 @@ def get_separator_from(path):
         separator = '\\'
     elif '/' in path:
         separator = '/'
+    else:
+        separator = None
     return separator
 
 
@@ -226,14 +231,26 @@ def read_file(filename):
     return content
 
 
+def refresh_file(filename, content):
+    # print 'refreshing filename: ' + filename + ' with text: ' + text
+    if content:
+        if not os.path.isfile(filename):
+            print 'file {0} not exist, must create'.format(filename)
+            touch_file(filename)
+        file_write(filename, content)
+
+    else:
+        print 'no text to write, skipping file {0}'.format(filename)
+
+
 def file_write(filename, content):
     with open(filename, 'w+') as target_file:
         target_file.write(content)
 
 
-def get_file_size(_file):
+def get_file_size(file_path):
     # return file size in kilobytes
-    return '{0:.2f}'.format(os.path.getsize(_file) / 1024)
+    return '{0:.2f}'.format(os.path.getsize(file_path) / 1024)
 
 
 def touch_file(path):

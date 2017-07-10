@@ -10,11 +10,12 @@ import UI74
 import TX74
 from Template import HTML
 
+
 class h808e(object):
     def __init__(self):
         self.enc = self.create_structure()
         self.folders = self.get_main_directories()
-        self.node = self.set_active_node(800)
+        self.set_active_node(800)
         self.dir_active = OS74.get_current_dir()
         self.db_path = ''
         self.db_tables = self.get_table()
@@ -74,6 +75,52 @@ class h808e(object):
             if main_folder == main_node:
                 print 'get all directories for {0}'.format(main_node)
 
+    def is_registered_directory(self):
+        print 'just check if table exists'
+        if os.path.isdir(self.dir_active):
+            print 'table do not exist'
+            return False
+        else:
+            return True
+
+    def directory_register(self):
+        # register directory within sqlite database
+        conn_mem = DB74.open_db_connection(":memory:")
+        curs_mem = conn_mem.cursor()
+        curs_mem.execute("""CREATE TABLE h808e (
+                ID int,
+                reg_name text,
+                file_dir int, --boolean
+                last_change text, --date
+                size int
+                ); """)
+        i = 0
+        tab_ins = """INSERT INTO h808e
+                (reg_name, file_dir)
+                VALUES ({0});"""
+        col = ('reg_name', 'file_dir')
+        for root, directories, files in os.walk(self.dir_active):
+            curs_mem.execute(tab_ins.format('"", ' + root))
+            i += 1
+            # iterate files in directory
+            for filename in files:
+                curs_mem.execute(tab_ins.format(i, filename, root, 'date date date',
+                                                OS74.get_file_size(root + '/' + filename)))
+                # v = (filename, root)
+                # print v
+                print '---file {0} registered, checking size.'.format(filename)
+                # c.execute(dw.tab_ins.format(fln_val))
+                i += 1
+                # print filename
+        return True
+
+    def directory_watcher(self):
+        flag = True
+        if os.path.isdir(self.dir_active):
+            if not self.is_registered_directory():
+                while flag:
+                    flag = self.directory_register()
+
     def iterate_enc_structure(self):
         directory = self.get_root_path(self.dir_active)
         for en in he.enc:
@@ -81,29 +128,31 @@ class h808e(object):
             print '--' * int(en['level']) + str(en['code'])
             self.set_active_node(en['code'])
             self.set_db_data(self.get_node_content(str(en['code'])))
-            refresh_file(directory + str(en['code']) + '.html', self.db_data)
+            OS74.refresh_file(directory + str(en['code']) + '.html', self.db_data)
 
             for esn in en['child']:
                 # 2. level
                 print '--' * int(esn['level']) + str(esn['code'])
                 self.set_active_node(esn['code'])
                 self.set_db_data(self.get_node_content(str(esn['code'])))
-                refresh_file(directory + str(esn['code']) + '.html', self.db_data)
+                OS74.refresh_file(directory + str(esn['code']) + '.html', self.db_data)
 
                 for essn in esn['child']:
                     # 3. level
                     print '--' * int(essn['level']) + str(essn['code'])
                     self.set_active_node(essn['code'])
                     self.set_db_data(self.get_node_content(str(essn['code'])))
-                    refresh_file(directory + str(essn['code']) + '.html', self.db_data)
+                    OS74.refresh_file(directory + str(essn['code']) + '.html', self.db_data)
 
     def iterate_enc_db_structure(self):
-        fathers = conn.execute(q.select_father_nodes()).fetchall()
+        conn = DB74.open_db_connection(self.db_path)
+        fathers = conn.execute(HTML.select_father_nodes).fetchall()
         main_fathers = [father[0] for father in fathers]
-        root_nodes = conn.execute(c.select_root_nodes).fetchall()
+        root_nodes = conn.execute(HTML.select_root_nodes).fetchall()
         for root_node in root_nodes:
             print root_node[2].encode('utf8') + ' root node / id ' + str(
                 root_node[4]) + ' / sqn ' + str(root_node[5]) + ' level 1'
+        DB74.close_db_connection(conn)
 
     def get_table(self):
         tables = (None, '')
@@ -147,7 +196,7 @@ class h808e(object):
             self.db_path = db_path
         else:
             self.db_path = ':memory:'
-            
+
     def set_db_data(self, text):
         html_content = HTML.pageTemplateBegin.format(self.node, 'toolkit')
         html_content += '{0}' + HTML.pageTemplateMiddle
@@ -156,7 +205,7 @@ class h808e(object):
             html_content = html_content.format(TX74.xml_to_html(''.join(text).encode('utf8')))
         else:
             html_content = html_content.format('')
-            
+
         self.db_data = html_content
 
     def set_dir_active(self, directory):
@@ -164,7 +213,7 @@ class h808e(object):
 
     def set_active_node(self, node):
         self.node = node
-     
+
 
 class SQL(object):
     select_father_nodes = """SELECT children.father_id, COUNT(node.node_id)
@@ -186,6 +235,21 @@ class SQL(object):
     ORDER BY children.sequence"""
     select_node_text2 = """SELECT test FROM "enc" WHERE code = {0};"""
     select_node_text = """SELECT txt FROM "enc_nodes" WHERE code = {0};"""
+    exist = """SELECT EXISTS(
+            SELECT 1 FROM {0}
+            WHERE {1}
+        );"""
+    table_exist = exist.format('sqlite_master', 'type="table" AND name = "{0}"')
+    tab_ddl = 'CREATE TABLE {0} ({1});'
+    tab_fld = """ ID int,
+        reg_name text,
+        file_dir int, --boolean
+        last_change text, --date
+        size int
+        """
+    table_create = tab_ddl.format('dirlist', tab_fld)
+    tab_ins = 'INSERT INTO dirlist VALUES ({0});'
+    ins_val = '"{0}", "{1}", "{2}", "{3}", {4}'
 
 
 def build_text_menu(directory):
@@ -197,7 +261,7 @@ def build_text_menu(directory):
         2.  Open encyklopedia sqlite browser
         3.  Directory synchronizer
         4.  Generate structure from db
-        5.  A
+        5.  Register directory
         6.  B
         7.  C
         -------------------------------------
@@ -209,6 +273,7 @@ def build_text_menu(directory):
         keep_alive = raw_input("Please run:")
         if keep_alive == "1":
             print("\n Opening cherrytree ...")
+
         elif keep_alive == "2":
             print("\n Opening sqlite browser\n")
 
@@ -218,6 +283,10 @@ def build_text_menu(directory):
         elif keep_alive == "4":
             print 'generate structure'
             he.iterate_enc_structure()
+
+        elif keep_alive == "5":
+            print 'register direcotry'
+            he.directory_watcher()
 
         elif keep_alive == "8":
             # running Tkinter GUI
@@ -230,52 +299,6 @@ def build_text_menu(directory):
         elif keep_alive != "":
             print("\n Not Valid Choice Try again")
 
-
-def refresh_file(filename, text):
-    # print 'refreshing filename: ' + filename + ' with text: ' + text
-    if text:
-        if not os.path.isfile(filename):
-            print 'file {0} not exist, must create'.format(filename)
-            OS74.touch_file(filename)
-        OS74.file_write(filename, text)
-
-    else:
-        print 'no text to write, skipping file {0}'.format(filename)
-
-
-def register_dir(directory, he):
-    # register directory within sqlite database
-    conn_mem = sqlite3.connect(":memory:")
-    curs_mem = conn_mem.cursor()
-    curs_mem.execute("""CREATE TABLE h808e (
-        ID int,
-        reg_name text,
-        file_dir int, --boolean
-        last_change text, --date
-        size int
-        ); """)
-    i = 1
-    tab_ins = """INSERT INTO h808e
-        (reg_name, file_dir)
-        VALUES ({0});"""
-    col = ('reg_name', 'file_dir')
-    for root, directories, files in os.walk(directory):
-        curs_mem.execute(tab_ins.format('"", ' + root))
-        i += 1
-        # iterate files in directory
-        for filename in files:
-            fln_val = dw.ins_val.format(i, filename, root, 'date date date',
-                                        get_file_size(root + '/' + filename))
-            v = (filename, root)
-            # print v
-            if val_exist(v, col, 'dirlist', c):
-                msg = '---file {0} registered, checking size.'.format(filename)
-            else:
-                msg = '---file {0} registering.'.format(filename)
-            # c.execute(dw.tab_ins.format(fln_val))
-            i += 1
-            # print filename
-    return c
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="construct h808e")
@@ -294,4 +317,3 @@ if __name__ == '__main__':
     # browse encyklopedia node (en) + subnode (esn), subsubnode (essn)
 
     build_text_menu(he)
-

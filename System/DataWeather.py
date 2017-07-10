@@ -8,6 +8,7 @@ class OpenWeatherMap(key, loc):
     second parameter location"""
     print 'validate API-key disabled'
     print 'getting location ' + loc
+    
     def obs_weather(key):
         owm = pyowm.OWM(key)
         wap = owm.weather_at_place(loc)
@@ -20,7 +21,11 @@ class OpenWeatherMap(key, loc):
     def will_be_sunny():
         tomorrow = pyowm.timeutils.tomorrow()
         return forecast.will_be_sunny_at(tomorrow)  # true/false
-    
+
+class WeatherUnderground(object):
+    def __init__(self):
+        self.actual_data = self.
+        
 
 """ Passing space-separated command line arguments
 1. location where user wants to read weather
@@ -30,17 +35,8 @@ parser = argparse.ArgumentParser(description="weather@location")
 parser.add_argument('-l', help='Location', type=str, default='')
 parser.add_argument('-w', help='Write path', type=str, default='none')
 args = parser.parse_args()
-# Determine if passed parguments for running over a directory
-if len(sys.argv)>2:
-    # print sys.argv
-    # write_file_path=os.path.dirname(os.path.realpath(__file__))+'/weather.htm'
-    write_file_path=sys.argv[1]
-    # print write_file_path
-    # print sys.argv[2]
-    loc = sys.argv[2]
-else:
-    loc = 'Horni Pocernice,cz' #'Necin,cz'
-
+loc = args.l
+loc = 'Horni Pocernice,cz' #'Necin,cz'
 print 'weather forecast in '+loc
 
 # owm = pyowm.OWM(API_key='your-API-key', subscription_type='pro')

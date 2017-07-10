@@ -79,6 +79,17 @@ def temp_connect_database(database):
     finally:
         conn.close()
 
+def open_db_connection(path):
+    conn = sqlite3.connect(path)
+    # conn.row_factory = sqlite3.Row
+    print "Openned database %s as %r" % (path, conn)
+    return conn
+    
+def close_db_connection(conn):
+    try:
+        conn.close()
+    except:
+        print "connection cannot be closed"
 
 def databases_compare(db1, db2):
     db_left = sqlite3.connect(db1).cursor()
