@@ -6,7 +6,7 @@ import TX74
 import log
 
 
-def get_table_name(sql, qry_type):
+def get_query_type(sql, qry_type):
     """get table name from SQL text"""
     if qry_type == 'DDL':
         print 'CREATE/DROP/ALTER/RENAME TABLE'
