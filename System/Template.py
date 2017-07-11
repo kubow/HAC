@@ -83,7 +83,20 @@ class HTML(object):
     </body>
     </htmll>
     """
-    selectFatherNodes = """SELECT children.father_id, COUNT(node.node_id) FROM node
+    
+class SQL(object):
+    """ First H808 querries / device controller"""
+    
+    table_ddl = 'CREATE TABLE {0} ({1});'
+    tab_fld = """ ID int,
+        reg_name text,
+        file_dir int, --boolean
+        last_change text, --date
+        size int
+        """
+    table_create = table_ddl.format('dirlist', tab_fld)
+    
+    select_father_nodes = """SELECT children.father_id, COUNT(node.node_id) FROM node
     INNER JOIN children ON node.node_id = children.node_id
     GROUP BY father_id"""
     selectRootNodes = """SELECT children.father_id, node.level, node.name,
@@ -99,7 +112,42 @@ class HTML(object):
     INNER JOIN enc ON children.node_id = enc.node_id
     WHERE children.father_id =:father
     ORDER BY children.sequence"""
+    
+    select = 'SELECT {0} FROM ({1});'
+    select_where = 'SELECT {0} FROM ({1}) WHERE {2};'
+    
+    select_node_text = select_where.format('txt', '"enc_nodes"'. 'code = {0}')
+    select_node_text2 = """SELECT txt FROM "enc_nodes" WHERE code = {0};"""
+    
+    exist = """SELECT EXISTS(
+            SELECT 1 FROM {0}
+            WHERE {1}
+        );"""
+    table_exist = exist.format('sqlite_master', 'type="table" AND name = "{0}"')
+        
+    insert = 'INSERT INTO {0} VALUES ({1});'
+    
+    ins_val = '"{0}", "{1}", "{2}", "{3}", {4}'
     dashline = '---------------------------------------------------------'
+
+    get_settings = """SELECT drivertype, driverloc 
+    FROM driver 
+    WHERE device = (
+        SELECT ID from device where devicename = '{0}'
+    );"""
+    get_driver_loc = """SELECT driverloc 
+    FROM driver 
+    WHERE device = {0} AND drivertype = "{1}";"""
+    get_device_id = '(SELECT ID from device WHERE devicename ="{0}")'
+    get_structure = 'SELECT * FROM structure'
+    get_table_name = 'SELECT table_name FROM setting;'
+    column_select = 'SELECT {0} FROM {1};'
+    group_select = 'SELECT length({0}) AS {1} FROM measured GROUP BY {2};'
+    
+    value_select = 'SELECT {0} FROM {1} WHERE timestamp = "{2}";'
+    value_exist = 'SELECT timestamp FROM {0} WHERE timestamp = "{1}";'
+    value_insert = 'INSERT INTO {0} VALUES ({1});'
+    value_update = 'UPDATE {0} SET {1} WHERE timestamp = "{2}";'
 
 
 def construct(node, fathers, conn, level, mf, href, mainhref):

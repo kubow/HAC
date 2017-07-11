@@ -4,6 +4,7 @@ import sqlite3
 
 import TX74
 import log
+from Template import SQL
 
 
 def get_query_type(sql, qry_type):
@@ -17,6 +18,19 @@ def get_query_type(sql, qry_type):
     return 'sql result'
 
 
+def temp_connect_database(database):
+    # connect to database
+    try:
+        conn = sqlite3.connect(database)
+        # show the text menu
+    except:
+        print 'cannot find main db file! > ' + database + ' ?'
+        # make connection to a temporary database?
+        conn = sqlite3.connect(':memory:')
+    finally:
+        conn.close()
+
+        
 def execute_not_connected(database, sql):
     """execute command and return dataset"""
     conn = sqlite3.connect(database)
@@ -66,18 +80,6 @@ def execute_connected(c, sql, logfile, module, debug=False):
     if debug:
         log.log_operation(logfile, module, 'executed SQL: {0}'.format(sql))
 
-
-def temp_connect_database(database):
-    # connect to database
-    try:
-        conn = sqlite3.connect(database)
-        # show the text menu
-    except:
-        print 'cannot find main db file! > ' + database + ' ?'
-        # make connection to a temporary database?
-        conn = sqlite3.connect(':memory:')
-    finally:
-        conn.close()
 
 def open_db_connection(path):
     conn = sqlite3.connect(path)
@@ -130,10 +132,7 @@ def get_db_objects_list(db):
 
 
 def db_object_exist(obj_name, db):
-    return db.execute("""SELECT EXISTS(
-        SELECT 1 FROM sqlite_master
-        WHERE type = "table" AND name = "{0}"
-        );""".format(obj_name)).fetchone()
+    return db.execute(SQL.table_exist.format(obj_name)).fetchone()
 
 
 def get_table_rows(table, db):

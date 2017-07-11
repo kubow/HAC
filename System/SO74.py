@@ -1,20 +1,24 @@
 import os
 import sys
 import pyowm
+import argparse
 
-class OpenWeatherMap(key, loc):
+class OpenWeatherMap(object):
     """observe weather function
     API-key required for owm
     second parameter location"""
-    print 'validate API-key disabled'
-    print 'getting location ' + loc
-    
-    def obs_weather(key):
-        owm = pyowm.OWM(key)
-        wap = owm.weather_at_place(loc)
-        frc = owm.daily_forecast(loc)
+    def __init__(self):
+        print 'validate API-key disabled'
+        self.api_key = '1050e850fbcc463dd98a726d6af37134'
+        self.owm = pyowm.OWM(self.api_key)
+        print 'getting location '
+        
+        
+    def obs_weather(self, loc):
+        wap = self.owm.weather_at_place(loc)
+        frc = self.owm.daily_forecast(loc)
         # wbs = will_be_sunny()
-        # wac = owm.weather_around_coords(-22.57, -43.12)
+        # wac = self.owm.weather_around_coords(-22.57, -43.12)
         observed = {'actual':wap.get_weather(), 'forecast':frc}
         return observed
         
@@ -22,9 +26,9 @@ class OpenWeatherMap(key, loc):
         tomorrow = pyowm.timeutils.tomorrow()
         return forecast.will_be_sunny_at(tomorrow)  # true/false
 
-class WeatherUnderground(object):
+'''class WeatherUnderground(object):
     def __init__(self):
-        self.actual_data = self.get_actual(location)
+        self.actual_data = self.get_actual(location)'''
         
 
 """ Passing space-separated command line arguments
@@ -35,19 +39,22 @@ parser = argparse.ArgumentParser(description="weather@location")
 parser.add_argument('-l', help='Location', type=str, default='')
 parser.add_argument('-w', help='Write path', type=str, default='none')
 args = parser.parse_args()
-loc = args.l
-loc = 'Horni Pocernice,cz' #'Necin,cz'
+if args.l:
+    loc = args.l
+else:
+    # determine setting from database
+    loc = 'Horni Pocernice,cz' #'Necin,cz'
 print 'weather forecast in '+loc
 
 # owm = pyowm.OWM(API_key='your-API-key', subscription_type='pro')
-owm = pyowm.OWM('1050e850fbcc463dd98a726d6af37134')  # You MUST provide a valid API key
+o = OpenWeatherMap()
 
-obs = owm.weather_at_place(loc)
+obs = o.owm.weather_at_place(loc)
 w = obs.get_weather()
 # Weather details
 # w.get_wind()                  # {'speed': 4.6, 'deg': 330}
-#w.get_humidity()              # 87
-#w.get_temperature('celsius')  # {'temp_max': 10.5, 'temp': 9.7, 'temp_min': 9.0}
+# w.get_humidity()              # 87
+# w.get_temperature('celsius')  # {'temp_max': 10.5, 'temp': 9.7, 'temp_min': 9.0}
 
 htm=open(args.l, 'w+')
 print 'file '+args.l+' created...'

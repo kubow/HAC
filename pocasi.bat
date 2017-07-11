@@ -23,7 +23,8 @@ ECHO ====================
 ECHO python read forecast 
 ECHO ====================
 ECHO syntax: %py_forecast_file% file_to_write location (now disabled)
-REM python %py_forecast_file% %mainHTML% %location%
+SET location=
+python %py_forecast_file% -l %location% -w %mainHTML%
 ECHO ==========================
 ECHO python write proccessed data
 ECHO ==========================
@@ -33,8 +34,8 @@ REM ECHO %%F
 SET platform=%%F
 )
 ECHO syntax: %py_data_file% -d %platform% -l location
-REM ECHO writing to: %data_dir%%YY%%MM%.sqlite 
+ECHO writing to: %data_dir%%YY%%MM%.sqlite 
 ECHO ...............
 REM python %py_data_file% -d %platform% -l %data_dir% >> %log_dir%logfile.log
 python %py_data_file% -d %platform% -l %data_dir%
-python %py_log_file% -l %log_dir%logfile.log -m "weather" -t "weather read and data aggregated"
+REM python %py_log_file% -l %log_dir%logfile.log -m "weather" -t "weather read and data aggregated"

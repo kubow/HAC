@@ -14,7 +14,7 @@ echo ^<title^>Prezentace^</title^> >> %mainHTML%
 echo ^<link rel="stylesheet" type="text/css" href="%tempName%/style.css"^> >> %mainHTML%
 echo ^</head^> >> %mainHTML%
 echo ^<body^> >> %mainHTML%
-echo ^<div id="frame"^>^<iframe src="%presName%/presenting.html" width="100%%" height="100%%"^>^</iframe^>^</div^> >> %mainHTML%
+echo ^<div id="frame"^>^<iframe src="Multimedia/presenting.html" width="100%%" height="100%%"^>^</iframe^>^</div^> >> %mainHTML%
 echo ^<div id="top"^>^<marquee behavior="scroll" direction="left" scrolldelay="100"^> >> %mainHTML%
 rem echo ^<div id="top"^>^<marquee behavior="scroll" direction="left" scrolldelay="100" scrollamount="3"^> >> %mainHTML%
 type  %presDir%text_horni_lista.txt >> %mainHTML%

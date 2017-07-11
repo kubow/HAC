@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
 import os
 import argparse
-import sqlite3
 # sys.setdefaultencoding('utf-8')
 # H808E modules
 import DB74
 import OS74
 import UI74
 import TX74
-from Template import HTML
+from Template import HTML, SQL
 
 
 class h808e(object):
     def __init__(self):
         self.enc = self.create_structure()
-        self.folders = self.get_main_directories()
         self.set_active_node(800)
         self.dir_active = OS74.get_current_dir()
+        self.dir_folders = self.get_main_directories()
+        
         self.db_path = ''
         self.db_tables = self.get_table()
         self.db_query = 'SELECT * FROM enc_nodes;'
@@ -71,7 +71,7 @@ class h808e(object):
 
     def get_sub_directories(self, main_node):
         sub_folders = []
-        for main_folder in self.folders:
+        for main_folder in self.dir_folders:
             if main_folder == main_node:
                 print 'get all directories for {0}'.format(main_node)
 
@@ -84,36 +84,33 @@ class h808e(object):
             return True
 
     def directory_register(self):
-        # register directory within sqlite database
+        # load to in memory sqlite database
+        self.load_active_directory_memory()
+        # transfer to corresponding database
+        
+        
+
+        return True
+
+    def load_active_directory_memory(self):
         conn_mem = DB74.open_db_connection(":memory:")
         curs_mem = conn_mem.cursor()
-        curs_mem.execute("""CREATE TABLE h808e (
-                ID int,
-                reg_name text,
-                file_dir int, --boolean
-                last_change text, --date
-                size int
-                ); """)
+        curs_mem.execute(SQL.table_create)
         i = 0
-        tab_ins = """INSERT INTO h808e
-                (reg_name, file_dir)
-                VALUES ({0});"""
-        col = ('reg_name', 'file_dir')
+        
+        tab_ins = SQL.insert.format('h808e (reg_name, file_dir)')
+        
         for root, directories, files in os.walk(self.dir_active):
             curs_mem.execute(tab_ins.format('"", ' + root))
             i += 1
-            # iterate files in directory
             for filename in files:
                 curs_mem.execute(tab_ins.format(i, filename, root, 'date date date',
                                                 OS74.get_file_size(root + '/' + filename)))
-                # v = (filename, root)
-                # print v
                 print '---file {0} registered, checking size.'.format(filename)
-                # c.execute(dw.tab_ins.format(fln_val))
                 i += 1
-                # print filename
-        return True
-
+        
+        self.db_data = curs_mem.execute('select * from h808e;')
+        
     def directory_watcher(self):
         flag = True
         if os.path.isdir(self.dir_active):
@@ -146,9 +143,9 @@ class h808e(object):
 
     def iterate_enc_db_structure(self):
         conn = DB74.open_db_connection(self.db_path)
-        fathers = conn.execute(HTML.select_father_nodes).fetchall()
+        fathers = conn.execute(SQL.select_father_nodes).fetchall()
         main_fathers = [father[0] for father in fathers]
-        root_nodes = conn.execute(HTML.select_root_nodes).fetchall()
+        root_nodes = conn.execute(SQL.select_root_nodes).fetchall()
         for root_node in root_nodes:
             print root_node[2].encode('utf8') + ' root node / id ' + str(
                 root_node[4]) + ' / sqn ' + str(root_node[5]) + ' level 1'
@@ -215,43 +212,6 @@ class h808e(object):
         self.node = node
 
 
-class SQL(object):
-    select_father_nodes = """SELECT children.father_id, COUNT(node.node_id)
-    FROM node
-    INNER JOIN children ON node.node_id = children.node_id
-    GROUP BY father_id"""
-    select_root_nodes = """SELECT children.father_id, node.level, node.name,
-    node.txt, node.node_id, children.sequence, enc.code FROM children
-    INNER JOIN node ON children.node_id = node.node_id
-    INNER JOIN enc ON enc.node_id = node.node_id
-    WHERE (children.father_id = 0 )
-    ORDER BY children.sequence"""
-    select_sub_nodes = """SELECT node.node_id, node.name, node.txt,
-    children.sequence, enc.code
-    FROM children
-    INNER JOIN node ON children.node_id = node.node_id
-    INNER JOIN enc ON children.node_id = enc.node_id
-    WHERE children.father_id =:father
-    ORDER BY children.sequence"""
-    select_node_text2 = """SELECT test FROM "enc" WHERE code = {0};"""
-    select_node_text = """SELECT txt FROM "enc_nodes" WHERE code = {0};"""
-    exist = """SELECT EXISTS(
-            SELECT 1 FROM {0}
-            WHERE {1}
-        );"""
-    table_exist = exist.format('sqlite_master', 'type="table" AND name = "{0}"')
-    tab_ddl = 'CREATE TABLE {0} ({1});'
-    tab_fld = """ ID int,
-        reg_name text,
-        file_dir int, --boolean
-        last_change text, --date
-        size int
-        """
-    table_create = tab_ddl.format('dirlist', tab_fld)
-    tab_ins = 'INSERT INTO dirlist VALUES ({0});'
-    ins_val = '"{0}", "{1}", "{2}", "{3}", {4}'
-
-
 def build_text_menu(directory):
     keep_alive = True
     while keep_alive:
@@ -309,8 +269,6 @@ if __name__ == '__main__':
     he = h808e()
     he.set_dir_active(args.d)
     he.set_db_path(args.c)
-    # SQL queries class
-    q = SQL()
 
     # prepare the insert query
     # insert = 'INSERT INTO veci (hmotne, oblast, uroven) VALUES ({0}, "{1}", {2});'

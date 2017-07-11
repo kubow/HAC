@@ -53,6 +53,129 @@ def load_text_from(filename):
         # for m in re.findall(r'\n\n', whole_data):
         # print m
     return text
+    
+    
+def export_text_to(filename, text):
+    with open(filename, 'w+') as output_file:
+        output_file.write(text)    
+    
+
+def writeCSV(file_name, values, timestamp, device):
+    """write a CSV file
+    values - in dictionary
+    timestamp of exact time measured
+    device - which perform data read"""
+    if os.path.exists(file_name):
+        f = open(file_name, "a")
+    else:
+        f = open(file_name, "a+")
+        line = 1
+        # write time series and header
+        for actime, vals in values.iteritems():
+            row = ''
+            if line == 1:
+                for d, v in vals.iteritems():
+                    row += str(d) + ','
+                row = 'datetime, ' + row
+                f.write(row + "\n")
+            row = str(actime) + ','
+            for d, v in vals.iteritems():
+                row += str(v) + ','
+            f.write(row+"\n")
+            line += 1
+    f.close()
+
+def readCSV(csvfile):
+    """read value from csv file
+    return in dictionary"""
+    try:
+        fileobj = open(csvfile,'r')
+        lines = fileobj.readlines()
+        timestamp = get_time_from_file(csvfile)
+        fileobj.close()
+        # load field names as variables
+        val = 0
+        timestamps = {}
+        flds = []  # field number
+        vels = []  # velocities
+        values = {}
+        velocities = {}
+        # load values to dictionary
+        for row in lines:
+            if not row:
+                continue
+            hd = row.split(',')
+            if val == 0:
+                # various columns save
+                for i in range(len(hd)):
+                    if hd[i] not in ('datetime', None, '\n'):
+                        flds.append('val_'+str(i))
+                        vels.append(hd[i].strip())
+                        values['val_'+str(i)] = 0
+                val += 1
+            else:
+                for fld in flds:
+                    idx = int(fld.split('_')[-1])
+                    values[fld] = int(values[fld]) + int(hd[idx])
+                val += 1
+        for field, sum_vals in values.iteritems():
+            values[field] = sum_vals/val
+            # get index of field - change to proper list
+            velocities[vels[flds.index(field)]] = sum_vals/val
+        timestamps[timestamp] = velocities
+        return timestamps
+    except Exception as ex:
+        print ex.args[0]
+        print 'problem in csv ' + csvfile + ' (line{0})'.format(str(val))
+        return None
+
+def readJSON(file):
+    print 'file: ' + file
+    with open(file, 'r') as fh:
+        #first = next(fh).decode()
+        first = fh.readline()
+        print 'got first line' + first
+        print '*****************'
+        fh.seek(-512, 2)
+        #last = fh.readlines()
+        last = fh.readlines()[-1].decode()
+    return (first, last)
+
+def writeJSON(location, cols, c):
+    # print cols
+    columns = cols.split(',')
+    for column in columns:
+        col = column.split(' ')[0]
+        # avoid some column names
+        if col in ('timestamp', None) or not col:
+            continue
+        # determine if column contains data
+        loc = c.execute(Device.group_select.format(col, col, col)).fetchall()
+        col_data = '(%s)' % ', '.join(map(str, loc))
+        bypass = column + ' : ' + col_data
+        if 'None' in col_data:
+            print bypass + ' - bypassing, found None data'
+            continue
+        print bypass
+        # prepare JSON file to HTML graphs
+        print '-------------------'
+        if os.path.isfile(location + col + '.json'):
+            print readJSON(location + col + '.json')
+        else:
+            print location + col + '/.json'
+        print '-------------------'
+        get_ts = Device.column_select.format('timestamp, ' + col, 'measured')
+        #print get_ts
+        json = open(location + col + '.json','w')
+        json.write('[')
+        # fetch dataset
+        for ts in c.execute(get_ts).fetchall():
+            # write values
+            print ts
+            json.write('[' + ts[0] + ',' + str(ts[1]) + '],\n')
+        
+        # finish JSON file
+        json.write(']')
 
 
 def file_content_difference(file1, file2):
@@ -74,11 +197,6 @@ def create_file_if_neccesary(filename):
         print ' -> ' + filename + ' - creating new file ...'
         with open(filename, 'a'):
             os.utime(filename, None)
-
-
-def export_text_to(filename, text):
-    with open(filename, 'w+') as output_file:
-        output_file.write(text)
 
 
 def xml_to_html(xml_text):
