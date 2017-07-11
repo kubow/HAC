@@ -25,7 +25,7 @@ echo python read forecast
 echo ====================
 #syntax: py_for_file file_to_write location
 #forecast temporarily diabled
-python ${py_for_file} ${mainHTML} ${location}
+python ${py_for_file} -l ${location} -w ${mainHTML} 
 echo ==========================
 echo python write proccessed data
 echo ==========================

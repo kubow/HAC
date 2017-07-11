@@ -56,8 +56,8 @@ w = obs.get_weather()
 # w.get_humidity()              # 87
 # w.get_temperature('celsius')  # {'temp_max': 10.5, 'temp': 9.7, 'temp_min': 9.0}
 
-htm=open(args.l, 'w+')
-print 'file '+args.l+' created...'
+htm=open(args.w, 'w+')
+print 'file '+args.w+' created...'
 htm.write('<HTML>\n<HEAD>\n<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">\n')
 htm.write('<TITLE>Weather at '+loc+'</TITLE>\n</HEAD>\n<BODY>\n<H1>')
 htm.write('Weather at '+loc+'</H1>\n<P>')

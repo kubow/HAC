@@ -138,7 +138,7 @@ class SQL(object):
     get_driver_loc = """SELECT driverloc 
     FROM driver 
     WHERE device = {0} AND drivertype = "{1}";"""
-    get_device_id = '(SELECT ID from device WHERE devicename ="{0}")'
+    get_device_id = '(SELECT ID from device WHERE devicename = "{0}")'
     get_structure = 'SELECT * FROM structure'
     get_table_name = 'SELECT table_name FROM setting;'
     column_select = 'SELECT {0} FROM {1};'
