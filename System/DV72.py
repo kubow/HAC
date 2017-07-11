@@ -7,7 +7,6 @@ function to write CSV/JSON file from downloaded data
 and a logger module - currently not implemented
 """
 import os
-import sys
 import time
 import datetime
 import serial
@@ -17,28 +16,32 @@ import DB74
 import TX74
 from Template import SQL
 
+
 class Device(object):
     def __init__(self):
         self.date_format = '%Y/%m/%d %H:%M:%S'
         self.date_file_format = '%Y%m%d_%H%M'
         self.setup_db = os.path.dirname(os.path.realpath(__file__)) + '/Device.db'
-        self.interval_shift = 2
     
     def setup_device(self, device, sensor, timeout):
         conn = DB74.open_db_connection(self.setup_db)
         c = conn.cursor()
-        #port = port with device
+        # port = port with device
         sql = SQL.get_driver_loc
         sub_sql = SQL.get_device_id.format(device)
         sql = sql.format(sub_sql, sensor)
         port = c.execute(sql).fetchone()[0]
-        #br = baud rate
+        # br = baud rate
         sql = 'SELECT baud FROM setting;'
         br = c.execute(sql).fetchone()[0]
         DB74.close_db_connection(conn)
         self.port = port
         self.br = br
         self.timeout = timeout
+        self.interval_shift = 2
+
+    def setup_output_path(self, path):
+        self.output_path = path
         
     def read_serial(self):
         data_vals = {} #dictionary holding all/interval values
@@ -49,7 +52,7 @@ class Device(object):
         ser.flushInput()
         ser.flushOutput()
         try:
-            time.sleep(to)
+            time.sleep(self.timeout)
             print 'running with timeout {0} seconds.'.format(self.timeout)
             #received = ser.readline().replace('\r\n', ' ') #not used - instead
             to_read = ser.inWaiting()
@@ -127,55 +130,7 @@ def min_between(d1, d2):
     '''not used for now - just temp'''
     #d1 = datetime.strptime(d1, "%Y-%m-%d")
     #d2 = datetime.strptime(d2, "%Y-%m-%d")
-    return abs(d2 - d1)    
-    
-
-def read_serial(port, br, to, fname):
-    #dictionary holding all/interval values
-    data_vals = {}
-    data_int = {} # clear the dictionary
-    self.interval_shift = 2 # shift of intervals in minutes
-    last_run = get_time(datetime.datetime.now(), self.interval_shift)
-    csv = ''
-    ser = serial.Serial(port, br, timeout=to)
-    ser.flushInput()
-    ser.flushOutput()
-    try:
-        time.sleep(to)
-        print 'running with timeout {0} seconds.'.format(to)
-        #received = ser.readline().replace('\r\n', ' ') #not used - instead
-        to_read = ser.inWaiting()
-        received = ser.read(to_read)
-        # parse data
-        if len(received) >= 1:
-            vel_val = received.split(':')
-            just_now = datetime.datetime.now()
-            now = get_time(just_now, self.interval_shift)
-            csv_fname = now.strftime(dev.date_file_format)+'.csv'
-            # checking interval shifts
-            if now > last_run:
-                TX74.writeCSV(csv, data_vals, just_now, 'RPi')
-                data_vals = {} # clear the dictionaries 
-                data_int = {} 
-                last_run = now
-            csv = args.l + csv_fname
-            print received + str(just_now.strftime(SQL.date_format))
-            #building dictionary
-            data_int[vel_val[0]] = vel_val[-1]
-            data_vals[just_now.strftime(SQL.date_format)] = data_int 
-            return 
-        else:
-            print 'received no text !!!!'
-            return None
-    except Exception as ex:
-        print ex.args[0].replace('\n', ' ')
-        print 'now '+ str(now)
-        print 'last_run' + str(last_run)
-        #if error found, do timeout
-        #print data_vals
-        #raw_input("Press enter to continue")
-        #os.system("pause")
-        return None
+    return abs(d2 - d1)
         
         
 if __name__ == '__main__':
@@ -193,7 +148,7 @@ if __name__ == '__main__':
     dev = Device()
     # device settings: port, baud rate and timeout
     dev.setup_device(args.d, args.s, 0)
-    dev.output_path(args.l)
+    dev.setup_output_path(args.l)
     # log sql (debug) print sql
     
     print 'Reading serial input from: {0} - at {1}'.format(str(dev.port),str(dev.br))

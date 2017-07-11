@@ -116,7 +116,7 @@ class SQL(object):
     select = 'SELECT {0} FROM ({1});'
     select_where = 'SELECT {0} FROM ({1}) WHERE {2};'
     
-    select_node_text = select_where.format('txt', '"enc_nodes"'. 'code = {0}')
+    select_node_text = select_where.format('txt', '"enc_nodes"', 'code = {0}')
     select_node_text2 = """SELECT txt FROM "enc_nodes" WHERE code = {0};"""
     
     exist = """SELECT EXISTS(

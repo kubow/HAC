@@ -9,9 +9,9 @@ log_dir=${PWD}/Multimedia/
 data_db=${PWD}/Multimedia/Measured/
 last_run_file=${data_db}last.run
 
-settings_db=${PWD}/System/Device/settings.db
-py_dev_file=${PWD}/System/Device/DataWrite.py
-py_for_file=${PWD}/System/DataWeather.py
+settings_db=${PWD}/System/Device.db
+py_dev_file=${PWD}/System/DV72.py
+py_for_file=${PWD}/System/SO74.py
 
 echo ============================================
 echo "getting location in format ('city','country')"

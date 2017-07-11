@@ -6,8 +6,8 @@ SET mainHTML=%~dp0index.html
 SET log_dir=%~dp0Multimedia\
 SET data_dir=%log_dir%Measured\
 SET device_dir=%~dp0System\Device\
-SET py_data_file=%device_dir%DataWrite.py
-SET py_forecast_file=%~dp0System\DataWeather.py
+SET py_data_file=%device_dir%DV72.py
+SET py_forecast_file=%~dp0System\SO74.py
 SET py_log_file=%~dp0System\log.py
 SET sqlite=C:\_Run\App\Database\SQLite\sqlite3.exe
 ECHO ============================================
@@ -23,7 +23,7 @@ ECHO ====================
 ECHO python read forecast 
 ECHO ====================
 ECHO syntax: %py_forecast_file% file_to_write location (now disabled)
-SET location=
+SET location="(Horni Pocernice, cz)"
 python %py_forecast_file% -l %location% -w %mainHTML%
 ECHO ==========================
 ECHO python write proccessed data
