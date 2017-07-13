@@ -223,6 +223,13 @@ def get_separator_from(path):
     return separator
 
 
+def is_file(filename):
+    if os.path.isfile(filename):
+        return True
+    else:
+        return False
+
+
 def read_file(filename):
     with open(filename, 'r') as content_file:
         content = content_file.read()
@@ -256,6 +263,12 @@ def get_file_size(file_path):
 def touch_file(path):
     with open(path, 'a'):
         os.utime(path, None)
+        
+        
+def create_dir_if_neccesary(path):
+    if not os.path.exists(path):
+        os.makedirs(path)
+        print 'directory '+path+' folder created ...'
 
 
 if __name__ == '__main__':

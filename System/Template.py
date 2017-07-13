@@ -16,14 +16,27 @@ class HTML(object):
     + pageTemplateBegin - as document header (up to menu)
     + pageTemplateMiddle - as middle part of document
     + pageTemplateEnd - as ending part of document"""
+    skelet = """<!DOCTYPE html> 
+    <html lang="en">
+    <head>{0}
+    </head>
+    <body>{1}
+    </body>
+    </html>"""
+    skelet_meta = skelet.format('\n<meta {0}>{1}', '{2}')
+    skelet_meta_charset = skelet_meta.format('charset="UTF-8"', '{0}', '{1}')
+    skelet_titled = skelet_meta_charset.format('\n<title>{0}</title>', '{1}')
     ref = '<a href="{0}.html">{1}</a>'
     ref_c = '<a class="{0}" href="{1}.html">{2}</a>'
     heading = '<h{0}>{1}</h{0}>'
     paragraph = '<p>{0}</p>'
     paragraph_c = '<p class="{0}">{1}</p>'
+    div_tag_simple = '<div {0}>{1}</div>'
+    div_tag_id = div_tag_simple.format('id="{0}"', '{1}')
+    div_tag_class = div_tag_simple.format('class="{0}"', '{1}')
     div_tag = '<div id="{0}" class="{1}">{2}</div>'
     pageTemplateBegin = """<!DOCTYPE HTML>
-    <htmll>
+    <html lang="cs">
     <head>
     <meta charset="utf-8">
     <title>{0}</title>
@@ -117,14 +130,13 @@ class SQL(object):
     select_where = 'SELECT {0} FROM ({1}) WHERE {2};'
     
     select_node_text = select_where.format('txt', '"enc_nodes"', 'code = {0}')
-    select_node_text2 = """SELECT txt FROM "enc_nodes" WHERE code = {0};"""
     
     exist = """SELECT EXISTS(
             SELECT 1 FROM {0}
             WHERE {1}
         );"""
     table_exist = exist.format('sqlite_master', 'type="table" AND name = "{0}"')
-        
+    
     insert = 'INSERT INTO {0} VALUES ({1});'
     
     ins_val = '"{0}", "{1}", "{2}", "{3}", {4}'

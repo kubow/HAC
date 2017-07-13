@@ -1,7 +1,7 @@
-import os, sys
 import argparse
 import sqlite3
 
+import OS74
 import TX74
 import log
 from Template import SQL
@@ -33,18 +33,33 @@ def temp_connect_database(database):
         
 def execute_not_connected(database, sql):
     """execute command and return dataset"""
+    if OS74.is_file(database):
+        conn = sqlite3.connect(database)
+        curs = conn.execute(sql)
+        res_set = curs.fetchall()
+        # log.log_operation(logfile, module, 'executed SQL: {0}'.format(sql))
+        conn.close()
+        if res_set:
+            print res_set
+            return res_set[0]
+        else:
+            print 'no node connected'
+            return None
+    else:
+        print 'cannot find the database'
+        return None
+
+        
+def execute_many_not_connected(database, sql):
+    """execute command and return dataset"""
     conn = sqlite3.connect(database)
     curs = conn.execute(sql)
     res_set = curs.fetchall()
     # log.log_operation(logfile, module, 'executed SQL: {0}'.format(sql))
     conn.close()
-    if res_set:
-        print res_set
-        return res_set[0]
-    else:
-        print 'no node connected'
-        return None
-
+    
+    return res_set
+    
 
 def fetch_one_from_tab(c, sql):
     result = c.execute(sql).fetch_one()
@@ -66,19 +81,17 @@ def execute_connected(c, sql, logfile, module, debug=False):
     # main logic to distinguish between query types
     if 'CREATE TABLE' in sql or 'DROP TABLE' in sql:
         qry_type = 'DDL'
-        table_name = get_table_name(sql, qry_type)
-        log.log_operation(logfile, module, 'modyfing table: {0}'.format(table_name))
     elif 'INSERT' in sql or 'UPDATE' in sql or 'DELETE' in sql:
         qry_type = 'DML'
-        table_name = get_table_name(sql, qry_type)
-    elif 'SELECT' in sql:
-        qry_type = 'DML'
-        table_name = get_table_name(sql, qry_type)
     else:
-        print 'some bad happened, cannot find qery type'
+        # must be select
+        qry_type = 'DML'
+    table_name = SQL.get_table_name(sql, qry_type)
+
     c.execute()
     if debug:
         log.log_operation(logfile, module, 'executed SQL: {0}'.format(sql))
+        log.log_operation(logfile, module, 'affected table: {0}'.format(table_name))
 
 
 def open_db_connection(path):
@@ -86,12 +99,14 @@ def open_db_connection(path):
     # conn.row_factory = sqlite3.Row
     print "Openned database %s as %r" % (path, conn)
     return conn
-    
+
+
 def close_db_connection(conn):
     try:
         conn.close()
     except:
         print "connection cannot be closed"
+
 
 def databases_compare(db1, db2):
     db_left = sqlite3.connect(db1).cursor()
@@ -118,8 +133,7 @@ def databases_compare(db1, db2):
                         continue
                     mirror = get_field_content(where,
                                                column.split(' ')[0], table[0], db_right)
-                    diff = TX74.similar(row[col_num], mirror[0])
-                    if diff < 1:
+                    if TX74.similar(row[col_num], mirror[0]) < 1:
                         print '!!! difference !!!'
                     col_num += 1
 

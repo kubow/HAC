@@ -6,21 +6,75 @@ XML > HTML
 """
 import re
 import os
-import sys
 import argparse
 import difflib
-
-from xml.dom.minidom import parseString
 import xml.etree.ElementTree as xml_tree
-
+import lxml.html
+import requests
+from xml.dom.minidom import parseString
 try:
     from bs4 import BeautifulSoup
 except:
     print 'using alternative html parser'
+import HTMLParser
 
+import DV72
+from Template import HTML, SQL
 import log
-
 # sys.setdefaultencoding('utf-8')
+
+
+class WebContent(HTMLParser.HTMLParser):
+    """http://stackoverflow.com/questions/3276040/how-can-i-use-the-python-htmlparser-library-to-extract-data-from-a-specific-div """
+    def __init__(self, url):
+        HTMLParser.HTMLParser.__init__(self)
+        self.headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.90 Safari/537.36'}
+        self.recording = 0
+        self.data = []
+        self.url = url
+        self.start_tag_type = 'id'
+        self.start_tag_name = 'daily-menu-container'
+        self.easier = True # found BS4
+
+    def handle_starttag(self, tag, attributes): #, tag_type, tag_name):
+        if tag != 'div':
+            return
+        if self.recording:
+            self.recording += 1
+            return
+        for name, value in attributes:
+            if name == self.start_tag_type and value == self.start_tag_name:
+                break
+        else:
+            return
+        self.recording = 1
+
+    def handle_endtag(self, tag):
+        if tag == 'div' and self.recording:
+            self.recording -= 1
+
+    def handle_data(self, data):
+        if self.recording:
+            self.data.append(data)
+            
+    def procces_url(self):
+        try:
+            html = requests.get(self.url, timeout=(10, 5))
+            if is_html_text(html):
+                if self.easier:
+                    soup = BeautifulSoup(html.content, "lxml") 
+                    div = soup.find('div', {'id': tag_name})
+                    self.div = div
+                    return ''.join(map(str, div.contents))
+                else:
+                    p = WebContent()
+                    div = p.feed(html.content)
+                    print div
+                    p.close()
+                    self.div = div
+        except:
+            print 'no text in: ' + self.url
+        
 
 def replace_line_endings(block_text):
     # replace double carriage return with tildos
@@ -34,6 +88,7 @@ def replace_line_endings(block_text):
     return block_text
 
 def trim_line_last_chars(filename):
+    new_line = []
     for line in load_text_from(filename):
         new_line.append(line[:-2])
     return new_line
@@ -46,6 +101,11 @@ def filter_lines(textfile, with_filter):
             stream += line
     return stream
 
+def is_html_text(text):
+    if lxml.html.fromstring(text).find('.//*') is not None:
+        return True
+    else:
+        return False
 
 def load_text_from(filename):
     with open(filename, 'rb') as input_file:
@@ -91,7 +151,7 @@ def readCSV(csvfile):
     try:
         fileobj = open(csvfile,'r')
         lines = fileobj.readlines()
-        timestamp = get_time_from_file(csvfile)
+        timestamp = DV72.get_time_from_file(csvfile)
         fileobj.close()
         # load field names as variables
         val = 0
@@ -150,7 +210,7 @@ def writeJSON(location, cols, c):
         if col in ('timestamp', None) or not col:
             continue
         # determine if column contains data
-        loc = c.execute(Device.group_select.format(col, col, col)).fetchall()
+        loc = c.execute(SQL.group_select.format(col, col, col)).fetchall()
         col_data = '(%s)' % ', '.join(map(str, loc))
         bypass = column + ' : ' + col_data
         if 'None' in col_data:
@@ -164,7 +224,7 @@ def writeJSON(location, cols, c):
         else:
             print location + col + '/.json'
         print '-------------------'
-        get_ts = Device.column_select.format('timestamp, ' + col, 'measured')
+        get_ts = SQL.column_select.format('timestamp, ' + col, 'measured')
         #print get_ts
         json = open(location + col + '.json','w')
         json.write('[')
@@ -179,8 +239,7 @@ def writeJSON(location, cols, c):
 
 
 def file_content_difference(file1, file2):
-    diff = difflib.unified_diff(lines1, lines2,
-    fromfile=file1, tofile=file2, lineterm='', n=0)
+    diff = difflib.unified_diff(fromfile=file1, tofile=file2, lineterm='', n=0)
     lines = list(diff)[2:]
     added = [line[1:] for line in lines if line[0] == '+']
     removed = [line[1:] for line in lines if line[0] == '-']
@@ -204,22 +263,22 @@ def xml_to_html(xml_text):
     html_text = ''
     c = Template.HTML()
     for element in xml_tree.fromstring(xml_text)._children:
-        if element.text <> None:
+        if element.text is not None:
             if len(element.attrib) > 0:
                 if 'scale' in element:
                     if element.attrib['scale'] == 'h1':
-                        html_text += c.heading.format('1', element.text.encode('utf8'))
+                        html_text += HTML.heading.format('1', element.text.encode('utf8'))
                     elif element.attrib['scale'] == 'h2':
-                        html_text += c.heading.format('2', element.text.encode('utf8'))
+                        html_text += HTML.heading.format('2', element.text.encode('utf8'))
                     else:
-                        html_text += c.paragraph.format('2', element.text.encode('utf8'))
+                        html_text += HTML.paragraph.format('2', element.text.encode('utf8'))
                 else:
-                    html_text += c.paragraph.format(element.text.encode('utf8'))
+                    html_text += HTML.paragraph.format(element.text.encode('utf8'))
             else:
                 for par_text in element.text.split('\n'):
-                    html_text += c.paragraph.format(par_text.encode('utf8'))
+                    html_text += HTML.paragraph.format(par_text.encode('utf8'))
         else:
-            html_text += c.paragraph.format('... no content for this part ...\n')
+            html_text += HTML.paragraph.format('... no content for this part ...\n')
     return html_text
 
 

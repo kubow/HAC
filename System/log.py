@@ -1,6 +1,7 @@
 import os
 import argparse
 import datetime
+import logging
 
 def log_operation(logfile, module, text):
     logfile = open(logfile, 'a') #w+
@@ -12,7 +13,28 @@ def log_operation(logfile, module, text):
         print 'something happened'
     finally:
         logfile.close()
-
+        
+        
+def advanced_logger(log_file, module):
+    logging.basicConfig()
+    logger = logging.getLogger('PY ; '+module)
+    logger.setLevel(logging.DEBUG)
+    formatter = logging.Formatter(fmt='%(asctime)s ; '+module+' ; %(name)s ; %(levelname)s ; %(message)s', datefmt='%d.%m.%Y %H:%M:%S')
+    fh = logging.FileHandler(log_file)
+    fh.setLevel(logging.DEBUG)
+    fh.setFormatter(formatter)
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.ERROR)
+    ch.setFormatter(formatter)
+    logger.addHandler(fh)
+    logger.addHandler(ch)
+    return logger
+    
+def advanced_logget_test():
+    logger = advanced_logger('logfile.log')
+    logger.log(10, '0 ; this is a debug message')
+    logger.log(20, '3 ; this is an error message')
+    
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="log to file")
     parser.add_argument('-l', help='Log file', type=str, default='')

@@ -1,5 +1,6 @@
 """Usage JSON2SQLite.py #.json
-parses JSON data to SQLite"""
+parses JSON data to SQLite
+kubw kubow 2017"""
 import os
 import sys
 import sqlite3
