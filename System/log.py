@@ -3,16 +3,16 @@ import argparse
 import datetime
 import logging
 
-def log_operation(logfile, module, text):
-    logfile = open(logfile, 'a') #w+
+def log_operation(log_file, module, text):
+    log_file = open(log_file, 'a') #w+
     now = datetime.datetime.now()
     line_text = str(now) + ' - ' + module + ' - ' + text + '\n'
     try:
-        logfile.write(line_text)
+        log_file.write(line_text)
     except:
         print 'something happened'
     finally:
-        logfile.close()
+        log_file.close()
         
         
 def advanced_logger(log_file, module):
@@ -31,7 +31,7 @@ def advanced_logger(log_file, module):
     return logger
     
 def advanced_logget_test():
-    logger = advanced_logger('logfile.log')
+    logger = advanced_logger('log_file.log')
     logger.log(10, '0 ; this is a debug message')
     logger.log(20, '3 ; this is an error message')
     

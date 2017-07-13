@@ -60,20 +60,21 @@ class WebContent(HTMLParser.HTMLParser):
     def procces_url(self):
         try:
             html = requests.get(self.url, timeout=(10, 5))
-            if is_html_text(html):
+            if is_html_text(html.content):
                 if self.easier:
-                    soup = BeautifulSoup(html.content, "lxml") 
-                    div = soup.find('div', {'id': tag_name})
-                    self.div = div
-                    return ''.join(map(str, div.contents))
+                    soup = BeautifulSoup(html.content, "lxml")
+                    self.div = soup.find('div', {self.start_tag_type: self.start_tag_name})
+                    return ''.join(map(str, self.div.contents))
                 else:
                     p = WebContent()
-                    div = p.feed(html.content)
-                    print div
+                    self.div = p.feed(html.content)
                     p.close()
-                    self.div = div
+
+            else:
+                print 'cannot parse content of {0} ({1})'.format(self.url, html.content)
         except:
             print 'no text in: ' + self.url
+            self.div = None
         
 
 def replace_line_endings(block_text):

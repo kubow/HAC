@@ -50,18 +50,23 @@ class OpenWeatherMap(object):
         self.actual_data = self.get_actual(location)'''
 
 
-def browse_internet(path_dir):
-    OS74.create_dir_if_neccesary(OS74.one_dir_up(path_dir) + '/Multimedia/RestMenu')
+def browse_internet(match_dir):
+    OS74.create_dir_if_neccesary(match_dir + '/Multimedia/RestMenu')
     settings_db = os.path.dirname(os.path.realpath(__file__))+'/Device.db'
     restaurants = DB74.execute_many_not_connected(settings_db, 'SELECT * FROM RestActive;')
     template = HTML.skelet_titled
     for restaurant in restaurants:
-        if restaurant[8]:
-            wc = WebContent(restaurant[8])
+        if restaurant[4]:
+            wc = WebContent(restaurant[4])
         else:
-            wc = WebContent(restaurant[5])
+            wc = WebContent(restaurant[5]) # zomato style
         wc.procces_url()
-        OS74.file_write(restaurant[2], template.format(restaurant[3], wc.div))
+        html_file_pah = match_dir + '/' + restaurant[2].encode('utf-8') + '.html'
+        if wc.div:
+            print html_file_pah
+        else:
+            print html_file_pah + ' ... not creating, cannot fetch source'
+        # OS74.file_write(html_file_path, template.format(restaurant[3].encode('utf-8'), wc.div))
         
 def write_temperature_text(html_file, title, content):
     OS74.file_write(html_file, HTML.skelet_titled.format(title, content.encode('utf-8')))
