@@ -32,8 +32,6 @@ class WebContent(HTMLParser.HTMLParser):
         self.recording = 0
         self.data = []
         self.url = url
-        self.start_tag_type = 'id'
-        self.start_tag_name = 'daily-menu-container'
         self.easier = True # found BS4
 
     def handle_starttag(self, tag, attributes): #, tag_type, tag_name):
@@ -57,14 +55,17 @@ class WebContent(HTMLParser.HTMLParser):
         if self.recording:
             self.data.append(data)
             
-    def procces_url(self):
+    def procces_url(self, tag_type, tag_name):
+        if 'id' in str(tag_type).lower():
+            tag_type = 'id'
+        else:
+            tag_type = 'class'
         try:
             html = requests.get(self.url, timeout=(10, 5))
             if is_html_text(html.content):
                 if self.easier:
                     soup = BeautifulSoup(html.content, "lxml")
-                    self.div = soup.find('div', {self.start_tag_type: self.start_tag_name})
-                    return ''.join(map(str, self.div.contents))
+                    self.div = soup.find('div', {tag_type: tag_name})
                 else:
                     p = WebContent()
                     self.div = p.feed(html.content)
@@ -72,8 +73,10 @@ class WebContent(HTMLParser.HTMLParser):
 
             else:
                 print 'cannot parse content of {0} ({1})'.format(self.url, html.content)
+        except HTMLParser.HTMLParseError, e:
+            print 'cannot fetch address {0}, ({1})'.format(self.url, e)
         except:
-            print 'no text in: ' + self.url
+            print 'some else error occurred: ' + self.url
             self.div = None
         
 

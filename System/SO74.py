@@ -51,25 +51,28 @@ class OpenWeatherMap(object):
 
 
 def browse_internet(match_dir):
-    OS74.create_dir_if_neccesary(match_dir + '/Multimedia/RestMenu')
+    final_dir = match_dir + '/Multimedia/RestMenu'
+    OS74.create_dir_if_neccesary(final_dir)
     settings_db = os.path.dirname(os.path.realpath(__file__))+'/Settings.sqlite'
     restaurants = DB74.execute_many_not_connected(settings_db, 'SELECT * FROM RestActive;')
     template = HTML.skelet_titled
     for restaurant in restaurants:
         if restaurant[4]:
             wc = WebContent(restaurant[4])
+            wc.procces_url(restaurant[7], restaurant[6])
         else:
             wc = WebContent(restaurant[5]) # zomato style
-        wc.procces_url()
-        html_file_pah = match_dir + '/' + restaurant[2].encode('utf-8') + '.html'
+            wc.procces_url('id', 'daily-menu-container')
+
+        html_file_path = final_dir + '/' + restaurant[2].encode('utf-8') + '.html'
         if wc.div:
-            print html_file_pah
-        else:
-            print html_file_pah + ' ... not creating, cannot fetch source'
-        # OS74.file_write(html_file_path, template.format(restaurant[3].encode('utf-8'), wc.div))
-        
+            print 'creating ' + html_file_path + ' from: ' + wc.url
+            OS74.file_write(html_file_path, template.format(restaurant[3].encode('utf-8'), wc.div))
+
+
 def write_temperature_text(html_file, title, content):
     OS74.file_write(html_file, HTML.skelet_titled.format(title, content.encode('utf-8')))
+
 
 def temporary_class_Mapping():
     #from qgis.core import *
@@ -97,4 +100,5 @@ if __name__ == '__main__':
         o = OpenWeatherMap(loc)
 
         print 'writing content to file: '+args.w
-        write_temperature_text(args.w, 'Weather at '+loc, o.build_text_place() + '\n' + o.build_text_local())
+        write_temperature_text(args.w + 'index.html',
+                               'Weather at '+loc, o.build_text_place() + '\n' + o.build_text_local())
