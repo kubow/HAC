@@ -52,7 +52,7 @@ class OpenWeatherMap(object):
 
 def browse_internet(match_dir):
     OS74.create_dir_if_neccesary(match_dir + '/Multimedia/RestMenu')
-    settings_db = os.path.dirname(os.path.realpath(__file__))+'/Device.db'
+    settings_db = os.path.dirname(os.path.realpath(__file__))+'/Settings.sqlite'
     restaurants = DB74.execute_many_not_connected(settings_db, 'SELECT * FROM RestActive;')
     template = HTML.skelet_titled
     for restaurant in restaurants:

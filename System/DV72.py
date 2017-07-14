@@ -21,7 +21,7 @@ class Device(object):
     def __init__(self):
         self.date_format = '%Y/%m/%d %H:%M:%S'
         self.date_file_format = '%Y%m%d_%H%M'
-        self.setup_db = os.path.dirname(os.path.realpath(__file__)) + '/Device.db'
+        self.setup_db = os.path.dirname(os.path.realpath(__file__)) + '/Settings.sqlite'
     
     def setup_device(self, device, sensor, timeout):
         conn = DB74.open_db_connection(self.setup_db)

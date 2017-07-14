@@ -9,7 +9,7 @@ log_dir=${PWD}/Multimedia/
 data_db=${PWD}/Multimedia/Measured/
 last_run_file=${data_db}last.run
 
-settings_db=${PWD}/System/Device.db
+settings_db=${PWD}/System/Settings.sqlite
 py_dev_file=${PWD}/System/DV72.py
 py_for_file=${PWD}/System/SO74.py
 
