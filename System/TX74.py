@@ -254,7 +254,7 @@ def file_content_difference(file1, file2):
             print line
 
 def create_file_if_neccesary(filename):
-    if os.isfile(file):
+    if os.path.isfile(filename):
         print ' -> ' + filename + ' - exists ...'
     else:
         print ' -> ' + filename + ' - creating new file ...'
@@ -314,7 +314,7 @@ if __name__ == '__main__':
     parser.add_argument('-l', help='Logic', type=str, default='')
     args = parser.parse_args()
 
-    if os.isfile(args.i):
+    if os.path.isfile(args.i):
         create_file_if_neccesary(args.o)
         export_text_to(args.o, replace_line_endings(load_text_from(args.i)))
     else:
