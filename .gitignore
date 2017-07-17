@@ -1,11 +1,10 @@
-/index.html
+/index.htm*
 /*.log
-/Multimedia/*.html
-/Multimedia/log*
-/Multimedia/*.log
-/Multimedia/image/*.jpg
+/Multimedia/*.htm*
+/Multimedia/*log*
+/Multimedia/image/*
 /Multimedia/Measured/*
-/Multimedia/RestMenu/*.htm
+/Multimedia/RestMenu/*.htm*
 /System/*.htm
 /System/*.pyc
 /System/Device/*.pyc
