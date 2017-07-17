@@ -88,8 +88,6 @@ class h808e(object):
         self.load_active_directory_memory()
         # transfer to corresponding database
         
-        
-
         return True
 
     def load_active_directory_memory(self):

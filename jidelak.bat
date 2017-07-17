@@ -1,11 +1,12 @@
 @echo off
-Set mainHTML=%~dp0%index.html
-Set subHTML1=%~dp0Multimedia\showing1.htm
-Set subHTML2=%~dp0Multimedia\showing2.htm
-Set subHTML3=%~dp0Multimedia\showing3.htm
+Set mainHTML=%~dp0index.html
+SET mlt_dir=%~dp0Multimedia\
+Set subHTML1=%mlt_dir%showing1.htm
+Set subHTML2=%mlt_dir%showing2.htm
+Set subHTML3=%mlt_dir%showing3.htm
 rem need to log vbs script outputs
 rem wscript %~dp0System\Reader\ReaderMenu.vbs
-python %~dp0System\Reader\Reader.py
+python %~dp0System\SO74.py -g 1 -w %~dp0
 echo ^<html^> > %mainHTML%
 echo ^<head^> >> %mainHTML%
 echo ^<meta http-equiv="Content-Type" content="text/html; charset=windows-1250" /^> >> %mainHTML%
