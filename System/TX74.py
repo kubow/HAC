@@ -131,22 +131,24 @@ def writeCSV(file_name, values, timestamp, device):
     device - which perform data read"""
     if os.path.exists(file_name):
         f = open(file_name, "a")
+        line = 2
+        # TODO: check if header corresponds
     else:
         f = open(file_name, "a+")
         line = 1
-        # write time series and header
-        for actime, vals in values.iteritems():
-            row = ''
-            if line == 1:
-                for d, v in vals.iteritems():
-                    row += str(d) + ','
-                row = 'datetime, ' + row
-                f.write(row + "\n")
-            row = str(actime) + ','
+    # write time series and header
+    for actime, vals in values.iteritems():
+        row = ''
+        if line == 1:
             for d, v in vals.iteritems():
-                row += str(v) + ','
-            f.write(row+"\n")
-            line += 1
+                row += str(d) + ','
+            row = 'datetime, ' + row
+            f.write(row + "\n")
+        row = str(actime) + ','
+        for d, v in vals.iteritems():
+            row += str(v) + ','
+        f.write(row+"\n")
+        line += 1
     f.close()
 
 def readCSV(csvfile):
