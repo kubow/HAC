@@ -64,7 +64,7 @@ class WebContent(HTMLParser.HTMLParser):
             html = requests.get(self.url, timeout=(10, 5))
             if is_html_text(html.content):
                 if self.easier:
-                    soup = BeautifulSoup(html.content, "lxml")
+                    soup = BeautifulSoup(html.content, 'lxml')
                     self.div = soup.find('div', {tag_type: tag_name})
                 else:
                     p = WebContent()
@@ -90,6 +90,25 @@ def replace_line_endings(block_text):
     # and finally put back new line characters
     block_text = re.sub(r'~~~', r'\n\n', block_text)
     return block_text
+    
+    
+def replace_cr_lf(block_text):
+    # replace windows line endings with linux line endings
+    if '\r\n' in block_text:
+        block_text.replace('\r\n', '\n')
+    else:
+        print 'this text does not have any windows line endings, passing ...'
+    return block_text
+    
+    
+def replace_lf_crlf(block_text)
+    # replace linux line endings with windows line endings
+    if re.search('\r?\n'):
+        block_text = re.sub('\r?\n', '\r\n', block_text)
+    else:
+        print 'this text does not have any linux line endings, passing ...'
+    return block_text
+    
 
 def trim_line_last_chars(filename):
     new_line = []
@@ -97,6 +116,7 @@ def trim_line_last_chars(filename):
         new_line.append(line[:-2])
     return new_line
 
+    
 def filter_lines(textfile, with_filter):
     stream = ''
     for line in textfile:
@@ -105,12 +125,14 @@ def filter_lines(textfile, with_filter):
             stream += line
     return stream
 
+    
 def is_html_text(text):
     if lxml.html.fromstring(text).find('.//*') is not None:
         return True
     else:
         return False
 
+        
 def load_text_from(filename):
     with open(filename, 'rb') as input_file:
         text = input_file.read()
@@ -130,11 +152,11 @@ def writeCSV(file_name, values, timestamp, device):
     timestamp of exact time measured
     device - which perform data read"""
     if os.path.exists(file_name):
-        f = open(file_name, "a")
+        f = open(file_name, 'a')
         line = 2
         # TODO: check if header corresponds
     else:
-        f = open(file_name, "a+")
+        f = open(file_name, 'a+')
         line = 1
     # write time series and header
     for actime, vals in values.iteritems():
@@ -143,11 +165,11 @@ def writeCSV(file_name, values, timestamp, device):
             for d, v in vals.iteritems():
                 row += str(d) + ','
             row = 'datetime, ' + row
-            f.write(row + "\n")
+            f.write(row + '\n')
         row = str(actime) + ','
         for d, v in vals.iteritems():
             row += str(v) + ','
-        f.write(row+"\n")
+        f.write(row+'\n')
         line += 1
     f.close()
 
@@ -195,6 +217,7 @@ def readCSV(csvfile):
         print 'problem in csv ' + csvfile + ' (line{0})'.format(str(val))
         return None
 
+        
 def readJSON(file):
     print 'file: ' + file
     with open(file, 'r') as fh:
@@ -207,6 +230,7 @@ def readJSON(file):
         last = fh.readlines()[-1].decode()
     return (first, last)
 
+    
 def writeJSON(location, cols, c):
     # print cols
     columns = cols.split(',')
@@ -255,6 +279,7 @@ def file_content_difference(file1, file2):
         if line not in removed:
             print line
 
+            
 def create_file_if_neccesary(filename):
     if os.path.isfile(filename):
         print ' -> ' + filename + ' - exists ...'
@@ -296,9 +321,9 @@ def htm_to_plain_txt(htm_txt):
     
 def test_utf_special_characters():
     print os.getcwd()
-    veta=u"Žluťoučký kůň pěl ďábelské ódy."
+    veta=u'Žluťoučký kůň pěl ďábelské ódy.'
     print veta
-    log.file_write("aaa.log", "temp", veta)
+    log.file_write('aaa.log', 'temp', veta)
     
     
 def similar(seq1, seq2):
@@ -310,14 +335,22 @@ def similar(seq1, seq2):
         b=str(seq2).lower()).ratio() #> 0.9
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Text proccess")
-    parser.add_argument('-i', help='Input file', type=str, default='')
-    parser.add_argument('-o', help='Output file', type=str, default='')
+    parser = argparse.ArgumentParser(description='Text proccess')
+    parser.add_argument('-i', help='Input file/dir', type=str, default='')
+    parser.add_argument('-o', help='Output file/dir', type=str, default='')
     parser.add_argument('-l', help='Logic', type=str, default='')
     args = parser.parse_args()
 
     if os.path.isfile(args.i):
         create_file_if_neccesary(args.o)
         export_text_to(args.o, replace_line_endings(load_text_from(args.i)))
+    elif os.path.isdir(args.i):
+        for filename in os.listdir(directory):
+            if 'lin' in args.l:
+                export_text_to(args.o, replace_cr_lf(load_text_from(filename))
+            elif 'win' in args.l:
+                export_text_to(args.o, replace_lf_crlf(load_text_from(filename))
+            else:
+                print 'cannot determine logic'
     else:
-        print args.i + ' -> input file does not exist ...'
+        print args.i + ' -> input file/dir does not exist ...'
