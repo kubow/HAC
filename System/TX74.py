@@ -92,7 +92,7 @@ def replace_line_endings(block_text):
     return block_text
     
     
-def replace_cr_lf(block_text):
+def replace_crlf_lf(block_text):
     # replace windows line endings with linux line endings
     if '\r\n' in block_text:
         block_text.replace('\r\n', '\n')
@@ -101,7 +101,7 @@ def replace_cr_lf(block_text):
     return block_text
     
     
-def replace_lf_crlf(block_text)
+def replace_lf_crlf(block_text):
     # replace linux line endings with windows line endings
     if re.search('\r?\n'):
         block_text = re.sub('\r?\n', '\r\n', block_text)
@@ -345,11 +345,13 @@ if __name__ == '__main__':
         create_file_if_neccesary(args.o)
         export_text_to(args.o, replace_line_endings(load_text_from(args.i)))
     elif os.path.isdir(args.i):
-        for filename in os.listdir(directory):
+        for filename in os.listdir(args.i):
+            file_path = args.i + '/' + filename
+            print file_path
             if 'lin' in args.l:
-                export_text_to(args.o, replace_cr_lf(load_text_from(filename))
+                export_text_to(args.o + '/' + filename, replace_crlf_lf(load_text_from(file_path)))
             elif 'win' in args.l:
-                export_text_to(args.o, replace_lf_crlf(load_text_from(filename))
+                export_text_to(args.o + '/' + filename, replace_lf_crlf(load_text_from(file_path)))
             else:
                 print 'cannot determine logic'
     else:
