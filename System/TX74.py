@@ -10,6 +10,7 @@ import argparse
 import difflib
 import xml.etree.ElementTree as xml_tree
 import lxml.html
+import feedparser
 import requests
 from xml.dom.minidom import parseString
 try:
@@ -78,6 +79,36 @@ class WebContent(HTMLParser.HTMLParser):
         except:
             print 'some else error occurred: ' + self.url
             self.div = None
+            
+            
+class RssContent(object):
+    def __init__(self, rss_url):
+        self.feed_url = rss_url
+        thefeed = feedparser.parse(self.feed_url)
+        self.title = thefeed.feed.get("title", "")
+        self.link = thefeed.feed.get("link", "")
+        self.desc = thefeed.feed.get("description", "")
+        self.pub = thefeed.feed.get("published", "")
+        self.pub_pars = thefeed.feed.get("published_parsed",
+                           thefeed.feed.published_parsed))
+        for thefeedentry in thefeed.entries:
+            print("__________")
+            print(thefeedentry.get("guid", ""))
+            print(thefeedentry.get("title", ""))
+            print(thefeedentry.get("link", ""))
+            print(thefeedentry.get("description", ""))
+            print("__________")
+
+            # Parsing Namespaces
+            for thefeednamespace in thefeed.namespaces:
+                if (thefeednamespace == "media"):
+                    # parse for Yahoo Media
+                    print("Media")
+                    allmediacontent = thefeedentry.get("media_content", "")
+                    for themediacontent in allmediacontent:
+                        print(themediacontent["url"])
+                        print(themediacontent["height"])
+                        print(themediacontent["width"])
         
 
 def replace_line_endings(block_text):

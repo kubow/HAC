@@ -54,8 +54,10 @@ def browse_internet(match_dir):
     final_dir = match_dir + '/Multimedia/RestMenu'
     OS74.create_dir_if_neccesary(final_dir)
     settings_db = os.path.dirname(os.path.realpath(__file__))+'/Settings.sqlite'
+    
     restaurants = DB74.execute_many_not_connected(settings_db, 'SELECT * FROM RestActive;')
-    template = HTML.skelet_titled
+    rss = TX74.RssContent()
+    template = 
     for restaurant in restaurants:
         if restaurant[4]:
             wc = WebContent(restaurant[4])
@@ -67,7 +69,8 @@ def browse_internet(match_dir):
         html_file_path = final_dir + '/' + restaurant[2].encode('utf-8') + '.html'
         if wc.div:
             print 'creating ' + html_file_path + ' from: ' + wc.url
-            OS74.file_write(html_file_path, template.format(restaurant[3].encode('utf-8'), wc.div))
+            OS74.file_write(html_file_path, 
+                        HTML.skelet_titled.format(restaurant[3].encode('utf-8'), wc.div))
 
 
 def write_temperature_text(html_file, title, content):
@@ -83,7 +86,7 @@ if __name__ == '__main__':
     destination = ' type of file to write (HTML, SQLite, All)/destination location'
     parser = argparse.ArgumentParser(description="weather@location")
     parser.add_argument('-l', help=localization, type=str, default='')
-    parser.add_argument('-g', help='HTML mode', type=str, default='')
+    parser.add_argument('-g', help='mode', type=str, default='')
     parser.add_argument('-w', help=destination, type=str, default='none')
     args = parser.parse_args()
     if args.g:
