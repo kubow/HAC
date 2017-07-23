@@ -50,14 +50,12 @@ class OpenWeatherMap(object):
         self.actual_data = self.get_actual(location)'''
 
 
-def browse_internet(match_dir):
-    final_dir = match_dir + '/Multimedia/RestMenu'
+def proccess_rest(final_dir):
     OS74.create_dir_if_neccesary(final_dir)
     settings_db = os.path.dirname(os.path.realpath(__file__))+'/Settings.sqlite'
     
     restaurants = DB74.execute_many_not_connected(settings_db, 'SELECT * FROM RestActive;')
-    rss = TX74.RssContent()
-    template = 
+    
     for restaurant in restaurants:
         if restaurant[4]:
             wc = WebContent(restaurant[4])
@@ -65,13 +63,24 @@ def browse_internet(match_dir):
         else:
             wc = WebContent(restaurant[5]) # zomato style
             wc.procces_url('id', 'daily-menu-container')
-
         html_file_path = final_dir + '/' + restaurant[2].encode('utf-8') + '.html'
         if wc.div:
             print 'creating ' + html_file_path + ' from: ' + wc.url
             OS74.file_write(html_file_path, 
-                        HTML.skelet_titled.format(restaurant[3].encode('utf-8'), wc.div))
+                    HTML.skelet_titled.format(restaurant[3].encode('utf-8'), wc.div))
 
+
+def proccess_rss(final_dir):
+    OS74.create_dir_if_neccesary(final_dir)
+    rss = TX74.RssContent()
+    
+
+def browse_internet(mode, match_dir):
+    if 'rest' in mode:
+        procces_rest(match_dir + '/Multimedia/RestMenu')
+    elif 'rss' in mode:
+        process_rss(match_dir + '/Multimedia/NewsFeed')
+    
 
 def write_temperature_text(html_file, title, content):
     OS74.file_write(html_file, HTML.skelet_titled.format(title, content.encode('utf-8')))
@@ -99,9 +108,8 @@ if __name__ == '__main__':
             # determine setting from database / make default
             loc = 'Horni Pocernice,cz' #'Necin,cz'
 
-        print 'getting weather forecast of location: '+loc
+        print_text = 'Weather at '+loc, o.build_text_place() + '\n' + o.build_text_local()
         o = OpenWeatherMap(loc)
 
         print 'writing content to file: '+args.w
-        write_temperature_text(args.w + 'index.html',
-                               'Weather at '+loc, o.build_text_place() + '\n' + o.build_text_local())
+        write_temperature_text(args.w, print_text)
