@@ -83,32 +83,34 @@ class WebContent(HTMLParser.HTMLParser):
             
 class RssContent(object):
     def __init__(self, rss_url):
-        self.feed_url = rss_url
-        thefeed = feedparser.parse(self.feed_url)
+        self.url = rss_url
+        thefeed = feedparser.parse(self.url)
         self.title = thefeed.feed.get("title", "")
         self.link = thefeed.feed.get("link", "")
         self.desc = thefeed.feed.get("description", "")
         self.pub = thefeed.feed.get("published", "")
-        self.pub_pars = thefeed.feed.get("published_parsed",
-                           thefeed.feed.published_parsed))
+        # self.pub_pars = thefeed.feed.get("published_parsed",
+        #                   thefeed.feed.published_parsed)
+        inner_text = ''
         for thefeedentry in thefeed.entries:
-            print("__________")
-            print(thefeedentry.get("guid", ""))
-            print(thefeedentry.get("title", ""))
-            print(thefeedentry.get("link", ""))
-            print(thefeedentry.get("description", ""))
-            print("__________")
+            inner_text += "\n__________"
+            inner_text += thefeedentry.get("guid", "")
+            inner_text += thefeedentry.get("title", "")
+            inner_text += thefeedentry.get("link", "")
+            inner_text += thefeedentry.get("description", "")
+            inner_text += "\n__________"
 
             # Parsing Namespaces
             for thefeednamespace in thefeed.namespaces:
                 if (thefeednamespace == "media"):
                     # parse for Yahoo Media
-                    print("Media")
+                    inner_text += "Media"
                     allmediacontent = thefeedentry.get("media_content", "")
                     for themediacontent in allmediacontent:
-                        print(themediacontent["url"])
-                        print(themediacontent["height"])
-                        print(themediacontent["width"])
+                        inner_text += themediacontent["url"]
+                        inner_text += themediacontent["height"]
+                        inner_text += themediacontent["width"]
+        self.div = inner_text
         
 
 def replace_line_endings(block_text):

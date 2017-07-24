@@ -5,21 +5,23 @@ import os
 
 import DB74
 import OS74
-from TX74 import WebContent
+from TX74 import WebContent, RssContent
 from Template import HTML
 
 
 class OpenWeatherMap(object):
     def __init__(self, location):
         # syntax = pyowm.OWM(API_key='your-API-key', subscription_type='pro')
+        owm = pyowm.OWM(self.owm_api)
         print 'OpenWeatherMap.org - validate API-key disabled'
         self.owm_api = '1050e850fbcc463dd98a726d6af37134'
-        self.place_obj = pyowm.OWM(self.owm_api).weather_at_place(location)._location
+        self.place_obj = owm.weather_at_place(location)._location
         self.place_name = self.place_obj._name + ', ' + self.place_obj._country
         self.place_coor = str(self.place_obj._lat) + ', ' + str(self.place_obj._lon)
-        self.weather_local = pyowm.OWM(self.owm_api).weather_at_place(location).get_weather()
-        self.weather_forecast = pyowm.OWM(self.owm_api).daily_forecast(location).get_forecast()
+        self.weather_local = owm.weather_at_place(location).get_weather()
+        self.weather_forecast = owm.daily_forecast(location).get_forecast()
         self.weather_forecast_days = self.weather_forecast._weathers
+        self.heading = 'Weather at '+ location, self.build_text_place() + '\n' + o.build_text_local()
         # tomorrow = pyowm.timeutils.tomorrow()
         # self.is_sunny_tomorrow = self.weather_forecast.will_be_sunny_at(tomorrow) # true/false
 
@@ -49,8 +51,11 @@ class OpenWeatherMap(object):
     def __init__(self):
         self.actual_data = self.get_actual(location)'''
 
+def temporary_class_Mapping():
+    #from qgis.core import *
+    print u'aaa'
 
-def proccess_rest(final_dir):
+def process_rest(final_dir):
     OS74.create_dir_if_neccesary(final_dir)
     settings_db = os.path.dirname(os.path.realpath(__file__))+'/Settings.sqlite'
     
@@ -70,46 +75,82 @@ def proccess_rest(final_dir):
                     HTML.skelet_titled.format(restaurant[3].encode('utf-8'), wc.div))
 
 
-def proccess_rss(final_dir):
-    OS74.create_dir_if_neccesary(final_dir)
-    rss = TX74.RssContent()
-    
+def process_web_content(mode, final_dir, url=None):
+    settings_db = os.path.dirname(os.path.realpath(__file__)) + '/Settings.sqlite'
+    if url:
+        wc = WebContent(url)
+        print wc
+    else:
+        if 'rest' in mode:
+            web_objects = DB74.execute_many_not_connected(settings_db, 'SELECT * FROM RestActive;')
+            for restaurant in web_objects:
+                if restaurant[4]:
+                    wc = WebContent(restaurant[4])
+                    wc.procces_url(restaurant[7], restaurant[6])
+                else:
+                    wc = WebContent(restaurant[5])  # zomato style
+                    wc.procces_url('id', 'daily-menu-container')
+                html_file_path = final_dir + '/' + restaurant[2].encode('utf-8') + '.html'
+                if wc.div:
+                    print 'creating ' + html_file_path + ' from: ' + wc.url
+                    OS74.file_write(html_file_path,
+                                    HTML.skelet_titled.format(restaurant[3].encode('utf-8'), wc.div))
+        elif 'rss' in mode:
+            web_objects = DB74.execute_many_not_connected(settings_db, 'SELECT * FROM RssActive;')
+            for rss in web_objects:
+                if rss[3]:
+                    wc = RssContent(rss[3])
+                else:
+                    print 'no address to fetch ...' + str(rss)
+                html_file_path = final_dir + '/' + rss[2].encode('utf-8') + '.html'
+                if wc.div:
+                    print 'creating ' + html_file_path + ' from: ' + wc.url
+                    OS74.file_write(html_file_path,
+                            HTML.skelet_titled.format(rss[3].encode('utf-8'), wc.div.encode('utf-8')))
 
-def browse_internet(mode, match_dir):
+
+def browse_internet(mode, match_dir, url=None):
     if 'rest' in mode:
-        procces_rest(match_dir + '/Multimedia/RestMenu')
+        final_dir = match_dir + '/Multimedia/RestMenu'
+        url = None
     elif 'rss' in mode:
-        process_rss(match_dir + '/Multimedia/NewsFeed')
-    
+        final_dir = match_dir + '/Multimedia/NewsFeed'
+        url = None
+    else:
+        final_dir = match_dir + '/Multimedia/WebsCont'
+    OS74.create_dir_if_neccesary(final_dir)
+    process_web_content(mode, final_dir, url)
+
+
+def set_default_location(try_this):
+    if try_this:
+        return try_this
+    else:
+        # determine setting from database / make default
+        return 'Horni Pocernice,cz'  # 'Necin,cz'
+
 
 def write_temperature_text(html_file, title, content):
     OS74.file_write(html_file, HTML.skelet_titled.format(title, content.encode('utf-8')))
 
 
-def temporary_class_Mapping():
-    #from qgis.core import *
-    print u'aaa'
-
 if __name__ == '__main__':
-    localization = ' location where user wants to read weather'
+    localization = (" location where user wants to read weather\n"
+                    "     or a link to a web page, which will be read")
     destination = ' type of file to write (HTML, SQLite, All)/destination location'
     parser = argparse.ArgumentParser(description="weather@location")
     parser.add_argument('-l', help=localization, type=str, default='')
     parser.add_argument('-g', help='mode', type=str, default='')
     parser.add_argument('-w', help=destination, type=str, default='none')
     args = parser.parse_args()
-    if args.g:
-        browse_internet(args.w)
-    else:
-        # check for submitted location
-        if args.l:
-            loc = args.l
-        else:
-            # determine setting from database / make default
-            loc = 'Horni Pocernice,cz' #'Necin,cz'
-
-        print_text = 'Weather at '+loc, o.build_text_place() + '\n' + o.build_text_local()
+    loc = set_default_location(args.l)
+    if 'weather' in args.g:
         o = OpenWeatherMap(loc)
+        print 'writing content to file: ' + args.w
+        write_temperature_text(args.w)
+    else:
+        browse_internet(args.g, args.w, args.l)
 
-        print 'writing content to file: '+args.w
-        write_temperature_text(args.w, print_text)
+
+
+

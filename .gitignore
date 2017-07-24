@@ -4,6 +4,7 @@
 /Multimedia/*log*
 /Multimedia/image/*
 /Multimedia/Measured/*
+/Multimedia/NewsFeed/*.htm*
 /Multimedia/RestMenu/*.htm*
 /System/*.htm
 /System/*.pyc
