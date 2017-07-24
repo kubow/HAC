@@ -12,16 +12,16 @@ from Template import HTML
 class OpenWeatherMap(object):
     def __init__(self, location):
         # syntax = pyowm.OWM(API_key='your-API-key', subscription_type='pro')
-        owm = pyowm.OWM(self.owm_api)
+        owm_api = '1050e850fbcc463dd98a726d6af37134'
+        owm = pyowm.OWM(owm_api)
         print 'OpenWeatherMap.org - validate API-key disabled'
-        self.owm_api = '1050e850fbcc463dd98a726d6af37134'
         self.place_obj = owm.weather_at_place(location)._location
         self.place_name = self.place_obj._name + ', ' + self.place_obj._country
         self.place_coor = str(self.place_obj._lat) + ', ' + str(self.place_obj._lon)
         self.weather_local = owm.weather_at_place(location).get_weather()
         self.weather_forecast = owm.daily_forecast(location).get_forecast()
         self.weather_forecast_days = self.weather_forecast._weathers
-        self.heading = 'Weather at '+ location, self.build_text_place() + '\n' + o.build_text_local()
+        self.heading = 'Weather at '+ location, self.build_text_place() + '\n' + self.build_text_local()
         # tomorrow = pyowm.timeutils.tomorrow()
         # self.is_sunny_tomorrow = self.weather_forecast.will_be_sunny_at(tomorrow) # true/false
 
@@ -147,10 +147,6 @@ if __name__ == '__main__':
     if 'weather' in args.g:
         o = OpenWeatherMap(loc)
         print 'writing content to file: ' + args.w
-        write_temperature_text(args.w)
+        write_temperature_text(args.w, o.heading[0], o.heading[1])
     else:
         browse_internet(args.g, args.w, args.l)
-
-
-
-

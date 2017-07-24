@@ -25,7 +25,7 @@ echo python read forecast
 echo ====================
 #syntax: py_for_file file_to_write location
 #forecast temporarily diabled
-python ${py_for_file} -l ${location} -w ${mainHTML} 
+python ${py_for_file} -l ${location} -g weather -w ${mainHTML} 
 echo ==========================
 echo python write proccessed data
 echo ==========================
@@ -34,6 +34,6 @@ echo ==========================
 platform=$(sqlite3 ${settings_db} 'select devicename from device_active;')
 echo Running on ${platform} - writing ${YY}${MM}"("${DD}").db"
 #python ${py_dev_file} -d ${weather_mo} -p ${platform}
-python ${py_dev_file} -d ${platform} -l ${data_db}
+python ${py_dev_file} -d ${platform} -s luxo -l ${data_db}
 python ${PWD}/System/log.py -l ${PWD}/Multimedia/logfile.log -m "weather" -t "agregated all data"
 touch ${last_run_file}
