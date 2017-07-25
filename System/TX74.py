@@ -73,11 +73,11 @@ class WebContent(HTMLParser.HTMLParser):
                     p.close()
 
             else:
-                print 'cannot parse content of {0} ({1})'.format(self.url, html.content)
+                print '---cannot parse content of {0} ({1})'.format(self.url, html.content)
         except HTMLParser.HTMLParseError, e:
-            print 'cannot fetch address {0}, ({1})'.format(self.url, e)
+            print '---cannot fetch address {0}, ({1})'.format(self.url, e)
         except:
-            print 'some else error occurred: ' + self.url
+            print '---some else error occurred: ' + self.url
             self.div = None
             
             

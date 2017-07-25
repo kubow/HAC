@@ -4,10 +4,8 @@
 YY=$(date +%Y)
 MM=$(date +%m)
 DD=$(date +%d)
-mainHTML=${PWD}/index.html
+
 log_dir=${PWD}/Multimedia/
-data_db=${PWD}/Multimedia/Measured/
-last_run_file=${data_db}last.run
 
 settings_db=${PWD}/System/Settings.sqlite
 py_dev_file=${PWD}/System/DV72.py
@@ -25,10 +23,12 @@ echo python read forecast
 echo ====================
 #syntax: py_for_file file_to_write location
 #forecast temporarily diabled
-python ${py_for_file} -l ${location} -g weather -w ${mainHTML} 
+python ${py_for_file} -g weather -l ${location} -w ${PWD} 
 echo ==========================
 echo python write proccessed data
 echo ==========================
+data_db=${PWD}/Multimedia/Measured/
+last_run_file=${data_db}last.run
 #weather_mo=${data_db}${YY}${MM}.db
 #weather_dy=${data_db}${YY}${MM}${DD}.db
 platform=$(sqlite3 ${settings_db} 'select devicename from device_active;')

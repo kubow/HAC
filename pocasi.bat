@@ -2,7 +2,7 @@
 cls
 SET YY=%Date:~10,4%
 SET MM=%Date:~4,2%
-SET mainHTML=%~dp0index.html
+SET mainHTML=index.html
 SET log_dir=%~dp0Multimedia\
 SET data_dir=%log_dir%Measured\
 SET system_dir=%~dp0System\
@@ -22,9 +22,9 @@ ECHO got: "%result%" : %command%
 ECHO ====================
 ECHO python read forecast 
 ECHO ====================
-ECHO syntax: %py_forecast_file% file_to_write location (now disabled)
+ECHO syntax: %py_forecast_file% -g weather -l location -w destination_to_write_results
 SET location="Horni Pocernice, cz"
-python %py_forecast_file% -l %location% -w %mainHTML%
+python %py_forecast_file% -g weather -l %location% -w %~dp0
 ECHO ==========================
 ECHO python write proccessed data
 ECHO ==========================

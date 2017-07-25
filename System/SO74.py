@@ -6,7 +6,7 @@ import os
 import DB74
 import OS74
 from TX74 import WebContent, RssContent
-from Template import HTML
+from Template import HTML, SQL
 
 
 class OpenWeatherMap(object):
@@ -21,7 +21,7 @@ class OpenWeatherMap(object):
         self.weather_local = owm.weather_at_place(location).get_weather()
         self.weather_forecast = owm.daily_forecast(location).get_forecast()
         self.weather_forecast_days = self.weather_forecast._weathers
-        self.heading = 'Weather at '+ location, self.build_text_place() + '\n' + self.build_text_local()
+        self.heading = 'Weather at ' + location, self.build_text_place() + '\n' + self.build_text_local()
         # tomorrow = pyowm.timeutils.tomorrow()
         # self.is_sunny_tomorrow = self.weather_forecast.will_be_sunny_at(tomorrow) # true/false
 
@@ -49,30 +49,12 @@ class OpenWeatherMap(object):
 
 '''class WeatherUnderground(object):
     def __init__(self):
-        self.actual_data = self.get_actual(location)'''
+        self.actual_data = self.get_actual(location)
 
-def temporary_class_Mapping():
+class Mapping(object):
     #from qgis.core import *
     print u'aaa'
-
-def process_rest(final_dir):
-    OS74.create_dir_if_neccesary(final_dir)
-    settings_db = os.path.dirname(os.path.realpath(__file__))+'/Settings.sqlite'
-    
-    restaurants = DB74.execute_many_not_connected(settings_db, 'SELECT * FROM RestActive;')
-    
-    for restaurant in restaurants:
-        if restaurant[4]:
-            wc = WebContent(restaurant[4])
-            wc.procces_url(restaurant[7], restaurant[6])
-        else:
-            wc = WebContent(restaurant[5]) # zomato style
-            wc.procces_url('id', 'daily-menu-container')
-        html_file_path = final_dir + '/' + restaurant[2].encode('utf-8') + '.html'
-        if wc.div:
-            print 'creating ' + html_file_path + ' from: ' + wc.url
-            OS74.file_write(html_file_path, 
-                    HTML.skelet_titled.format(restaurant[3].encode('utf-8'), wc.div))
+    '''
 
 
 def process_web_content(mode, final_dir, url=None):
@@ -95,6 +77,8 @@ def process_web_content(mode, final_dir, url=None):
                     print 'creating ' + html_file_path + ' from: ' + wc.url
                     OS74.file_write(html_file_path,
                                     HTML.skelet_titled.format(restaurant[3].encode('utf-8'), wc.div))
+                else:
+                    print 'no content parsed from: ' + wc.url
         elif 'rss' in mode:
             web_objects = DB74.execute_many_not_connected(settings_db, 'SELECT * FROM RssActive;')
             for rss in web_objects:
@@ -106,7 +90,9 @@ def process_web_content(mode, final_dir, url=None):
                 if wc.div:
                     print 'creating ' + html_file_path + ' from: ' + wc.url
                     OS74.file_write(html_file_path,
-                            HTML.skelet_titled.format(rss[3].encode('utf-8'), wc.div.encode('utf-8')))
+                                    HTML.skelet_titled.format(rss[3].encode('utf-8'), wc.div.encode('utf-8')))
+                else:
+                    print 'no content parsed from: ' + wc.url
 
 
 def browse_internet(mode, match_dir, url=None):
@@ -147,6 +133,6 @@ if __name__ == '__main__':
     if 'weather' in args.g:
         o = OpenWeatherMap(loc)
         print 'writing content to file: ' + args.w
-        write_temperature_text(args.w, o.heading[0], o.heading[1])
+        write_temperature_text(args.w + '/index.html', o.heading[0], o.heading[1])
     else:
         browse_internet(args.g, args.w, args.l)

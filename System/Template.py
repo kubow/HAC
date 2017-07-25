@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 import sys
-import datetime
-
-from xml.dom.minidom import parseString
 import xml.etree.ElementTree as xml_tree
-from bs4 import BeautifulSoup
 # sys.setdefaultencoding('utf-8')
+
 
 class HTML(object):
     """Some important structure templates, currently:
@@ -96,9 +93,10 @@ class HTML(object):
     </body>
     </htmll>
     """
-    
+
+
 class SQL(object):
-    """ First H808 querries / device controller"""
+    """ First H808 queries / device controller"""
     
     table_ddl = 'CREATE TABLE {0} ({1});'
     tab_fld = """ ID int,
@@ -108,7 +106,18 @@ class SQL(object):
         size int
         """
     table_create = table_ddl.format('dirlist', tab_fld)
-    
+
+    select = 'SELECT {0} FROM ({1});'
+    select_where = 'SELECT {0} FROM ({1}) WHERE {2};'
+
+    select_node_text = select_where.format('txt', '"enc_nodes"', 'code = {0}')
+
+    exist = """SELECT EXISTS(
+                SELECT 1 FROM {0}
+                WHERE {1}
+            );"""
+    table_exist = exist.format('sqlite_master', 'type="table" AND name = "{0}"')
+
     select_father_nodes = """SELECT children.father_id, COUNT(node.node_id) FROM node
     INNER JOIN children ON node.node_id = children.node_id
     GROUP BY father_id"""
@@ -125,18 +134,7 @@ class SQL(object):
     INNER JOIN enc ON children.node_id = enc.node_id
     WHERE children.father_id =:father
     ORDER BY children.sequence"""
-    
-    select = 'SELECT {0} FROM ({1});'
-    select_where = 'SELECT {0} FROM ({1}) WHERE {2};'
-    
-    select_node_text = select_where.format('txt', '"enc_nodes"', 'code = {0}')
-    
-    exist = """SELECT EXISTS(
-            SELECT 1 FROM {0}
-            WHERE {1}
-        );"""
-    table_exist = exist.format('sqlite_master', 'type="table" AND name = "{0}"')
-    
+
     insert = 'INSERT INTO {0} VALUES ({1});'
     
     ins_val = '"{0}", "{1}", "{2}", "{3}", {4}'
