@@ -124,10 +124,11 @@ if __name__ == '__main__':
     localization = (" location where user wants to read weather\n"
                     "     or a link to a web page, which will be read")
     destination = ' type of file to write (HTML, SQLite, All)/destination location'
+    def_loc = 'Praha, cz'
     parser = argparse.ArgumentParser(description="weather@location")
-    parser.add_argument('-l', help=localization, type=str, default='')
-    parser.add_argument('-g', help='mode', type=str, default='')
+    parser.add_argument('-g', help='mode', type=str, default='weather')
     parser.add_argument('-w', help=destination, type=str, default='none')
+    parser.add_argument('-l', help=localization, type=str, default='none')
     args = parser.parse_args()
     loc = set_default_location(args.l)
     if 'weather' in args.g:

@@ -7,23 +7,22 @@ import argparse
 import glob
 import datetime
 
-import platform
-from sys import platform as _platform
+try:
+    import ttk
+    import Tkinter as tk
+    import platform
+    from sys import platform as _platform
+except ImportError:
+    print 'some bad import happened'
+    import tkinter as tk
 
 import TX74
-
-import ttk
-
-try:
-    import Tkinter as tk
-except ImportError:
-    import tkinter as tk
 
 
 class Window(object):
     """Class for maintain widgets related to directory"""
 
-    def populate_tree(tree, node):
+    def populate_tree(self, tree, node):
         if tree.set(node, "type") != 'directory':
             return
 
@@ -71,7 +70,7 @@ class Window(object):
                 tree.delete(tree.get_children(''))
                 self.populate_roots(tree)
 
-    def autoscroll(sbar, first, last):
+    def autoscroll(self, sbar, first, last):
         """Hide and show scrollbar as needed."""
         first, last = float(first), float(last)
         if first <= 0 and last >= 1:
@@ -100,9 +99,8 @@ class app_browser(tk.Frame):
         tree.heading("#0", text="Directory Structure", anchor='w')
         tree.heading("size", text="File Size", anchor='w')
         tree.column("size", stretch=0, width=100)
-
-        print dir(w)
-        w.populate_roots()
+        
+        w.populate_roots(tree)
         tree.bind('<<TreeviewOpen>>', w.update_tree)
         tree.bind('<Double-Button-1>', w.change_dir)
 
@@ -266,9 +264,23 @@ def touch_file(path):
         
         
 def create_dir_if_neccesary(path):
+    # must check if path is meaningful name
     if not os.path.exists(path):
         os.makedirs(path)
         print 'directory '+path+' folder created ...'
+        
+        
+def center(toplevel):
+    toplevel.update_idletasks()
+    w = toplevel.winfo_screenwidth()
+    h = toplevel.winfo_screenheight()
+    print w
+    print h
+    print dir(toplevel)
+    # size = tuple(int(_) for _ in toplevel.geometry().split('+')[0].split('x'))
+    x = 0 # w/2 - size[0]/2
+    y = 0 # h/2 - size[1]/2
+    toplevel.geometry("%dx%d+%d+%d" % (size + (x, y)))
 
 
 if __name__ == '__main__':
@@ -277,9 +289,11 @@ if __name__ == '__main__':
     parser.add_argument('-l', help='list dir', type=str, default='')
     parser.add_argument('-f', help='file output', type=str, default='')
     args = parser.parse_args()
+    print args
     if args.b:
         root = tk.Tk()
         app = app_browser(root)
+        center(app)
         app.mainloop()
     elif args.l:
         directory_lister(args.l, args.f, True)
