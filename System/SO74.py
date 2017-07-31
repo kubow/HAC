@@ -3,6 +3,7 @@ import pyowm
 import argparse
 import os
 
+from log import Log
 import DB74
 import OS74
 from TX74 import WebContent, RssContent
@@ -117,6 +118,7 @@ def set_default_location(try_this):
 
 
 def write_temperature_text(html_file, title, content):
+    logger.log_operation('log_file.log', 'writing content {0} to file: {1}'.format(title, html_file))
     OS74.file_write(html_file, HTML.skelet_titled.format(title, content.encode('utf-8')))
 
 
@@ -131,6 +133,7 @@ if __name__ == '__main__':
     parser.add_argument('-l', help=localization, type=str, default='none')
     args = parser.parse_args()
     loc = set_default_location(args.l)
+    logger = Log('logfile.log', args.g)
     if 'weather' in args.g:
         o = OpenWeatherMap(loc)
         print 'writing content to file: ' + args.w

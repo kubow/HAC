@@ -16,6 +16,7 @@ except ImportError:
     print 'some bad import happened'
     import tkinter as tk
 
+from log import Log
 import TX74
 
 
@@ -274,13 +275,13 @@ def center(toplevel):
     toplevel.update_idletasks()
     w = toplevel.winfo_screenwidth()
     h = toplevel.winfo_screenheight()
-    print w
-    print h
-    print dir(toplevel)
-    # size = tuple(int(_) for _ in toplevel.geometry().split('+')[0].split('x'))
-    x = 0 # w/2 - size[0]/2
-    y = 0 # h/2 - size[1]/2
-    toplevel.geometry("%dx%d+%d+%d" % (size + (x, y)))
+    size = tuple(int(_) for _ in toplevel.geometry().split('+')[0].split('x'))
+    x = w/2 - size[0]/2
+    y = h/2 - size[1]/2
+    position = "%dx%d+%d+%d" % (size + (x, y))
+    log_text = 'window position : ' + position + ' - full screen {0}/{1}'.format(str(w), str(h))
+    logger.log_simple(args.f, 'directory', log_text)
+    toplevel.geometry(position)
 
 
 if __name__ == '__main__':
@@ -289,11 +290,11 @@ if __name__ == '__main__':
     parser.add_argument('-l', help='list dir', type=str, default='')
     parser.add_argument('-f', help='file output', type=str, default='')
     args = parser.parse_args()
-    print args
+    logger = Log(args.f, 'directory')
     if args.b:
         root = tk.Tk()
         app = app_browser(root)
-        center(app)
+        center(root)
         app.mainloop()
     elif args.l:
         directory_lister(args.l, args.f, True)
