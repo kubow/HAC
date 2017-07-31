@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import pyowm
 import argparse
+import datetime
 import os
 
 from log import Log
@@ -38,8 +39,9 @@ class OpenWeatherMap(object):
         snow = HTML.paragraph.format('Snowing: ' + str(self.weather_local._snow) + ' mm')
         temp = HTML.paragraph.format('Temperature: ' + str(self.weather_local.get_temperature('celsius')))
         wind = HTML.paragraph.format('Wind: ' + str(self.weather_local.get_wind()) + ' m/s')
+        time = HTML.paragraph.format(datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'))
 
-        velocities = (stat, pres, humi, rain, snow, temp, wind)
+        velocities = (stat, pres, humi, rain, snow, temp, wind, time)
         text_local = '\n'.join(velocities)
         return HTML.div_tag_id.format('weather_now', text_local)
 
@@ -106,6 +108,7 @@ def browse_internet(mode, match_dir, url=None):
     else:
         final_dir = match_dir + '/Multimedia/WebsCont'
     OS74.create_dir_if_neccesary(final_dir)
+    logger.log_simple('proccessing internet content to ' + final_dir)
     process_web_content(mode, final_dir, url)
 
 
@@ -118,25 +121,27 @@ def set_default_location(try_this):
 
 
 def write_temperature_text(html_file, title, content):
-    logger.log_operation('log_file.log', 'writing content {0} to file: {1}'.format(title, html_file))
+    logger.log_simple('writing content {0} to file: {1}'.format(title, html_file))
     OS74.file_write(html_file, HTML.skelet_titled.format(title, content.encode('utf-8')))
 
 
 if __name__ == '__main__':
-    localization = (" location where user wants to read weather\n"
+    localization = (" place/location where user wants to read weather\n"
                     "     or a link to a web page, which will be read")
-    destination = ' type of file to write (HTML, SQLite, All)/destination location'
+    destination = (" type of file to write (HTML, SQLite, All)\n"
+                    "or destination location")
     def_loc = 'Praha, cz'
     parser = argparse.ArgumentParser(description="weather@location")
     parser.add_argument('-g', help='mode', type=str, default='weather')
     parser.add_argument('-w', help=destination, type=str, default='none')
-    parser.add_argument('-l', help=localization, type=str, default='none')
+    parser.add_argument('-p', help=localization, type=str, default='none')
+    parser.add_argument('-l', help='logfile', type=str, default='none')
     args = parser.parse_args()
-    loc = set_default_location(args.l)
-    logger = Log('logfile.log', args.g)
+    loc = set_default_location(args.p)
+    logger = Log(args.l, args.g)
     if 'weather' in args.g:
         o = OpenWeatherMap(loc)
         print 'writing content to file: ' + args.w
         write_temperature_text(args.w + '/index.html', o.heading[0], o.heading[1])
     else:
-        browse_internet(args.g, args.w, args.l)
+        browse_internet(args.g, args.w, args.p)

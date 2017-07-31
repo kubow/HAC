@@ -6,7 +6,7 @@ MM=$(date +%m)
 DD=$(date +%d)
 
 log_dir=${PWD}/Multimedia/
-
+log_file=${log_dir}logfile.log
 settings_db=${PWD}/System/Settings.sqlite
 py_dev_file=${PWD}/System/DV72.py
 py_for_file=${PWD}/System/SO74.py
@@ -23,7 +23,7 @@ echo python read forecast
 echo ====================
 #syntax: py_for_file file_to_write location
 #forecast temporarily diabled
-python ${py_for_file} -g weather -l ${location} -w ${PWD} 
+python ${py_for_file} -g weather -p ${location} -w ${PWD} -l ${log_file}
 echo ==========================
 echo python write proccessed data
 echo ==========================
@@ -35,5 +35,4 @@ platform=$(sqlite3 ${settings_db} 'select devicename from device_active;')
 echo Running on ${platform} - writing ${YY}${MM}"("${DD}").db"
 #python ${py_dev_file} -d ${weather_mo} -p ${platform}
 python ${py_dev_file} -d ${platform} -s luxo -l ${data_db}
-python ${PWD}/System/log.py -l ${PWD}/Multimedia/logfile.log -m "weather" -t "agregated all data"
 touch ${last_run_file}

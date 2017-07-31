@@ -280,7 +280,7 @@ def center(toplevel):
     y = h/2 - size[1]/2
     position = "%dx%d+%d+%d" % (size + (x, y))
     log_text = 'window position : ' + position + ' - full screen {0}/{1}'.format(str(w), str(h))
-    logger.log_simple(args.f, 'directory', log_text)
+    logger.log_simple(log_text)
     toplevel.geometry(position)
 
 
