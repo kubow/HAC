@@ -16,7 +16,7 @@ except ImportError:
     print 'some bad import happened'
     import tkinter as tk
 
-from log import Log
+
 import TX74
 
 
@@ -171,10 +171,8 @@ def directory_lister(directory, output, list_files=False):
 
     content = head.format(datetime.datetime.now(), str(total_size) + ' kb', folder_count) + '\n' + htm_content
     # print content
-    print template
-    htm = open(output, 'w+')
-    htm.write(template.replace('YYY', content))
-    htm.close()
+    # print template
+    file_write(output, content)
 
 
 def get_current_dir():
@@ -254,6 +252,11 @@ def file_write(filename, content):
         target_file.write(content)
 
 
+def file_append(filename, content):
+    with open(filename, 'a') as target_file:
+        target_file.write(content)
+
+
 def get_file_size(file_path):
     # return file size in kilobytes
     return '{0:.2f}'.format(os.path.getsize(file_path) / 1024)
@@ -280,11 +283,12 @@ def center(toplevel):
     y = h/2 - size[1]/2
     position = "%dx%d+%d+%d" % (size + (x, y))
     log_text = 'window position : ' + position + ' - full screen {0}/{1}'.format(str(w), str(h))
-    logger.log_simple(log_text)
+    logger.log_operation(log_text)
     toplevel.geometry(position)
 
 
 if __name__ == '__main__':
+    from log import Log
     parser = argparse.ArgumentParser(description="browse/list dirs")
     parser.add_argument('-b', help='browse dir', type=str, default='')
     parser.add_argument('-l', help='list dir', type=str, default='')

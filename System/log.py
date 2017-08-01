@@ -2,40 +2,41 @@ import os
 import argparse
 import datetime
 import logging
+from OS74 import file_append
 
 
 class Log(object):
     def __init__(self, log_file, module, log_level='warning', advanced=False):
+        self.date_format = '%d.%m.%Y %H:%M:%S'
         if os.path.isfile(log_file):
             self.log_file = log_file
         else:
-            print log_file + ' does not exist!'
+            print log_file + ' does not exist! - create new one?'
         self.module = module
+        self.line_text = ''
         self.log_level = log_level
-        self.advanced = advanced
-        self.date_format = '%d.%m.%Y %H:%M:%S'
         if advanced:
-            self.logger = self.log_advanced()
+            self.advanced = advanced
+            self.logger = self.init_logger()
+        else:
+            self.advanced = False
 
-    def log_simple(self, text):
+    def log_operation(self, text, level=20):
         now = datetime.datetime.now().strftime(self.date_format)
-        line_text = str(now) + ' - ' + self.module + ' - ' + text + '\n'
-        print line_text
-        try:
-            log_file = open(self.log_file, 'a')  # w+
-            log_file.write(line_text)
-            lof_file.close()
-        except:
-            print 'something happened'
-        finally:
-            pass
+        if self.advanced:
+            line_text = text
+            self.logger.log(level, text)
+        else:
+            line_text = str(now) + ' ; ' + self.module + ' ; ' + text + '\n'
+            file_append(self.log_file, line_text)
+        self.line_text = line_text
 
-    def log_advanced(self):
+    def init_logger(self):
         text_format = '%(asctime)s ; ' + self.module + ' ; %(name)s ; %(levelname)s ; %(message)s'
         date_format = self.date_format 
         logging.basicConfig()
-        logger = logging.getLogger('PY ; ' + self.module)
-        logger.setLevel(logging.DEBUG)
+        log_start = logging.getLogger('PY ; ' + self.module)
+        log_start.setLevel(logging.DEBUG)
         formatter = logging.Formatter(fmt=text_format, datefmt=date_format)
         fh = logging.FileHandler(self.log_file)
         fh.setLevel(logging.DEBUG)
@@ -43,14 +44,14 @@ class Log(object):
         ch = logging.StreamHandler()
         ch.setLevel(logging.ERROR)
         ch.setFormatter(formatter)
-        logger.addHandler(fh)
-        logger.addHandler(ch)
-        return logger
+        log_start.addHandler(fh)
+        log_start.addHandler(ch)
+        return log_start
 
 
 def advanced_logger_test():
-    logger.logger.log(10, '0 ; this is a debug message')
-    logger.logger.log(20, '3 ; this is an error message')
+    logger.log_operation('0 ; this is a debug message', 10)
+    logger.log_operation('3 ; this is an error message', 20)
 
 
 if __name__ == '__main__':
@@ -63,4 +64,4 @@ if __name__ == '__main__':
     if logger.advanced:
         advanced_logger_test()
     else:
-        logger.log_simple(args.t)
+        logger.log_operation(args.t)

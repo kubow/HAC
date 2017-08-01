@@ -3,7 +3,6 @@ import sqlite3
 
 import OS74
 import TX74
-from log import Log
 from Template import SQL
 
 
@@ -87,7 +86,7 @@ def execute_connected(c, sql, logfile, module, debug=False):
     """
     logger = Log(logfile, module)
     if debug:
-        logger.log_simple('executing SQL: {0}'.format(sql))
+        logger.log_operation('executing SQL: {0}'.format(sql))
     # main logic to distinguish between query types
     if 'CREATE TABLE' in sql or 'DROP TABLE' in sql:
         qry_type = 'DDL'
@@ -100,8 +99,8 @@ def execute_connected(c, sql, logfile, module, debug=False):
 
     c.execute()
     if debug:
-        logger.log_simple('executed SQL: {0}'.format(sql))
-        logger.log_simple('affected table: {0}'.format(table_name))
+        logger.log_operation('executed SQL: {0}'.format(sql))
+        logger.log_operation('affected table: {0}'.format(table_name))
 
 
 def get_table_rows(table, db):
@@ -189,6 +188,7 @@ def temp_connect_database(database, do_some_work=''):
 
 
 if __name__ == '__main__':
+    from log import Log
     parser = argparse.ArgumentParser(description="Compare two sqlite databases")
     parser.add_argument('-m', help='mode: compare/browse sqlite database', type=str, default='')
     parser.add_argument('-l', help='first file', type=str, default='')

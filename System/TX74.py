@@ -32,6 +32,7 @@ class WebContent(HTMLParser.HTMLParser):
         self.headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.90 Safari/537.36'}
         self.recording = 0
         self.data = []
+        self.div = None
         self.url = url
         self.easier = True # found BS4
 
@@ -323,26 +324,25 @@ def create_file_if_neccesary(filename):
 
 
 def xml_to_html(xml_text):
-    import Template
     html_text = ''
-    c = Template.HTML()
+    h = HTML()
     for element in xml_tree.fromstring(xml_text)._children:
         if element.text is not None:
             if len(element.attrib) > 0:
                 if 'scale' in element:
                     if element.attrib['scale'] == 'h1':
-                        html_text += HTML.heading.format('1', element.text.encode('utf8'))
+                        html_text += h.heading.format('1', element.text.encode('utf8'))
                     elif element.attrib['scale'] == 'h2':
-                        html_text += HTML.heading.format('2', element.text.encode('utf8'))
+                        html_text += h.heading.format('2', element.text.encode('utf8'))
                     else:
-                        html_text += HTML.paragraph.format('2', element.text.encode('utf8'))
+                        html_text += h.paragraph.format('2', element.text.encode('utf8'))
                 else:
-                    html_text += HTML.paragraph.format(element.text.encode('utf8'))
+                    html_text += h.paragraph.format(element.text.encode('utf8'))
             else:
                 for par_text in element.text.split('\n'):
-                    html_text += HTML.paragraph.format(par_text.encode('utf8'))
+                    html_text += h.paragraph.format(par_text.encode('utf8'))
         else:
-            html_text += HTML.paragraph.format('... no content for this part ...\n')
+            html_text += h.paragraph.format('... no content for this part ...\n')
     return html_text
 
 
@@ -362,10 +362,10 @@ def test_utf_special_characters():
 def similar(seq1, seq2):
     try:
         return difflib.SequenceMatcher(a=seq1.lower(), 
-        b=seq2.lower()).ratio() #> 0.9
+        b=seq2.lower()).ratio() # > 0.9
     except:
         return difflib.SequenceMatcher(a=str(seq1).lower(), 
-        b=str(seq2).lower()).ratio() #> 0.9
+        b=str(seq2).lower()).ratio() # > 0.9
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Text proccess')

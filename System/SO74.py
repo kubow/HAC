@@ -4,7 +4,6 @@ import argparse
 import datetime
 import os
 
-from log import Log
 import DB74
 import OS74
 from TX74 import WebContent, RssContent
@@ -39,7 +38,7 @@ class OpenWeatherMap(object):
         snow = HTML.paragraph.format('Snowing: ' + str(self.weather_local._snow) + ' mm')
         temp = HTML.paragraph.format('Temperature: ' + str(self.weather_local.get_temperature('celsius')))
         wind = HTML.paragraph.format('Wind: ' + str(self.weather_local.get_wind()) + ' m/s')
-        time = HTML.paragraph.format(datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'))
+        time = HTML.paragraph.format('last proccess: ' + datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'))
 
         velocities = (stat, pres, humi, rain, snow, temp, wind, time)
         text_local = '\n'.join(velocities)
@@ -108,7 +107,7 @@ def browse_internet(mode, match_dir, url=None):
     else:
         final_dir = match_dir + '/Multimedia/WebsCont'
     OS74.create_dir_if_neccesary(final_dir)
-    logger.log_simple('proccessing internet content to ' + final_dir)
+    logger.log_operation('proccessing internet content to ' + final_dir)
     process_web_content(mode, final_dir, url)
 
 
@@ -121,11 +120,12 @@ def set_default_location(try_this):
 
 
 def write_temperature_text(html_file, title, content):
-    logger.log_simple('writing content {0} to file: {1}'.format(title, html_file))
+    logger.log_operation('writing content {0} to file: {1}'.format(title, html_file))
     OS74.file_write(html_file, HTML.skelet_titled.format(title, content.encode('utf-8')))
 
 
 if __name__ == '__main__':
+    from log import Log
     localization = (" place/location where user wants to read weather\n"
                     "     or a link to a web page, which will be read")
     destination = (" type of file to write (HTML, SQLite, All)\n"
