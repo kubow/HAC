@@ -3,11 +3,21 @@
 
 mainHTML=${PWD}'/index.html'
 #subHTML=${PWD}'/Multimedia/presenting.html'
+mlt_dir=${PWD}'/Multimedia/'
 subHTML1=${PWD}'/Multimedia/showing1.html'
 subHTML2=${PWD}'/Multimedia/showing2.html'
 subHTML3=${PWD}'/Multimedia/showing3.html'
 
-python ${PWD}/System/SO74.py -g 1 -w ${PWD}/Multimedia
+python ${PWD}/System/SO74.py -g restaurant -w ${PWD} -l ${mlt_dir}logfile.log
+
+cat ${PWD}'/Structure/HTML_Base_head.txt' > ${mainHTML}
+
+echo '<div id="frame"><iframe src="Multimedia/showing1.htm" width="100%%" height="100%%"></iframe></div>' >> ${mainHTML}
+echo '<div id="top"><marquee behavior="scroll" direction="left" scrolldelay="100">' >> ${mainHTML}
+cat ${mlt_dir}text_horni_lista.txt >> ${mainHTML}
+echo '</marquee></div>' >> ${mainHTML}
+echo '</body>' >> ${mainHTML}
+echo '</html>' >> ${mainHTML}
 
 #cat ${PWD}'/Structure/HTML_Base_head.txt' > $subHTML1
 #cat ${PWD}'/Structure/HTML_Base_head.txt' > $subHTML2

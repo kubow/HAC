@@ -7,14 +7,15 @@ Set subHTML3=%mlt_dir%showing3.htm
 rem need to log vbs script outputs
 rem wscript %~dp0System\Reader\ReaderMenu.vbs
 python %~dp0System\SO74.py -g restaurant -w %~dp0 -l %mlt_dir%logfile.log
-echo ^<html^> > %mainHTML%
-echo ^<head^> >> %mainHTML%
-echo ^<meta http-equiv="Content-Type" content="text/html; charset=windows-1250" /^> >> %mainHTML%
-echo ^<meta http-equiv="refresh" content="3;url=%subHTML1%" /^> >> %mainHTML%
-echo ^<title^>Jidelni_listek^</title^> >> %mainHTML%
-echo ^<link rel="stylesheet" type="text/css" href="Structure/style.css"^> >> %mainHTML%
-echo ^</head^> >> %mainHTML%
-echo ^<body^> >> %mainHTML%
+rem echo ^<html^> > %mainHTML%
+rem echo ^<head^> >> %mainHTML%
+rem echo ^<meta http-equiv="Content-Type" content="text/html; charset=windows-1250" /^> >> %mainHTML%
+rem echo ^<meta http-equiv="refresh" content="3;url=%subHTML1%" /^> >> %mainHTML%
+rem echo ^<title^>Jidelni_listek^</title^> >> %mainHTML%
+rem echo ^<link rel="stylesheet" type="text/css" href="Structure/style.css"^> >> %mainHTML%
+rem echo ^</head^> >> %mainHTML%
+rem echo ^<body^> >> %mainHTML%
+type %~dp0Structure\HTML_Base_Head.txt > %mainHTML%
 for %%F in (%~dp0Multimedia\RestMenu\*.htm) do (
     echo process file %~dp0Multimedia\RestMenu\%%~nxF
 )

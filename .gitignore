@@ -4,8 +4,10 @@
 /Multimedia/*log*
 /Multimedia/image/*
 /Multimedia/Measured/*
-/Multimedia/NewsFeed/*.htm*
-/Multimedia/RestMenu/*.htm*
+/Multimedia/NewsFeed/*.htm
+/Multimedia/NewsFeed/*.html
+/Multimedia/RestMenu/*.htm
+/Multimedia/RestMenu/*.html
 /System/*.htm
 /System/*.pyc
 /System/Device/*.pyc
