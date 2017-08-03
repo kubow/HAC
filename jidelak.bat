@@ -6,7 +6,7 @@ Set subHTML2=%mlt_dir%showing2.htm
 Set subHTML3=%mlt_dir%showing3.htm
 rem need to log vbs script outputs
 rem wscript %~dp0System\Reader\ReaderMenu.vbs
-python %~dp0System\SO74.py -g 1 -w %~dp0
+python %~dp0System\SO74.py -g restaurant -w %~dp0 -l %mlt_dir%logfile.log
 echo ^<html^> > %mainHTML%
 echo ^<head^> >> %mainHTML%
 echo ^<meta http-equiv="Content-Type" content="text/html; charset=windows-1250" /^> >> %mainHTML%

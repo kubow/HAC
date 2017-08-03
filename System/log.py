@@ -2,7 +2,6 @@ import os
 import argparse
 import datetime
 import logging
-from OS74 import file_append
 
 
 class Log(object):
@@ -32,7 +31,7 @@ class Log(object):
         self.line_text = line_text
 
     def init_logger(self):
-        text_format = '%(asctime)s ; ' + self.module + ' ; %(name)s ; %(levelname)s ; %(message)s'
+        text_format = '%(asctime)s ; ' + self.module + ' ; %(message)s ; %(name)s ; %(levelname)s'
         date_format = self.date_format 
         logging.basicConfig()
         log_start = logging.getLogger('PY ; ' + self.module)
@@ -48,6 +47,11 @@ class Log(object):
         log_start.addHandler(ch)
         return log_start
 
+
+def file_append(filename, content):
+    with open(filename, 'a') as target_file:
+        target_file.write(content)
+        
 
 def advanced_logger_test():
     logger.log_operation('0 ; this is a debug message', 10)

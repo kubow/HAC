@@ -138,7 +138,7 @@ if __name__ == '__main__':
     parser.add_argument('-l', help='logfile', type=str, default='none')
     args = parser.parse_args()
     loc = set_default_location(args.p)
-    logger = Log(args.l, args.g)
+    logger = Log(args.l, args.g, 'debug', True)
     if 'weather' in args.g:
         o = OpenWeatherMap(loc)
         print 'writing content to file: ' + args.w
