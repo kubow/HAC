@@ -1,52 +1,83 @@
-# HAC
-[![Architecture x64|ARM](https://img.shields.io/badge/Architecture-x64|ARM-yellowgreen.svg)](http://www.arm.com/products/processors/instruction-set-architectures/index.php)
-[![Platform Linux|Win](https://img.shields.io/badge/Platform-Linux|Win-orange.svg)](https://sqlite.org/features.html)
-[![Bash Script](https://img.shields.io/badge/Bash-Script-blue.svg)](https://www.gnu.org/software/bash/)
-[![Visual Basic Script|VBA](https://img.shields.io/badge/Visual%20Basic-Script%20%7C%20VBA-lightgrey.svg)](https://msdn.microsoft.com/en-us/vstudio/ms788229.aspx)
-[![Python 2.x|3.x](https://img.shields.io/badge/Python-2.x%20%7C%203.x-yellow.svg)](https://www.python.org/)
-[![HTML [5]](https://img.shields.io/badge/HTML-%5B5%5D-brightgreen.svg)](http://www.w3schools.com/html/default.asp)
-[![CSS [3]](https://img.shields.io/badge/CSS-%5B3%5D-ff69b4.svg)](http://www.w3schools.com/css/default.asp)
+# HAC (Home Automation Central)
+[![Architecture x64|ARM](https://img.shields.io/badge/Architecture-x64|ARM-yellowgreen.svg)](http://www.arm.com/products/processors/instruction-set-architectures/index.php) [![Platform Linux|Win](https://img.shields.io/badge/Platform-Linux|Win-orange.svg)](https://sqlite.org/features.html) [![Data SQLite|XML](https://img.shields.io/badge/Data-SQLite|XML|JSON|CSV-green.svg)](https://sqlite.org/features.html) [![Bash Script](https://img.shields.io/badge/Heartbeat-shellscripts*sh|cmd-blue.svg)](https://www.gnu.org/software/bash/) [![Python 2.x|3.x](https://img.shields.io/badge/Python-2.x%20%7C%203.x-yellow.svg)](https://www.python.org/) [![HTML [5]](https://img.shields.io/badge/HTML-%5B5%5D-brightgreen.svg)](http://www.w3schools.com/html/default.asp) [![CSS [3]](https://img.shields.io/badge/CSS-%5B3%5D-ff69b4.svg)](http://www.w3schools.com/css/default.asp)
 
-[![Data SQLite|XML](https://img.shields.io/badge/Data-SQLite|XML-green.svg)](https://sqlite.org/features.html)
+<i class="icon-file"></i><i class="icon-pencil"></i><i class="icon-refresh"></i><i class="icon-cog"></i>
 
-Home Automation Central.
-Used for communicating with various datasources (and also some live data) and presenting results on localhosts.
-Main configuration should be platform independent, I guess Android & iOS not for now (maybe in future).
+Used for communicating with various data sources and presenting results on hosts.
+Main configuration is platform independent, sqlite based, data generated are mostly JSON and CSV.
 
-Prequisities:
--python 2.x/3.x installed
+[TOC]
+## Database (DB74.py)
+used for browse/compare sqlite databases.
 
-## Multimedia
-These applications depending:
-### Database
-#### &nbsp;&nbsp;&nbsp;&nbsp; tk frontend python tables
-#### &nbsp;&nbsp;&nbsp;&nbsp; MySQL database (hosted on apache/nginx)
-#### &nbsp;&nbsp;&nbsp;&nbsp; PostgreSQL database
-#### &nbsp;&nbsp;&nbsp;&nbsp; sqlite databases (*.db)
-### Geo
-#### &nbsp;&nbsp;&nbsp;&nbsp; OpenLayers
-### images
-folder with images being presented 
-### RestMenu
-last loader restaurant menus, being presented with file presenting.html
-### WordPlay
-### text_horni_lista.txt
-information text running in the top of window
+ - parameters:
+   	- -m (mode:compare/browse)
+   	- -l (first file)
+   	- -r (second file)
+###DBView.py 
+used to GUI browse database (Tk)
+## Device (DV72.py)
+reading inputs and outputs from defined connections (settings in Settings.sqlite)
 
-## Structure
-Bulding parts of system.
-### CSS files
-### JS files
-### HTML templates
+ - parameters:
+	 - -d (device) - name of device currently running the script (win/rpi)
+	 - -s (sensor)  - luxo/all
+	 - -l (location) - Praha, CZ
+## H808E (H808E.py)
+main application to browse file structure (settings in Settings.sqlite)
 
-## System Modules
-Used for reading and processing text to standard fromat.
-#### &nbsp;&nbsp;&nbsp;&nbsp; Log Reader
-Processing log files with excel sheet
-### Directory Control
+ - parameters:
+	 - -c (encyklopedia sqlite database) (Cherry Tree application)
+	 - -d (directory with encyklopedia) (local file storage)
+## Operating System (OS74.py)
+Directory browser/lister
 
+ - parameters:
+	 - -b (browse directory)
+	 - -l (list directory)
+	 -  -f (output file - usually index.html)
+## Software (SO74.py)
+Several paths to retrieve multimedia information
+
+ - modes:
+	 - weather
+	 - internet browser (html, rss, restaurants...)
+ - parameters:
+	 - -g (mode: weather/rss/rest...)
+	 - -w (destination)
+	 - -p (place/location where user wants to read weather or a link to a web page, which will be read)
+	 -  -l (log file - usually logfile.log)
+## Text proccessing (TX74.py)
+Used for reading and processing text to standard formats.
+
+ - parameters:
+	 - -i (input directory)
+	 - -o (output directory)
+	 -  -l (logic)
 ## Extra Modules
-Used for reading and processing text to standard fromat.
-#### &nbsp;&nbsp;&nbsp;&nbsp; Log Reader
+### Log Reader
 Processing log files with excel sheet
-### Directory Control
+### Tester
+Testing main functions of the whole system
+| No tests  | Test class                   | Description           |
+ -----------| ---------------------------- | ------------------
+| 2         | `TestLog()`                  | Default logging testing |
+| 1         | `TestPlatform()`             | Determine platform |
+| 1         | `TestWeather()`              | Retrieve weather |
+| 1         | `TestWebContent()`           | Retrieve content of a website |
+
+
+And flow charts like this:
+
+```flow
+st=>start: Start
+e=>end
+op=>operation: My Operation
+cond=>condition: Yes or No?
+
+st->op->cond
+cond(yes)->e
+cond(no)->op
+```
+
+

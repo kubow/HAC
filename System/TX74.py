@@ -386,6 +386,6 @@ if __name__ == '__main__':
             elif 'win' in args.l:
                 export_text_to(args.o + '/' + filename, replace_lf_crlf(load_text_from(file_path)))
             else:
-                print 'cannot determine logic'
+                export_text_to(args.o + '/' + filename, replace_lf_crlf(load_text_from(file_path)))
     else:
         print args.i + ' -> input file/dir does not exist ...'

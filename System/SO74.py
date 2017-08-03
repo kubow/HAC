@@ -119,7 +119,7 @@ def set_default_location(try_this):
         return 'Horni Pocernice,cz'  # 'Necin,cz'
 
 
-def write_temperature_text(html_file, title, content):
+def write_weather_text(html_file, title, content):
     logger.log_operation('writing content {0} to file: {1}'.format(title, html_file))
     OS74.file_write(html_file, HTML.skelet_titled.format(title, content.encode('utf-8')))
 
@@ -142,6 +142,6 @@ if __name__ == '__main__':
     if 'weather' in args.g:
         o = OpenWeatherMap(loc)
         print 'writing content to file: ' + args.w
-        write_temperature_text(args.w + '/index.html', o.heading[0], o.heading[1])
+        write_weather_text(args.w + '/index.html', o.heading[0], o.heading[1])
     else:
         browse_internet(args.g, args.w, args.p)
