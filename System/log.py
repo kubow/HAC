@@ -5,7 +5,7 @@ import logging
 
 
 class Log(object):
-    def __init__(self, log_file, module, log_level='warning', advanced=False):
+    def __init__(self, log_file, module, caller_file='log.py', advanced=False):
         self.date_format = '%d.%m.%Y %H:%M:%S'
         if os.path.isfile(log_file):
             self.log_file = log_file
@@ -13,7 +13,7 @@ class Log(object):
             print log_file + ' does not exist! - create new one?'
         self.module = module
         self.line_text = ''
-        self.log_level = log_level
+        self.caller_file = caller_file
         if advanced:
             self.advanced = advanced
             self.logger = self.init_logger()
@@ -64,7 +64,7 @@ if __name__ == '__main__':
     parser.add_argument('-m', help='module', type=str, default='none')
     parser.add_argument('-t', help='Text to log', type=str, default='')
     args = parser.parse_args()
-    logger = Log(args.l, args.m, 'debug', True)
+    logger = Log(args.l, args.m, 'log.py', True)
     if logger.advanced:
         advanced_logger_test()
     else:

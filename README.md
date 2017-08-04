@@ -59,11 +59,11 @@ Used for reading and processing text to standard formats.
 Processing log files with excel sheet
 ### Tester
 Testing main functions of the whole system
-| No tests  | Test class                   | Description           |
- -----------| ---------------------------- | ------------------
-| 2         | `TestLog()`                  | Default logging testing |
-| 1         | `TestPlatform()`             | Determine platform |
-| 1         | `TestWeather()`              | Retrieve weather |
+| No tests  | Test class                   | Description                   |
+|-----------| ---------------------------- | ------------------------------|
+| 2         | `TestLog()`                  | Default logging testing       |
+| 1         | `TestPlatform()`             | Determine platform            |
+| 1         | `TestWeather()`              | Retrieve weather              |
 | 1         | `TestWebContent()`           | Retrieve content of a website |
 
 
