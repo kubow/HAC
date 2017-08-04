@@ -59,6 +59,7 @@ Used for reading and processing text to standard formats.
 Processing log files with excel sheet
 ### Tester
 Testing main functions of the whole system
+
 | No tests  | Test class                   | Description                   |
 |-----------| ---------------------------- | ------------------------------|
 | 2         | `TestLog()`                  | Default logging testing       |
