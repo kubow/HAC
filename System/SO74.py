@@ -77,12 +77,7 @@ def process_web_content(mode, final_dir, url=None):
                     wc = WebContent(restaurant[5])  # zomato style
                     wc.procces_url('id', 'daily-menu-container')
                 html_file_path = final_dir + '/' + restaurant[2].encode('utf-8') + '.html'
-                if wc.div:
-                    print 'creating ' + html_file_path + ' from: ' + wc.url
-                    OS74.file_write(html_file_path,
-                                    HTML.skelet_titled.format(restaurant[3].encode('utf-8'), wc.div))
-                else:
-                    print 'no content parsed from: ' + wc.url
+                wc.write_web_content_to_file(html_file_path, restaurant[3])
         elif 'rss' in mode:
             web_objects = DB74.execute_many_not_connected(settings_db, 'SELECT * FROM RssActive;')
             for rss in web_objects:
@@ -91,12 +86,7 @@ def process_web_content(mode, final_dir, url=None):
                 else:
                     print 'no address to fetch ...' + str(rss)
                 html_file_path = final_dir + '/' + rss[2].encode('utf-8') + '.html'
-                if wc.div:
-                    print 'creating ' + html_file_path + ' from: ' + wc.url
-                    OS74.file_write(html_file_path,
-                                    HTML.skelet_titled.format(rss[3].encode('utf-8'), wc.div.encode('utf-8')))
-                else:
-                    print 'no content parsed from: ' + wc.url
+                wc.write_web_content_to_file(html_file_path, rss[3])
 
 
 def browse_internet(mode, match_dir, url=None):

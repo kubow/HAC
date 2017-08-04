@@ -103,7 +103,21 @@ class WebContent(HTMLParser.HTMLParser):
                 self.div = str(html.content)
             else:
                 self.div = None
+                
+    def write_web_content_to_file(self, file_path, heading):
+        if self.div:
+            print 'creating ' + file_path + ' from: ' + self.url
+            OS74.file_write(file_path,
+                            HTML.skelet_titled.format(heading.encode('utf-8'), 
+                            self.div.encode('utf-8')))
+            log_path = 
+            self.log_to_database(log_path)
+        else:
+            print 'no content parsed from: ' + self.url
             
+            
+    def log_to_database():
+        
             
 class RssContent(object):
     def __init__(self, rss_url):
