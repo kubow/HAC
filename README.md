@@ -67,7 +67,6 @@ Testing main functions of the whole system
 | 1         | `TestWeather()`              | Retrieve weather              |
 | 1         | `TestWebContent()`           | Retrieve content of a website |
 
-
 And flow charts like this:
 
 ```flow

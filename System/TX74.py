@@ -20,6 +20,7 @@ except:
 import HTMLParser
 
 import DV72
+import OS74
 from Template import HTML, SQL
 import log
 # sys.setdefaultencoding('utf-8')
@@ -56,30 +57,52 @@ class WebContent(HTMLParser.HTMLParser):
     def handle_data(self, data):
         if self.recording:
             self.data.append(data)
-            
-    def procces_url(self, tag_type, tag_name):
+
+    def parse_html_text(self, html_text):
+        if is_html_text(html_text):
+            if self.easier:
+                soup = BeautifulSoup(html_text, 'lxml')
+                return soup
+            else:
+                # TODO: same logic as with beautiful soup
+                p = WebContent()
+                oups = p.feed(html_text)
+                p.close()
+                return oups
+
+
+    def procces_url(self, tag_type='', tag_name=''):
+        content = None
         if 'id' in str(tag_type).lower():
             tag_type = 'id'
-        else:
+        elif 'class' in str(tag_type).lower():
             tag_type = 'class'
         try:
-            html = requests.get(self.url, timeout=(10, 5))
-            if is_html_text(html.content):
-                if self.easier:
-                    soup = BeautifulSoup(html.content, 'lxml')
-                    self.div = soup.find('div', {tag_type: tag_name})
-                else:
-                    p = WebContent()
-                    self.div = p.feed(html.content)
-                    p.close()
-
+            if 'file:' in self.url:
+                content = OS74.read_file(self.url.split('///')[-1])
+                parsed_content = self.parse_html_text(content)
             else:
-                print '---cannot parse content of {0} ({1})'.format(self.url, html.content)
+                html = requests.get(self.url, timeout=(10, 5), headers=self.headers)
+                parsed_content = self.parse_html_text(html.content)
+            if self.easier:
+                if not tag_name:
+                    self.div = parsed_content.find('body')
+                else:
+                    self.div = parsed_content.find('div', {tag_type: tag_name})
+            else:
+                # TODO: same logic as with beautiful soup
+                pass
         except HTMLParser.HTMLParseError, e:
             print '---cannot fetch address {0}, ({1})'.format(self.url, e)
         except:
             print '---some else error occurred: ' + self.url
-            self.div = None
+            print '---cannot parse content of {0} ({1})'.format(self.url, html.content)
+            if content:
+                self.div = str(content)
+            elif html.content:
+                self.div = str(html.content)
+            else:
+                self.div = None
             
             
 class RssContent(object):
@@ -161,8 +184,11 @@ def filter_lines(textfile, with_filter):
 
     
 def is_html_text(text):
-    if lxml.html.fromstring(text).find('.//*') is not None:
-        return True
+    if text:
+        if lxml.html.fromstring(text).find('.//*') is not None:
+            return True
+        else:
+            return False
     else:
         return False
 
@@ -206,6 +232,7 @@ def writeCSV(file_name, values, timestamp, device):
         f.write(row+'\n')
         line += 1
     f.close()
+
 
 def readCSV(csvfile):
     """read value from csv file

@@ -16,6 +16,8 @@ class OpenWeatherMap(object):
         owm_api = '1050e850fbcc463dd98a726d6af37134'
         owm = pyowm.OWM(owm_api)
         print 'OpenWeatherMap.org - validate API-key disabled'
+        if not location:
+            location = 'Horni Pocernice,cz'  # 'Necin,cz'
         self.place_obj = owm.weather_at_place(location)._location
         self.place_name = self.place_obj._name + ', ' + self.place_obj._country
         self.place_coor = str(self.place_obj._lat) + ', ' + str(self.place_obj._lon)
@@ -111,14 +113,6 @@ def browse_internet(mode, match_dir, url=None):
     process_web_content(mode, final_dir, url)
 
 
-def set_default_location(try_this):
-    if try_this:
-        return try_this
-    else:
-        # determine setting from database / make default
-        return 'Horni Pocernice,cz'  # 'Necin,cz'
-
-
 def write_weather_text(html_file, title, content):
     logger.log_operation('writing content {0} to file: {1}'.format(title, html_file))
     OS74.file_write(html_file, HTML.skelet_titled.format(title, content.encode('utf-8')))
@@ -137,10 +131,9 @@ if __name__ == '__main__':
     parser.add_argument('-p', help=localization, type=str, default='none')
     parser.add_argument('-l', help='logfile', type=str, default='none')
     args = parser.parse_args()
-    loc = set_default_location(args.p)
-    logger = Log(args.l, args.g, 'debug', True)
+    logger = Log(args.l, args.g, __file__, True)
     if 'weather' in args.g:
-        o = OpenWeatherMap(loc)
+        o = OpenWeatherMap(args.p)
         print 'writing content to file: ' + args.w
         write_weather_text(args.w + '/index.html', o.heading[0], o.heading[1])
     else:

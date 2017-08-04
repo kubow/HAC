@@ -5,12 +5,14 @@ import logging
 
 
 class Log(object):
-    def __init__(self, log_file, module, caller_file='log.py', advanced=False):
+    def __init__(self, log_file, module, caller_file='log.py', advanced=True):
         self.date_format = '%d.%m.%Y %H:%M:%S'
         if os.path.isfile(log_file):
             self.log_file = log_file
         else:
-            print log_file + ' does not exist! - create new one?'
+            os.path.realpath()
+            print log_file + ' does not exist! - create new one in actual path'
+
         self.module = module
         self.line_text = ''
         self.caller_file = caller_file
@@ -26,17 +28,16 @@ class Log(object):
             line_text = text
             self.logger.log(level, text)
         else:
-            line_text = str(now) + ' ; ' + self.module + ' ; ' + text + '\n'
-            file_append(self.log_file, line_text)
-        self.line_text = line_text
+            self.line_text = str(now) + ' ; ' + self.module + ' ; ' + text + '\n'
+            with open(self.log_file, 'a') as target_file:
+                target_file.write(self.line_text)
 
     def init_logger(self):
         text_format = '%(asctime)s ; ' + self.module + ' ; %(message)s ; %(name)s ; %(levelname)s'
-        date_format = self.date_format 
         logging.basicConfig()
         log_start = logging.getLogger('PY ; ' + self.module)
         log_start.setLevel(logging.DEBUG)
-        formatter = logging.Formatter(fmt=text_format, datefmt=date_format)
+        formatter = logging.Formatter(fmt=text_format, datefmt=self.date_format)
         fh = logging.FileHandler(self.log_file)
         fh.setLevel(logging.DEBUG)
         fh.setFormatter(formatter)
@@ -47,11 +48,6 @@ class Log(object):
         log_start.addHandler(ch)
         return log_start
 
-
-def file_append(filename, content):
-    with open(filename, 'a') as target_file:
-        target_file.write(content)
-        
 
 def advanced_logger_test():
     logger.log_operation('0 ; this is a debug message', 10)

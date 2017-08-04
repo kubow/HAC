@@ -230,8 +230,6 @@ def is_file(filename):
 def read_file(filename):
     with open(filename, 'r') as content_file:
         content = content_file.read()
-    if 'htm' in filename.split()[-1]:
-        content = TX74.htm_to_plain_txt(content)
     return content
 
 

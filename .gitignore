@@ -1,7 +1,8 @@
 /index.htm*
-/*.log
-/Multimedia/*.htm*
-/Multimedia/*log*
+/Multimedia/*.htm
+/Multimedia/*.html
+/Multimedia/*.log
+/Multimedia/*.sqlite
 /Multimedia/image/*
 /Multimedia/Measured/*
 /Multimedia/NewsFeed/*.htm
