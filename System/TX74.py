@@ -8,6 +8,7 @@ import re
 import os
 import argparse
 import difflib
+import datetime
 import xml.etree.ElementTree as xml_tree
 import lxml.html
 import feedparser
@@ -20,6 +21,7 @@ except:
 import HTMLParser
 
 import DV72
+import DB74
 import OS74
 from Template import HTML, SQL
 import log
@@ -35,7 +37,8 @@ class WebContent(HTMLParser.HTMLParser):
         self.data = []
         self.div = None
         self.url = url
-        self.easier = True # found BS4
+        self.easier = True  # found BS4
+        self.div_text = ''
 
     def handle_starttag(self, tag, attributes): #, tag_type, tag_name):
         if tag != 'div':
@@ -70,8 +73,7 @@ class WebContent(HTMLParser.HTMLParser):
                 p.close()
                 return oups
 
-
-    def procces_url(self, tag_type='', tag_name=''):
+    def process_url(self, tag_type='', tag_name=''):
         content = None
         if 'id' in str(tag_type).lower():
             tag_type = 'id'
@@ -87,8 +89,10 @@ class WebContent(HTMLParser.HTMLParser):
             if self.easier:
                 if not tag_name:
                     self.div = parsed_content.find('body')
+                    self.div_text = parsed_content.find('body').text
                 else:
                     self.div = parsed_content.find('div', {tag_type: tag_name})
+                    self.div_text = parsed_content.find('div', {tag_type: tag_name}).text
             else:
                 # TODO: same logic as with beautiful soup
                 pass
@@ -110,13 +114,21 @@ class WebContent(HTMLParser.HTMLParser):
             OS74.file_write(file_path,
                             HTML.skelet_titled.format(heading.encode('utf-8'), 
                             self.div.encode('utf-8')))
-            log_path = 
-            self.log_to_database(log_path)
+            log_path = OS74.get_another_directory_file(file_path, 'logfile.sqlite')
+
+            self.log_to_database(log_path, heading)
         else:
             print 'no content parsed from: ' + self.url
-            
-            
-    def log_to_database():
+
+    def log_to_database(self, db_path, heading):
+        if not DB74.db_object_exist_noconnect('Log', db_path):
+            print 'must create'
+        tag_content = self.div_text.encode('utf-8').replace('\n\n\n\n', '\n').replace('\n\n', '\n')
+        sql = SQL.insert.format('Log (Connection, CPName, Report, LogDate, User, Domain)',
+                                '"{0}", "{1}", "{2}", "{3}", "{4}", "{5}"'.format(heading.encode('utf-8'), 0,
+                                                                                         tag_content, datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'),
+                                                                                         'jav', 'sybase'))
+        DB74.execute_not_connected(db_path, sql)
         
             
 class RssContent(object):

@@ -62,7 +62,8 @@ class Mapping(object):
 
 
 def process_web_content(mode, final_dir, url=None):
-    settings_db = os.path.dirname(os.path.realpath(__file__)) + '/Settings.sqlite'
+    path_separator = OS74.get_separator_from(final_dir)
+    settings_db = os.path.dirname(os.path.realpath(__file__)) + path_separator + 'Settings.sqlite'
     if url:
         wc = WebContent(url)
         print wc
@@ -72,11 +73,11 @@ def process_web_content(mode, final_dir, url=None):
             for restaurant in web_objects:
                 if restaurant[4]:
                     wc = WebContent(restaurant[4])
-                    wc.procces_url(restaurant[7], restaurant[6])
+                    wc.process_url(restaurant[7], restaurant[6])
                 else:
                     wc = WebContent(restaurant[5])  # zomato style
-                    wc.procces_url('id', 'daily-menu-container')
-                html_file_path = final_dir + '/' + restaurant[2].encode('utf-8') + '.html'
+                    wc.process_url('id', 'daily-menu-container')
+                html_file_path = final_dir + path_separator + restaurant[2].encode('utf-8') + '.html'
                 wc.write_web_content_to_file(html_file_path, restaurant[3])
         elif 'rss' in mode:
             web_objects = DB74.execute_many_not_connected(settings_db, 'SELECT * FROM RssActive;')
@@ -85,19 +86,20 @@ def process_web_content(mode, final_dir, url=None):
                     wc = RssContent(rss[3])
                 else:
                     print 'no address to fetch ...' + str(rss)
-                html_file_path = final_dir + '/' + rss[2].encode('utf-8') + '.html'
+                html_file_path = final_dir + path_separator + rss[2].encode('utf-8') + '.html'
                 wc.write_web_content_to_file(html_file_path, rss[3])
 
 
 def browse_internet(mode, match_dir, url=None):
+    path_separator = OS74.get_separator_from(args.l)
     if 'rest' in mode:
-        final_dir = match_dir + '/Multimedia/RestMenu'
+        final_dir = path_separator.join((match_dir, 'Multimedia', 'RestMenu'))
         url = None
     elif 'rss' in mode:
-        final_dir = match_dir + '/Multimedia/NewsFeed'
+        final_dir = path_separator.join((match_dir, 'Multimedia', 'NewsFeed'))
         url = None
     else:
-        final_dir = match_dir + '/Multimedia/WebsCont'
+        final_dir = path_separator.join((match_dir, 'Multimedia', 'WebsCont'))
     OS74.create_dir_if_neccesary(final_dir)
     logger.log_operation('proccessing internet content to ' + final_dir)
     process_web_content(mode, final_dir, url)
@@ -125,6 +127,7 @@ if __name__ == '__main__':
     if 'weather' in args.g:
         o = OpenWeatherMap(args.p)
         print 'writing content to file: ' + args.w
-        write_weather_text(args.w + '/index.html', o.heading[0], o.heading[1])
+        path_separator = OS74.get_separator_from(args.l)
+        write_weather_text(args.w + path_separator + 'index.html', o.heading[0], o.heading[1])
     else:
         browse_internet(args.g, args.w, args.p)

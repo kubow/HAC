@@ -24,6 +24,13 @@ def close_db_connection(conn):
 def get_db_objects_list(db):
     return db.execute(SQL.select_tables_in_db()).fetchall()
 
+    
+def db_object_exist_noconnect(obj_name, db_name):
+    conn = open_db_connection(db_name)
+    exists = db_object_exist(obj_name, conn)
+    close_db_connection(conn)
+    return exists
+
 
 def db_object_exist(obj_name, db):
     return db.execute(SQL.table_exist.format(obj_name)).fetchone()
@@ -51,9 +58,9 @@ def execute_not_connected(database, sql):
     if OS74.is_file(database):
         conn = open_db_connection(database)
         curs = conn.execute(sql)
+        conn.commit()
         res_set = curs.fetchall()
         # log.log_operation(logfile, module, 'executed SQL: {0}'.format(sql))
-        conn.close()
         if res_set:
             print res_set
             return res_set[0]

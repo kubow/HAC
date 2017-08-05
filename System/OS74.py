@@ -179,8 +179,17 @@ def get_current_dir():
     return os.path.dirname(os.path.realpath(__file__))
 
 
-def get_dir_from(file_name):
-    
+def get_another_directory_file(path, another):
+    separator = get_separator_from(path)
+    if os.path.isfile(path):
+        # strip filename from path
+        root_dir = one_dir_up(path)
+        return separator.join(root_dir.split(separator)[0:-1]) + separator + another
+    elif os.path.isdir(path):
+        return separator.join(path.split(separator)[0:-1]) + separator + another
+    else:
+        print 'not this nor that...'
+        return None
 
 def one_dir_up(directory):
     separator = get_separator_from(directory)

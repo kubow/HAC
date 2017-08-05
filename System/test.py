@@ -51,13 +51,13 @@ class TestWebContent(unittest.TestCase):
     def test_localhost_content(self):
         loc = 'file:///C:/_Run/Web/index.html'
         o = WebContent(loc)
-        o.procces_url()
+        o.process_url()
         self.assertIn('encyklopedie', str(o.div))
 
     def test_web_content(self):
         loc = 'https://aktualnizpravy.cz/'
         o = WebContent(loc)
-        o.procces_url()
+        o.process_url()
         self.assertIn('dnes m', str(o.div))
 
 
