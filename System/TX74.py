@@ -116,19 +116,17 @@ class WebContent(HTMLParser.HTMLParser):
                             self.div.encode('utf-8')))
             log_path = OS74.get_another_directory_file(file_path, 'logfile.sqlite')
 
-            self.log_to_database(log_path, heading)
+            # self.log_to_database(log_path, heading)
         else:
             print 'no content parsed from: ' + self.url
 
     def log_to_database(self, db_path, heading):
-        if not DB74.db_object_exist_noconnect('Log', db_path):
-            print 'must create'
         tag_content = self.div_text.encode('utf-8').replace('\n\n\n\n', '\n').replace('\n\n', '\n')
         sql = SQL.insert.format('Log (Connection, CPName, Report, LogDate, User, Domain)',
                                 '"{0}", "{1}", "{2}", "{3}", "{4}", "{5}"'.format(heading.encode('utf-8'), 0,
-                                                                                         tag_content, datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'),
-                                                                                         'jav', 'sybase'))
-        DB74.execute_not_connected(db_path, sql)
+                                tag_content, datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'),
+                                       'jav', 'sybase'))
+        DB74.log_to_database(db_path, 'Log', sql)
         
             
 class RssContent(object):
@@ -161,6 +159,18 @@ class RssContent(object):
                         inner_text += themediacontent["height"]
                         inner_text += themediacontent["width"]
         self.div = inner_text
+    
+    def write_rss_content_to_file(self, file_path, heading):
+        if self.div:
+            print 'creating ' + file_path + ' from: ' + self.url
+            OS74.file_write(file_path,
+                            HTML.skelet_titled.format(heading.encode('utf-8'), 
+                            self.div.encode('utf-8')))
+            log_path = OS74.get_another_directory_file(file_path, 'logfile.sqlite')
+
+            # self.log_to_database(log_path, heading)
+        else:
+            print 'no content parsed from: ' + self.url
         
 
 def replace_line_endings(block_text):

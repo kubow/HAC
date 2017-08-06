@@ -2,26 +2,18 @@
 #!/usr/bin python
 
 mainHTML=${PWD}'/index.html'
-#subHTML=${PWD}'/Multimedia/presenting.html'
 mlt_dir=${PWD}'/Multimedia/'
-subHTML1=${PWD}'/Multimedia/showing1.html'
-subHTML2=${PWD}'/Multimedia/showing2.html'
-subHTML3=${PWD}'/Multimedia/showing3.html'
+py_file=${PWD}'/System/SO74.py'
 
-python ${PWD}/System/SO74.py -g restaurant -w ${PWD} -l ${mlt_dir}logfile.log
+python ${py_file} -g restaurant -w ${PWD} -l ${mlt_dir}logfile.log
 
 cat ${PWD}'/Structure/HTML_Base_head.txt' > ${mainHTML}
-
 echo '<div id="frame"><iframe src="Multimedia/showing1.htm" width="100%%" height="100%%"></iframe></div>' >> ${mainHTML}
 echo '<div id="top"><marquee behavior="scroll" direction="left" scrolldelay="100">' >> ${mainHTML}
 cat ${mlt_dir}text_horni_lista.txt >> ${mainHTML}
 echo '</marquee></div>' >> ${mainHTML}
 echo '</body>' >> ${mainHTML}
 echo '</html>' >> ${mainHTML}
-
-#cat ${PWD}'/Structure/HTML_Base_head.txt' > $subHTML1
-#cat ${PWD}'/Structure/HTML_Base_head.txt' > $subHTML2
-#cat ${PWD}'/Structure/HTML_Base_head.txt' > $subHTML3
 
 #for line in $(sqlite3 ${PWD}/System/DataReaderWeb.db 'select Shortcut,Address,ZomatoAddress,Tag from RestActive'); do
 	#http://stackoverflow.com/questions/10520623/how-to-split-one-string-into-multiple-variables-in-bash-shell
@@ -38,10 +30,6 @@ echo '</html>' >> ${mainHTML}
 	#python ${PWD}/System/DataReaderWeb.py ${shc}
 	#echo ¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨
 #done
-
-#cat ${PWD}'/Structure/HTML_Base_tail.txt' >> $subHTML1
-#cat ${PWD}'/Structure/HTML_Base_tail.txt' >> $subHTML2
-#cat ${PWD}'/Structure/HTML_Base_tail.txt' >> $subHTML3
 
 #alternative version using command line
 #http://www.cyberciti.biz/faq/unix-linux-get-the-contents-of-a-webpage-in-a-terminal/

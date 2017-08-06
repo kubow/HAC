@@ -87,7 +87,7 @@ def process_web_content(mode, final_dir, url=None):
                 else:
                     print 'no address to fetch ...' + str(rss)
                 html_file_path = final_dir + path_separator + rss[2].encode('utf-8') + '.html'
-                wc.write_web_content_to_file(html_file_path, rss[3])
+                wc.write_rss_content_to_file(html_file_path, rss[3])
 
 
 def browse_internet(mode, match_dir, url=None):

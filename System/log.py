@@ -10,7 +10,7 @@ class Log(object):
         if os.path.isfile(log_file):
             self.log_file = log_file
         else:
-            os.path.realpath()
+            # print os.path.realpath()
             print log_file + ' does not exist! - create new one in actual path'
 
         self.module = module

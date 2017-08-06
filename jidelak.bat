@@ -2,12 +2,8 @@
 Set mainHTML=%~dp0index.html
 SET mlt_dir=%~dp0Multimedia\
 SET py_file=%~dp0System\SO74.py
-Set subHTML1=%mlt_dir%showing1.htm
-Set subHTML2=%mlt_dir%showing2.htm
-Set subHTML3=%mlt_dir%showing3.htm
 
-rem need to log vbs script outputs
-rem wscript %~dp0System\Reader\ReaderMenu.vbs
+rem wscript %~dp0System\Reader\ReaderMenu.vbs --not properly set...
 python %py_file% -g restaurant -w %~dp0 -l %mlt_dir%logfile.log
 
 type %~dp0Structure\HTML_Base_Head.txt > %mainHTML%
