@@ -141,12 +141,11 @@ def log_to_database(db_path, table_name, sql):
     if not OS74.is_file(db):
         # create connection
         
-        # if not db_object_exist_noconnect(table_name, db_path):
         # 
         print 'must create table'
     else:
-        
-    execute_not_connected(db_path, sql)
+        if not db_object_exist_noconnect(table_name, db_path):
+            execute_not_connected(db_path, sql)
 
 def databases_compare(db1, db2):
     db_left = open_db_connection(db1).cursor()

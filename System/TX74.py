@@ -95,7 +95,7 @@ class WebContent(HTMLParser.HTMLParser):
                     self.div_text = parsed_content.find('div', {tag_type: tag_name}).text
             else:
                 # TODO: same logic as with beautiful soup
-                pass
+                print 'HTML parser not working now...'
         except HTMLParser.HTMLParseError, e:
             print '---cannot fetch address {0}, ({1})'.format(self.url, e)
         except:
@@ -113,7 +113,7 @@ class WebContent(HTMLParser.HTMLParser):
             print 'creating ' + file_path + ' from: ' + self.url
             OS74.file_write(file_path,
                             HTML.skelet_titled.format(heading.encode('utf-8'), 
-                            self.div.encode('utf-8')))
+                            self.div[:2900].encode('utf-8')))
             log_path = OS74.get_another_directory_file(file_path, 'logfile.sqlite')
 
             # self.log_to_database(log_path, heading)
