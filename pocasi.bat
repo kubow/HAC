@@ -38,4 +38,4 @@ ECHO syntax: %py_data_file% -d %platform% -l location
 ECHO writing to: %data_dir%%YY%%MM%.sqlite 
 ECHO ...............
 REM python %py_data_file% -d %platform% -l %data_dir% >> %log_dir%logfile.log
-python %py_data_file% -d %platform% -l %data_dir%
+python %py_data_file% -d "%platform%" -l %data_dir%

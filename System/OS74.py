@@ -141,7 +141,7 @@ class Platform:
 
 def directory_lister(directory, output, list_files=False):
     template_loc = append_dir(one_dir_up(get_current_dir()), 'Structure') + 'HTML_DirectoryList.txt'
-    print template_loc
+    # print template_loc
     template = TX74.load_text_from(template_loc)
     template = template.replace('XXX', directory)
 
@@ -173,6 +173,10 @@ def directory_lister(directory, output, list_files=False):
     # print content
     # print template
     file_write(output, content)
+
+
+def get_current_settings():
+    return os.environ.get('USERNAME'), os.environ.get('USERDOMAIN')
 
 
 def get_current_dir():

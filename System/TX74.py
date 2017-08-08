@@ -111,21 +111,26 @@ class WebContent(HTMLParser.HTMLParser):
     def write_web_content_to_file(self, file_path, heading):
         if self.div:
             print 'creating ' + file_path + ' from: ' + self.url
-            OS74.file_write(file_path,
-                            HTML.skelet_titled.format(heading.encode('utf-8'), 
-                            self.div[:2900].encode('utf-8')))
-            log_path = OS74.get_another_directory_file(file_path, 'logfile.sqlite')
+            try:
+                OS74.file_write(file_path,
+                                HTML.skelet_titled.format(heading.encode('utf-8'),
+                                self.div.encode('utf-8')))
+                log_path = OS74.get_another_directory_file(file_path, 'logfile.sqlite')
 
-            # self.log_to_database(log_path, heading)
+                self.log_to_database(log_path, heading)
+            except:
+                print '!!! cannot write/log content'
         else:
             print 'no content parsed from: ' + self.url
 
     def log_to_database(self, db_path, heading):
+        time_stamp = datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S')
         tag_content = self.div_text.encode('utf-8').replace('\n\n\n\n', '\n').replace('\n\n', '\n')
-        sql = SQL.insert.format('Log (Connection, CPName, Report, LogDate, User, Domain)',
-                                '"{0}", "{1}", "{2}", "{3}", "{4}", "{5}"'.format(heading.encode('utf-8'), 0,
-                                tag_content, datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'),
-                                       'jav', 'sybase'))
+        table_def = 'Log (Connection, CPName, Report, LogDate, User, Domain)'
+        values_template = '"{0}", "{1}", "{2}", "{3}", "{4}", "{5}"'
+        user, domain = OS74.get_current_settings()
+        table_values = values_template.format(heading.encode('utf-8'), 0, tag_content, time_stamp, user, domain)
+        sql = SQL.insert.format(table_def, table_values)
         DB74.log_to_database(db_path, 'Log', sql)
         
             
@@ -425,10 +430,10 @@ def test_utf_special_characters():
 def similar(seq1, seq2):
     try:
         return difflib.SequenceMatcher(a=seq1.lower(), 
-        b=seq2.lower()).ratio() # > 0.9
+        b=seq2.lower()).ratio()  # > 0.9
     except:
         return difflib.SequenceMatcher(a=str(seq1).lower(), 
-        b=str(seq2).lower()).ratio() # > 0.9
+        b=str(seq2).lower()).ratio()  # > 0.9
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Text proccess')

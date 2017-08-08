@@ -9,7 +9,7 @@ from Template import SQL
 def open_db_connection(path):
     conn = sqlite3.connect(path)
     # conn.row_factory = sqlite3.Row
-    print "Opened database %s as %r" % (path, conn)
+    print "Opened database %s" % (path)
     return conn
 
 
@@ -62,10 +62,10 @@ def execute_not_connected(database, sql):
         res_set = curs.fetchall()
         # log.log_operation(logfile, module, 'executed SQL: {0}'.format(sql))
         if res_set:
-            print res_set
+            # print res_set
             return res_set[0]
         else:
-            print 'no node connected'
+            # print 'no node connected'
             return None
         close_db_connection(conn)
     else:
@@ -82,6 +82,15 @@ def execute_many_not_connected(database, sql):
     conn.close()
     
     return res_set
+
+
+def log_to_database(db_path, table_name, sql):
+    if not OS74.is_file(db_path):
+        # create connection
+        print 'must create table (currently doing nothing...)'
+    else:
+        if db_object_exist_noconnect(table_name, db_path):
+            execute_not_connected(db_path, sql)
 
 
 def execute_connected(c, sql, logfile, module, debug=False):
@@ -137,15 +146,6 @@ def get_field_index(field, table, db):
         else:
             i += 1
 
-def log_to_database(db_path, table_name, sql):
-    if not OS74.is_file(db):
-        # create connection
-        
-        # 
-        print 'must create table'
-    else:
-        if not db_object_exist_noconnect(table_name, db_path):
-            execute_not_connected(db_path, sql)
 
 def databases_compare(db1, db2):
     db_left = open_db_connection(db1).cursor()
