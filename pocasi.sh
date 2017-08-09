@@ -28,11 +28,10 @@ echo ==========================
 echo python write proccessed data
 echo ==========================
 data_db=${PWD}/Multimedia/Measured/
-last_run_file=${data_db}last.run
 #weather_mo=${data_db}${YY}${MM}.db
 #weather_dy=${data_db}${YY}${MM}${DD}.db
 platform=$(sqlite3 ${settings_db} 'select devicename from device_active;')
 echo Running on ${platform} - writing ${YY}${MM}"("${DD}").db"
 #python ${py_dev_file} -d ${weather_mo} -p ${platform}
 python ${py_dev_file} -d ${platform} -s luxo -l ${data_db}
-touch ${last_run_file}
+touch ${data_db}last.run

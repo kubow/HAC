@@ -13,6 +13,7 @@ import serial
 import argparse
 
 import DB74
+import OS74
 import TX74
 from Template import SQL
 
@@ -48,10 +49,10 @@ class Device(object):
         data_int = {} # clear the dictionary
         last_run = get_time(datetime.datetime.now(), self.interval_shift)
         csv = ''
-        ser = serial.Serial(self.port, self.br, timeout=self.timeout)
-        ser.flushInput()
-        ser.flushOutput()
         try:
+            ser = serial.Serial(self.port, self.br, timeout=self.timeout)
+            ser.flushInput()
+            ser.flushOutput()
             time.sleep(self.timeout)
             print 'running with timeout {0} seconds.'.format(self.timeout)
             #received = ser.readline().replace('\r\n', ' ') #not used - instead
@@ -74,10 +75,14 @@ class Device(object):
                 #building dictionary
                 data_int[vel_val[0]] = vel_val[-1]
                 data_vals[just_now.strftime(SQL.date_format)] = data_int 
-                return 
+                return data_vals
             else:
                 print 'received no text !!!!'
                 return None
+        except serial.SerialException as se:
+            print se.args
+            print 'serial communication not accesible!'
+            return None
         except Exception as ex:
             print ex.args[0].replace('\n', ' ')
             print 'now '+ str(now)
@@ -97,6 +102,7 @@ def get_time(timevalue, modnum):
     # decide where to put value
     if modulo >= float(modnum/2):
         min_new = minute - modulo + modnum
+        print min_new
         hour_new = timevalue.hour
     else:
         min_new = minute - modulo
@@ -152,6 +158,8 @@ if __name__ == '__main__':
     # log sql (debug) print sql
     
     print 'Reading serial input from: {0} - at {1}'.format(str(dev.port),str(dev.br))
-    while 1:
-        dev.read_serial()
+    ready = True
+    while ready:
+        ready = dev.read_serial()
         
+    OS74.touch_file(args.l+'last.run')
