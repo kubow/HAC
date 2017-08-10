@@ -26,16 +26,4 @@ ECHO ====================
 ECHO syntax: %py_forecast_file% -g weather -p location -w destination_to_write_results
 SET location="Horni Pocernice, cz"
 python %py_forecast_file% -g weather -p %location% -w %~dp0 -l %log_file%
-ECHO ==========================
-ECHO python write proccessed data
-ECHO ==========================
-SET command=%sqlite% %device_dir%settings.db  "select devicename from device_active;"
-FOR /F "tokens=* USEBACKQ" %%F IN (`%command%`) DO (
-REM ECHO %%F
-SET platform=%%F
-)
-ECHO syntax: %py_data_file% -d %platform% -l location
-ECHO writing to: %data_dir%%YY%%MM%.sqlite 
-ECHO ...............
-REM python %py_data_file% -d %platform% -l %data_dir% >> %log_dir%logfile.log
-python %py_data_file% -d "%platform%" -l %data_dir%
+

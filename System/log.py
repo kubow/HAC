@@ -25,7 +25,6 @@ class Log(object):
     def log_operation(self, text, level=20):
         now = datetime.datetime.now().strftime(self.date_format)
         if self.advanced:
-            line_text = text
             self.logger.log(level, text)
         else:
             self.line_text = str(now) + ' ; ' + self.module + ' ; ' + text + '\n'

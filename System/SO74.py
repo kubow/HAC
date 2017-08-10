@@ -8,7 +8,7 @@ import DB74
 import OS74
 from TX74 import WebContent, RssContent
 from Template import HTML, SQL
-
+from osmapi import OsmApi
 
 class OpenWeatherMap(object):
     def __init__(self, location):
@@ -49,6 +49,14 @@ class OpenWeatherMap(object):
     def build_text_forecast(self):
         velocities = (self.weather_local._status, str(self.weather_local._pressure['press']),
                       str(self.weather_local._humidity))
+
+
+class OpenStreetMap(object):
+    def __init__(self, url):
+        self.url = url
+        self.osm_api = 'AIzaSyDkEnsboDEPpmq98svR1ORv-zACEy2TSjQ'
+        print 'OpenStreetrMap.org - validate API-key disabled'
+        osm = OsmApi()
 
 
 '''class WeatherUnderground(object):

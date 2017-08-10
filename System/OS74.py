@@ -195,6 +195,7 @@ def get_another_directory_file(path, another):
         print 'not this nor that...'
         return None
 
+
 def one_dir_up(directory):
     separator = get_separator_from(directory)
     # strip filename from path
@@ -274,6 +275,15 @@ def file_append(filename, content):
 def get_file_size(file_path):
     # return file size in kilobytes
     return '{0:.2f}'.format(os.path.getsize(file_path) / 1024)
+
+
+def get_file_mod_date(file_path, format='%d-%m-%Y'):
+    return date_string_format(os.path.getmtime(file_path), format)
+
+
+def date_string_format(float_num, format):
+    dt_object = datetime.datetime.utcfromtimestamp(float_num)
+    return dt_object.strftime(format)
 
 
 def touch_file(path):

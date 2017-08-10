@@ -143,13 +143,17 @@ if __name__ == '__main__':
     argd = 'device name reading data'
     argz = 'sensor name'
     argl = 'location to write final data'
+    argm = 'mode (read serial/aggregate values)'
     
     parser = argparse.ArgumentParser(description="Write weather data")
     parser.add_argument('-d', help=argd, type=str, default='')
     parser.add_argument('-s', help=argz, type=str, default='')
     parser.add_argument('-l', help=argl, type=str, default='')
+    parser.add_argument('-m', help=argl, type=str, default='')
     args = parser.parse_args()
-    
+    last_run = args.l + 'last.run'
+    if not OS74.is_file(last_run):
+        OS74.touch_file(last_run)
     # create class for controlling device
     dev = Device()
     # device settings: port, baud rate and timeout
@@ -157,9 +161,15 @@ if __name__ == '__main__':
     dev.setup_output_path(args.l)
     # log sql (debug) print sql
     
-    print 'Reading serial input from: {0} - at {1}'.format(str(dev.port),str(dev.br))
-    ready = True
-    while ready:
-        ready = dev.read_serial()
-        
-    OS74.touch_file(args.l+'last.run')
+    if 'read' in args.m or 'ser' in args.m:
+        print 'Reading serial input from: {0} - at {1}'.format(str(dev.port),str(dev.br))
+        ready = True
+        # compute last read time distance
+        OS74.touch_file(last_run)
+        while ready:
+            ready = dev.read_serial()
+    elif 'agg' in args.m:
+        print 'aggregating values ...'
+        print 'last run ' + str(OS74.get_file_mod_date(last_run, '%Y/%m/%d %H:%M:%S'))
+    else:
+        print 'not possible'
