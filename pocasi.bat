@@ -27,3 +27,6 @@ ECHO syntax: %py_forecast_file% -g weather -p location -w destination_to_write_r
 SET location="Horni Pocernice, cz"
 python %py_forecast_file% -g weather -p %location% -w %~dp0 -l %log_file%
 
+ECHO ====================
+ECHO python aggregate data 
+ECHO ====================
