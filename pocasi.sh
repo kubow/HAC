@@ -7,9 +7,12 @@ DD=$(date +%d)
 
 log_dir=${PWD}/Multimedia/
 log_file=${log_dir}logfile.log
+data_dir=${log_dir}/Measured/
+system_dir=${PWD}/System/
+
 settings_db=${PWD}/System/Settings.sqlite
-py_dev_file=${PWD}/System/DV72.py
-py_for_file=${PWD}/System/SO74.py
+py_data_file=${PWD}/System/DV72.py
+py_forecast_file=${PWD}/System/SO74.py
 
 echo ============================================
 echo "getting location in format ('city','country')"
@@ -21,17 +24,15 @@ echo got: ${location} : 'select * from place_active'
 echo ====================
 echo python read forecast 
 echo ====================
-#syntax: py_for_file file_to_write location
+echo syntax: ${py_forecast_file} -g weather -p location -w destination_to_write_results
 #forecast temporarily diabled
-python ${py_for_file} -g weather -p ${location} -w ${PWD} -l ${log_file}
+python ${py_forecast_file} -g weather -p ${location} -w ${PWD} -l ${log_file}
 echo ==========================
 echo python write proccessed data
 echo ==========================
-data_db=${PWD}/Multimedia/Measured/
-#weather_mo=${data_db}${YY}${MM}.db
-#weather_dy=${data_db}${YY}${MM}${DD}.db
-platform=$(sqlite3 ${settings_db} 'select devicename from device_active;')
-echo Running on ${platform} - writing ${YY}${MM}"("${DD}").db"
-#python ${py_dev_file} -d ${weather_mo} -p ${platform}
-python ${py_dev_file} -d ${platform} -s luxo -l ${data_db}
-touch ${data_db}last.run
+platform='linux'
+echo 'syntax: '${py_data_file}' -d '${platform}' -l location -m mode(rea/agg)'
+# echo Running on ${platform} - writing ${YY}${MM}"("${DD}").db"
+#python ${py_data_file} -d ${weather_mo} -p ${platform}
+python ${py_data_file} -d ${platform} -l ${data_dir} -m aggregate
+

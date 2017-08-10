@@ -2,6 +2,7 @@
 /Multimedia/*.html
 /Multimedia/*.log
 /Multimedia/*.sqlite
+/Multimedia/last.run
 /Multimedia/image/*
 /Multimedia/Measured/*
 /Multimedia/NewsFeed/*.html

@@ -2,15 +2,15 @@
 cls
 SET YY=%Date:~10,4%
 SET MM=%Date:~4,2%
-SET mainHTML=index.html
+
 SET log_dir=%~dp0Multimedia\
 SET log_file=%log_dir%logfile.log
 SET data_dir=%log_dir%Measured\
 SET system_dir=%~dp0System\
 SET py_data_file=%system_dir%DV72.py
 SET py_forecast_file=%system_dir%SO74.py
-SET py_log_file=%~dp0System\log.py
 SET sqlite=C:\_Run\App\Database\SQLite\sqlite3.exe
+
 ECHO ============================================
 ECHO getting location in format ('city','country')
 ECHO ============================================
@@ -30,3 +30,9 @@ python %py_forecast_file% -g weather -p %location% -w %~dp0 -l %log_file%
 ECHO ====================
 ECHO python aggregate data 
 ECHO ====================
+SET platform=X86
+ECHO syntax: %py_data_file% -d %platform% -l location -m mode(rea/agg)
+ECHO writing to: %data_dir%%YY%%MM%.sqlite 
+ECHO ...............
+REM python %py_data_file% -d %platform% -l %data_dir% >> %log_dir%logfile.log
+python %py_data_file% -d "%platform%" -l %data_dir% -m aggregate
