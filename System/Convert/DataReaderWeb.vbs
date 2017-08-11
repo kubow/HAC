@@ -36,7 +36,7 @@ If mode = 0 then 'websites reading
     Set fs = Nothing
     outFile.Close
 Else 'run access version
-    Dim DBPath: DBPath = cf & "\Reader.db"
+    Dim DBPath: DBPath = cf & "\Settings.sqlite"
 
     Dim DBConn: Set DBConn = CreateObject("ADODB.Connection")
     Dim oCS: oCS = "Driver={SQLite3 ODBC Driver};Database=" & DBPath & ";StepAPI=;Timeout="

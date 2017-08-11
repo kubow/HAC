@@ -14,12 +14,13 @@ SET sqlite=C:\_Run\App\Database\SQLite\sqlite3.exe
 ECHO ============================================
 ECHO getting location in format ('city','country')
 ECHO ============================================
-SET command=%sqlite% %device_dir%settings.db "select * from place_active"
+SET command=%sqlite% %system_dir%Settings.sqlite "select * from place_active"
 FOR /F "tokens=* USEBACKQ" %%F IN (`%command%`) DO (
 REM ECHO %%F
 SET result=%%F
 )
 ECHO got: "%result%" : %command%
+
 ECHO ====================
 ECHO python read forecast 
 ECHO ====================
@@ -32,7 +33,7 @@ ECHO python aggregate data
 ECHO ====================
 SET platform=X86
 ECHO syntax: %py_data_file% -d %platform% -l location -m mode(rea/agg)
-ECHO writing to: %data_dir%%YY%%MM%.sqlite 
+ECHO aggregating to: %data_dir%%YY%%MM%.sqlite 
 ECHO ...............
 REM python %py_data_file% -d %platform% -l %data_dir% >> %log_dir%logfile.log
-python %py_data_file% -d "%platform%" -l %data_dir% -m aggregate
+python %py_data_file% -m aggregate -d "%platform%" -l %data_dir%

@@ -23,30 +23,31 @@ class Device(object):
         self.date_format = '%Y/%m/%d %H:%M:%S'
         self.date_file_format = '%Y%m%d_%H%M'
         self.setup_db = os.path.dirname(os.path.realpath(__file__)) + '/Settings.sqlite'
-    
-    def setup_device(self, device, sensor, timeout):
-        conn = DB74.open_db_connection(self.setup_db)
-        c = conn.cursor()
-        # port = port with device
-        sql = SQL.get_driver_loc
-        sub_sql = SQL.get_device_id.format(device)
-        sql = sql.format(sub_sql, sensor)
-        port = c.execute(sql).fetchone()[0]
-        # br = baud rate
-        sql = 'SELECT baud FROM setting;'
-        br = c.execute(sql).fetchone()[0]
-        DB74.close_db_connection(conn)
-        self.port = port
-        self.br = br
-        self.timeout = timeout
+        self.port = 0
+        self.br = 0
+        self.timeout = 0
         self.interval_shift = 2
+        self.table_name = '_'
+        self.output_path = os.path.dirname(os.path.realpath(__file__))
+
+    def setup_device(self, device, sensor, timeout):
+        # port = port with device
+        sub_sql = SQL.get_device_id.format(device)
+        sql = SQL.get_driver_loc.format(sub_sql, sensor)
+        self.port = DB74.execute_not_connected(self.setup_db, sql)
+        # br = baud rate
+        self.br = DB74.execute_not_connected(self.setup_db, 'SELECT baud FROM setting;')
+        # timeout waiting time
+        self.timeout = timeout
+        self.table_name = DB74.execute_not_connected(self.setup_db, 'SELECT table_name FROM setting;')
 
     def setup_output_path(self, path):
         self.output_path = path
         
     def read_serial(self):
-        data_vals = {} #dictionary holding all/interval values
-        data_int = {} # clear the dictionary
+        '''reading serial line and mirror it to CSV file'''
+        data_vals = {}  # dictionary holding all/interval values
+        data_int = {}  # clear the dictionary
         last_run = get_time(datetime.datetime.now(), self.interval_shift)
         csv = ''
         try:
@@ -55,7 +56,7 @@ class Device(object):
             ser.flushOutput()
             time.sleep(self.timeout)
             print 'running with timeout {0} seconds.'.format(self.timeout)
-            #received = ser.readline().replace('\r\n', ' ') #not used - instead
+            # received = ser.readline().replace('\r\n', ' ') #not used - instead
             to_read = ser.inWaiting()
             received = ser.read(to_read)
             # parse data
@@ -64,15 +65,16 @@ class Device(object):
                 just_now = datetime.datetime.now()
                 now = get_time(just_now, self.interval_shift)
                 csv_fname = now.strftime(dev.date_file_format)+'.csv'
+                csv = args.l + csv_fname
                 # checking interval shifts
                 if now > last_run:
                     TX74.writeCSV(csv, data_vals, just_now, 'RPi')
                     data_vals = {} # clear the dictionaries 
                     data_int = {} 
                     last_run = now
-                csv = args.l + csv_fname
+
                 print received + str(just_now.strftime(SQL.date_format))
-                #building dictionary
+                # building dictionary
                 data_int[vel_val[0]] = vel_val[-1]
                 data_vals[just_now.strftime(SQL.date_format)] = data_int 
                 return data_vals
@@ -87,12 +89,28 @@ class Device(object):
             print ex.args[0].replace('\n', ' ')
             print 'now '+ str(now)
             print 'last_run' + str(last_run)
-            #if error found, do timeout
-            #print data_vals
-            #raw_input("Press enter to continue")
-            #os.system("pause")
+            # if error found, do timeout
+            # print data_vals
+            # raw_input("Press enter to continue")
+            # os.system("pause")
             return None
-    
+
+    def write_to_database(self, timestamp, value, velocity):
+        # check if Archive directory present
+        if not os.path.exists(self.output_path + 'Archive'):
+            os.makedirs(self.output_path + 'Archive')
+        csv_cnt = 0
+        for csv_file in os.listdir(self.output_path):
+            if csv_file.split('.')[-1].lower() <> 'csv':
+                continue
+                # only csv files
+            ts = TX74.readCSV(self.output_path + csv_file)
+            if not DB74.db_object_exist_noconnect(self.table_name, self.output_path + csv_file[:6] + '.sqlite'):
+                print 'must create table first'
+            csv_cnt += 1
+
+
+
 def get_time(timevalue, modnum):
     """function to return rounded time
     second parameter aggregation time interval """
@@ -111,10 +129,10 @@ def get_time(timevalue, modnum):
             min_new = 0
         else:
             hour_new = timevalue.hour
-    timevalue_aggregated = datetime.datetime(timevalue.year,
+    value_aggregated = datetime.datetime(timevalue.year,
      timevalue.month, timevalue.day, hour_new, int(min_new), 0, 0)
-    #print 'timestamp: ' + str(timevalue) + ' > ' + str(timevalue_aggregated)
-    return timevalue_aggregated
+    # print 'timestamp: ' + str(timevalue) + ' > ' + str(value_aggregated)
+    return value_aggregated
 
     
 def get_time_from_file(file):
@@ -133,9 +151,9 @@ def get_time_from_file(file):
 
     
 def min_between(d1, d2):
-    '''not used for now - just temp'''
-    #d1 = datetime.strptime(d1, "%Y-%m-%d")
-    #d2 = datetime.strptime(d2, "%Y-%m-%d")
+    """not used for now - just temp"""
+    # d1 = datetime.strptime(d1, "%Y-%m-%d")
+    # d2 = datetime.strptime(d2, "%Y-%m-%d")
     return abs(d2 - d1)
         
         
@@ -169,7 +187,8 @@ if __name__ == '__main__':
         while ready:
             ready = dev.read_serial()
     elif 'agg' in args.m:
-        print 'aggregating values ...'
+        print 'aggregating values in {0}'.format(args.l)
         print 'last run ' + str(OS74.get_file_mod_date(last_run, '%Y/%m/%d %H:%M:%S'))
+        dev.write_to_database('now', 0, 'm/s')
     else:
         print 'not possible'

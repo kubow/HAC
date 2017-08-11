@@ -7,10 +7,9 @@ from Template import SQL
 
 
 def open_db_connection(path):
-    conn = sqlite3.connect(path)
     # conn.row_factory = sqlite3.Row
-    print "Opened database %s" % (path)
-    return conn
+    # print "Opened database %s" % (path)
+    return sqlite3.connect(path)
 
 
 def close_db_connection(conn):
@@ -59,15 +58,15 @@ def execute_not_connected(database, sql):
         conn = open_db_connection(database)
         curs = conn.execute(sql)
         conn.commit()
-        res_set = curs.fetchall()
-        # log.log_operation(logfile, module, 'executed SQL: {0}'.format(sql))
+        res_set = curs.fetchone()
+        # log.log_operation('executed SQL (return one row): {0}'.format(sql))
+        conn.close()
         if res_set:
             # print res_set
             return res_set[0]
         else:
             # print 'no node connected'
             return None
-        close_db_connection(conn)
     else:
         print 'cannot find the database'
         return None

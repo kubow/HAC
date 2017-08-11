@@ -124,7 +124,6 @@ if __name__ == '__main__':
                     "     or a link to a web page, which will be read")
     destination = (" type of file to write (HTML, SQLite, All)\n"
                     "or destination location")
-    def_loc = 'Praha, cz'
     parser = argparse.ArgumentParser(description="weather@location")
     parser.add_argument('-g', help='mode', type=str, default='weather')
     parser.add_argument('-w', help=destination, type=str, default='none')
@@ -133,7 +132,14 @@ if __name__ == '__main__':
     args = parser.parse_args()
     logger = Log(args.l, args.g, __file__, True)
     if 'weather' in args.g:
-        o = OpenWeatherMap(args.p)
+        if args.p:
+            if '|' in args.p:
+                def_loc = args.p.replace('|', ', ')
+            else:
+                def_loc = args.p
+        else:
+            def_loc = 'Praha, cz'
+        o = OpenWeatherMap(def_loc)
         print 'writing content to file: ' + args.w
         path_separator = OS74.get_separator_from(args.l)
         write_weather_text(args.w + path_separator + 'index.html', o.heading[0], o.heading[1])
