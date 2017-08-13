@@ -79,13 +79,16 @@ class WebContent(HTMLParser.HTMLParser):
             tag_type = 'id'
         elif 'class' in str(tag_type).lower():
             tag_type = 'class'
+        done = False
         try:
             if 'file:' in self.url:
                 content = OS74.read_file(self.url.split('///')[-1])
                 parsed_content = self.parse_html_text(content)
+                done = True
             else:
                 html = requests.get(self.url, timeout=(10, 5), headers=self.headers)
                 parsed_content = self.parse_html_text(html.content)
+                done = True
             if self.easier:
                 if not tag_name:
                     self.div = parsed_content.find('body')
@@ -100,11 +103,12 @@ class WebContent(HTMLParser.HTMLParser):
             print '---cannot fetch address {0}, ({1})'.format(self.url, e)
         except:
             print '---some else error occurred: ' + self.url
-            print '---cannot parse content of {0} ({1})'.format(self.url, html.content)
-            if content:
-                self.div = str(content)
-            elif html.content:
-                self.div = str(html.content)
+            if done:
+                if content:
+                    self.div = str(content)
+                    print '---cannot parse content of {0} ({1})'.format(self.url, content)
+                elif html:
+                    self.div = str(html.content)
             else:
                 self.div = None
                 
@@ -124,11 +128,12 @@ class WebContent(HTMLParser.HTMLParser):
             print 'no content parsed from: ' + self.url
 
     def log_to_database(self, db_path, heading):
+        user, domain = OS74.get_current_settings()
         time_stamp = datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S')
         tag_content = self.div_text.encode('utf-8').replace('\n\n\n\n', '\n').replace('\n\n', '\n')
+        # table structure
         table_def = 'Log (Connection, CPName, Report, LogDate, User, Domain)'
         values_template = '"{0}", "{1}", "{2}", "{3}", "{4}", "{5}"'
-        user, domain = OS74.get_current_settings()
         table_values = values_template.format(heading.encode('utf-8'), 0, tag_content, time_stamp, user, domain)
         sql = SQL.insert.format(table_def, table_values)
         DB74.log_to_database(db_path, 'Log', sql)

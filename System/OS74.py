@@ -139,6 +139,15 @@ class Platform:
         print 'system - {0} / release - {1}'.format(self.which_platform(), self.get_release())
 
 
+def run_command_line(command):
+    plf = Platform()
+        if 'win' == plf.main:
+            installation_dir = 'C:\\Program Files(x86)\\cherrytree\\'
+            command = installation_dir + command
+        elif 'lnx' == plf.main or 'linux' == plf.main:
+            command = command
+
+
 def directory_lister(directory, output, list_files=False):
     template_loc = append_dir(one_dir_up(get_current_dir()), 'Structure') + 'HTML_DirectoryList.txt'
     # print template_loc
@@ -286,8 +295,8 @@ def date_string_format(float_num, format):
     return dt_object.strftime(format)
 
 
-def touch_file(path):
-    with open(path, 'a'):
+def touch_file(path):    
+    with open(path, 'w+'):
         os.utime(path, None)
         
         

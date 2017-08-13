@@ -27,7 +27,7 @@ class MainWindow:
 
         # related data table down right
         self.rel_data = SimpleTable(self, 5, 3)
-        self.rel_data.grid(row=2, column=2, sticky=N + S + E)
+        self.rel_data.grid(row=2, column=1, sticky=N + S + E)
         self.rel_data.set(0, 0, 'gggg')
 
         # multimedia view window

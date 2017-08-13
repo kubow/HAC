@@ -231,7 +231,7 @@ def build_text_menu(directory):
         keep_alive = raw_input("Please run:")
         if keep_alive == "1":
             print("\n Opening cherrytree ...")
-
+            OS74.run_command_line('cherrytree %s' % args.c)    
         elif keep_alive == "2":
             print("\n Opening sqlite browser\n")
 

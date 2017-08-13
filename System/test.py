@@ -1,35 +1,43 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from log import Log # as Log2
+from log import Log
 from OS74 import Platform
 from SO74 import OpenWeatherMap
 from TX74 import WebContent, RssContent
 
 
+def load_platform_based(from_path, web=None):
+    plf = Platform()
+    if 'win' == plf.main:
+        if web:
+            return web + 'C:\\_Run\\' + from_path
+        else:
+            return 'C:\\_Run\\' + from_path
+    elif 'lnx' == plf.main or 'linux' == plf.main:
+        if web:
+            return web + '/home/kubow/Dokumenty/' + from_path
+        else:
+            return '/home/kubow/Dokumenty/' + from_path
+    else:
+        return None
+
+
 class TestLog(unittest.TestCase):
     """Check if logging can process"""
     def test_simple_log(self):
+        log_file = load_platform_based('Script/Multimedia/logfile.log')
         text = 'simple testing test'
-        log_file = 'C:\\_Run\\Script\\Multimedia\\logfile.log'
         logger = Log(log_file, 'test', 'test.py', False)
         logger.log_operation(text)
         self.assertIn(text, logger.line_text)
 
     def test_advanced_log(self):
         text = 'advanced testing test'
-        log_file = 'C:\\_Run\\Script\\Multimedia\\logfile.log'
+        log_file = load_platform_based('Script/Multimedia/logfile.log')
         logger = Log(log_file, 'test', 'test.py', True)
         logger.log_operation(text)
         self.assertIn(text, logger.line_text)
-
-
-class TestPlatform(unittest.TestCase):
-    """Check for operating platform"""
-    def test_platform(self):
-        platform = Platform()
-        print 'found platform'
-        self.assertIn('win', platform.main)
 
 
 class TestWeather(unittest.TestCase):
@@ -49,7 +57,7 @@ class TestWeather(unittest.TestCase):
 class TestWebContent(unittest.TestCase):
     """Check if weather data accessible"""
     def test_localhost_content(self):
-        loc = 'file:///C:/_Run/Web/index.html'
+        loc = load_platform_based('Web/index.html', 'file:///')
         o = WebContent(loc)
         o.process_url()
         self.assertIn('encyklopedie', str(o.div))
