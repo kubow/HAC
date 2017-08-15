@@ -6,7 +6,7 @@ from smtplib import SMTP_SSL as SMTP  # secure SMTP (port 465, uses SSL)
 # from smtplib import SMTP            # standard SMTP (port 25, no enc)
 from email.mime.text import MIMEText
 
-import Platform
+from OS74 import CurrentPlatform
 
 class Message():
     def __init___(self):

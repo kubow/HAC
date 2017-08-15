@@ -1,8 +1,8 @@
 import argparse
 import sqlite3
 
-import OS74
-import TX74
+from OS74 import FileSystemObject
+import SO74TX
 from Template import SQL
 
 
@@ -54,7 +54,7 @@ def fetch_one_from_tab(c, sql):
 
 def execute_not_connected(database, sql):
     """execute command and return data set"""
-    if OS74.is_file(database):
+    if FileSystemObject(database).is_file:
         conn = open_db_connection(database)
         curs = conn.execute(sql)
         conn.commit()
@@ -84,7 +84,7 @@ def execute_many_not_connected(database, sql):
 
 
 def log_to_database(db_path, table_name, sql):
-    if not OS74.is_file(db_path):
+    if not FileSystemObject(db_path).is_file:
         # create connection
         print 'must create table (currently doing nothing...)'
     else:
@@ -171,7 +171,7 @@ def databases_compare(db1, db2):
                         continue
                     mirror = get_field_content(where,
                                                column.split(' ')[0], table[0], db_right)
-                    if TX74.similar(row[col_num], mirror[0]) < 1:
+                    if SO74TX.similar(row[col_num], mirror[0]) < 1:
                         print '!!! difference !!!'
                     col_num += 1
 

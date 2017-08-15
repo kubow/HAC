@@ -6,7 +6,7 @@ from Tkinter import *
 from PIL import Image, ImageTk
 # local project imports
 import H808E
-import TX74
+import SO74TX
 
 
 class MainWindow:
@@ -251,7 +251,7 @@ def read_file(filename):
     with open(filename, 'r') as content_file:
         content = content_file.read()
     if 'htm' in filename.split()[-1]:
-        content = TX74.htm_to_plain_txt(content)
+        content = SO74TX.htm_to_plain_txt(content)
     return content
 
 

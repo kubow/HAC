@@ -13,8 +13,8 @@ import serial
 import argparse
 
 import DB74
-import OS74
-import TX74
+from OS74 import FileSystemObject
+import SO74TX
 from Template import SQL
 
 
@@ -68,7 +68,7 @@ class Device(object):
                 csv = args.l + csv_fname
                 # checking interval shifts
                 if now > last_run:
-                    TX74.writeCSV(csv, data_vals, just_now, 'RPi')
+                    SO74TX.writeCSV(csv, data_vals, just_now, 'RPi')
                     data_vals = {} # clear the dictionaries 
                     data_int = {} 
                     last_run = now
@@ -104,11 +104,16 @@ class Device(object):
             if csv_file.split('.')[-1].lower() <> 'csv':
                 continue
                 # only csv files
-            ts = TX74.readCSV(self.output_path + csv_file)
+            ts = SO74TX.readCSV(self.output_path + csv_file)
             if not DB74.db_object_exist_noconnect(self.table_name, self.output_path + csv_file[:6] + '.sqlite'):
                 print 'must create table first'
             csv_cnt += 1
-
+            for time_stamp, value in ts.iteritems():
+                self.process_time_serie()
+                
+    def process_time_serie(values):
+        for vel, val in values.iteritems():
+            print vel + val
 
 
 def get_time(timevalue, modnum):
@@ -170,8 +175,8 @@ if __name__ == '__main__':
     parser.add_argument('-m', help=argl, type=str, default='')
     args = parser.parse_args()
     last_run = args.l + 'last.run'
-    if not OS74.is_file(last_run):
-        OS74.touch_file(last_run)
+    if not FileSystemObject(last_run).is_file:
+        FileSystemObject(last_run).touch_file()
     # create class for controlling device
     dev = Device()
     # device settings: port, baud rate and timeout
@@ -183,12 +188,12 @@ if __name__ == '__main__':
         print 'Reading serial input from: {0} - at {1}'.format(str(dev.port),str(dev.br))
         ready = True
         # compute last read time distance
-        OS74.touch_file(last_run)
+        FileSystemObject(last_run).touch_file()
         while ready:
             ready = dev.read_serial()
     elif 'agg' in args.m:
         print 'aggregating values in {0}'.format(args.l)
-        print 'last run ' + str(OS74.get_file_mod_date(last_run, '%Y/%m/%d %H:%M:%S'))
+        print 'last run ' + str(FileSystemObject(last_run).get_file_mod_date('%Y/%m/%d %H:%M:%S'))
         dev.write_to_database('now', 0, 'm/s')
     else:
         print 'not possible'

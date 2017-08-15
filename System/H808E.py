@@ -4,9 +4,9 @@ import argparse
 # sys.setdefaultencoding('utf-8')
 # H808E modules
 import DB74
-import OS74
+from OS74 import FileSystemObject
 import UI74
-import TX74
+import SO74TX
 from Template import HTML, SQL
 
 
@@ -14,7 +14,7 @@ class h808e(object):
     def __init__(self):
         self.enc = self.create_structure()
         self.set_active_node(800)
-        self.dir_active = OS74.get_current_dir()
+        self.dir_active = 'C:\\_Run\\Script'
         self.dir_folders = self.get_main_directories()
         
         self.db_path = ''
@@ -103,7 +103,7 @@ class h808e(object):
             i += 1
             for filename in files:
                 curs_mem.execute(tab_ins.format(i, filename, root, 'date date date',
-                                                OS74.get_file_size(root + '/' + filename)))
+                                                FileSystemObject(root + '/' + filename).object_size()))
                 print '---file {0} registered, checking size.'.format(filename)
                 i += 1
         
@@ -123,21 +123,21 @@ class h808e(object):
             print '--' * int(en['level']) + str(en['code'])
             self.set_active_node(en['code'])
             self.set_db_data(self.get_node_content(str(en['code'])))
-            OS74.refresh_file(directory + str(en['code']) + '.html', self.db_data)
+            FileSystemObject(directory + str(en['code']) + '.html').refresh_file(self.db_data)
 
             for esn in en['child']:
                 # 2. level
                 print '--' * int(esn['level']) + str(esn['code'])
                 self.set_active_node(esn['code'])
                 self.set_db_data(self.get_node_content(str(esn['code'])))
-                OS74.refresh_file(directory + str(esn['code']) + '.html', self.db_data)
+                FileSystemObject(directory + str(esn['code']) + '.html').refresh_file(self.db_data)
 
                 for essn in esn['child']:
                     # 3. level
                     print '--' * int(essn['level']) + str(essn['code'])
                     self.set_active_node(essn['code'])
                     self.set_db_data(self.get_node_content(str(essn['code'])))
-                    OS74.refresh_file(directory + str(essn['code']) + '.html', self.db_data)
+                    FileSystemObject(directory + str(essn['code']) + '.html').refresh_file(self.db_data)
 
     def iterate_enc_db_structure(self):
         conn = DB74.open_db_connection(self.db_path)
@@ -177,7 +177,7 @@ class h808e(object):
         return self.get_nth_number(1, number) - 4
 
     def get_root_path(self, directory):
-        separator = OS74.get_separator_from(directory)
+        separator = FileSystemObject(directory).separator
         path_list = directory.split(separator)
         for item in path_list:
             if str(item).lower() == 'web':
@@ -197,7 +197,7 @@ class h808e(object):
         html_content += '{0}' + HTML.pageTemplateMiddle
         html_content += HTML.pageTemplateEnd.format('footer')
         if text:
-            html_content = html_content.format(TX74.xml_to_html(''.join(text).encode('utf8')))
+            html_content = html_content.format(SO74TX.xml_to_html(''.join(text).encode('utf8')))
         else:
             html_content = html_content.format('')
 
@@ -231,7 +231,7 @@ def build_text_menu(directory):
         keep_alive = raw_input("Please run:")
         if keep_alive == "1":
             print("\n Opening cherrytree ...")
-            OS74.run_command_line('cherrytree %s' % args.c)    
+            # OS74.run_command_line('cherrytree %s' % args.c)
         elif keep_alive == "2":
             print("\n Opening sqlite browser\n")
 

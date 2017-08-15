@@ -2,13 +2,13 @@
 import unittest
 
 from log import Log
-from OS74 import Platform
+from OS74 import CurrentPlatform, FileSystemObject
 from SO74 import OpenWeatherMap
-from TX74 import WebContent, RssContent
+from SO74TX import WebContent, RssContent
 
 
 def load_platform_based(from_path, web=None):
-    plf = Platform()
+    plf = CurrentPlatform()
     if 'win' == plf.main:
         if web:
             return web + 'C:\\_Run\\' + from_path
@@ -54,6 +54,14 @@ class TestWeather(unittest.TestCase):
         self.assertIn(loc.split(',')[-1], o.heading[0])
 
 
+class TestLocalContent(unittest.TestCase):
+    """Check if local data accessible"""
+    def test_local_content(self):
+        fso = FileSystemObject()
+        o = WebContent(loc)
+        o.process_url()
+
+
 class TestWebContent(unittest.TestCase):
     """Check if weather data accessible"""
     def test_localhost_content(self):
@@ -68,5 +76,10 @@ class TestWebContent(unittest.TestCase):
         o.process_url()
         self.assertIn('dnes m', str(o.div))
 
+    def test_rss_content(self):
+        loc = 'https://aktualnizpravy.cz/'
+        o = WebContent(loc)
+        o.process_url()
+        self.assertIn('dnes m', str(o.div))
 
 unittest.main()

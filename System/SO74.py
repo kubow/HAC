@@ -5,8 +5,8 @@ import datetime
 import os
 
 import DB74
-import OS74
-from TX74 import WebContent, RssContent
+from OS74 import FileSystemObject
+from SO74TX import WebContent, RssContent
 from Template import HTML, SQL
 from osmapi import OsmApi
 
@@ -70,7 +70,7 @@ class Mapping(object):
 
 
 def process_web_content(mode, final_dir, url=None):
-    path_separator = OS74.get_separator_from(final_dir)
+    path_separator = FileSystemObject(final_dir).separator
     settings_db = os.path.dirname(os.path.realpath(__file__)) + path_separator + 'Settings.sqlite'
     if url:
         wc = WebContent(url)
@@ -99,7 +99,7 @@ def process_web_content(mode, final_dir, url=None):
 
 
 def browse_internet(mode, match_dir, url=None):
-    path_separator = OS74.get_separator_from(args.l)
+    path_separator = FileSystemObject(args.l).separator
     if 'rest' in mode:
         final_dir = path_separator.join((match_dir, 'Multimedia', 'RestMenu'))
         url = None

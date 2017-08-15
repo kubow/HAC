@@ -17,7 +17,7 @@ except ImportError:
     import tkinter as tk
 
 
-import TX74
+import SO74TX
 
 
 class Window(object):
@@ -113,9 +113,149 @@ class app_browser(tk.Frame):
         root.grid_rowconfigure(0, weight=1)
 
 
-class Platform:
+class DateTimeObject(object):
+    def __init__(self):
+        self.date = datetime.datetime.now()
+
+    def date_string_format(self, float_num, format):
+        dt_object = datetime.datetime.utcfromtimestamp(float_num)
+        return dt_object.strftime(format)
+
+
+class FileSystemObject(object):
+    def __init__(self, from_path, to_path):
+        if os.path.isfile(from_path):
+            self.is_file = True
+            self.is_folder = False
+        elif os.path.isdir(from_path):
+            self.is_file = False
+            self.is_folder = True
+        else:
+            self.is_file = False
+            self.is_folder = False
+            print 'cannot determine ' + from_path
+        self.path = from_path
+        self.destination = to_path
+        self.separator = self.get_separator_from(from_path)
+
+    def get_separator_from(self):
+        if '\\' in self.path:
+            separator = '\\'
+        elif '/' in self.path:
+            separator = '/'
+        else:
+            separator = None
+        return separator
+
+    def one_dir_up(self):
+        # strip filename / last dir from path
+        return self.separator.join(self.path.split(self.separator)[0:-1])
+
+    def append_directory(self, path, directory):
+        return path + self.separator + directory + self.separator
+
+    def get_another_directory_file(self, another):
+        if self.is_file:
+            # strip filename from path
+            root_dir = self.one_dir_up(self.path)
+            return self.separator.join(root_dir.split(self.separator)[0:-1]) + self.separator + another
+        elif self.is_folder:
+            return self.separator.join(self.path.split(self.separator)[0:-1]) + self.separator + another
+        else:
+            print 'not file nor folder ...'
+            return None
+
+    def directory_lister(self, list_files=False):
+        template_loc = self.append_directory(self.one_dir_up(get_current_dir()), 'Structure') + 'HTML_DirectoryList.txt'
+        # print template_loc
+        template = SO74TX.load_text_from(template_loc)
+        template = template.replace('XXX', self.path)
+
+        head = '<table><tr class="Head"><td>List Generated on {0} / Total Folder Size - {1} / {2} Subfolders </td></tr>'
+        table_head = '<table><tr class="Head">{0}<td>{1}</table>'
+        table_row = '<tr class="{0}"><td>{1}</td><td>{2}</td></tr>'
+
+        htm_content = ''
+        total_size = 0
+        folder_count = 0
+        # Walk the directory tree
+        for root, directories, files in os.walk(self.path):
+            print root
+            folder_size = 0
+            file_count = 0
+            tmp_content = ''
+            for filename in files:
+                folder_size += (os.path.getsize(root + '/' + filename) / 1024)
+                if list_files:
+                    file_size = str('{0:.2f}'.format(os.path.getsize(root + '/' + filename) / 1024)) + ' kb'
+                    tmp_content = tmp_content + table_row.format('File', filename, file_size) + '\n'
+                file_count += 1
+            ref = '<a href="file:///' + root + '">' + root + '</a> (' + str(file_count) + ' files in folder)'
+            htm_content = htm_content + '\n' + table_row.format('Fldr', ref,
+                                                                str(folder_size) + ' kb') + '\n' + tmp_content
+            total_size = total_size + folder_size
+            folder_count += 1
+
+        content = head.format(datetime.datetime.now(), str(total_size) + ' kb', folder_count) + '\n' + htm_content
+        # print content
+        # print template
+        self.file_write(self.destination, content)
+
+    def object_read(self):
+        if self.is_file:
+            with open(self.path, 'r') as content_file:
+                content = content_file.read()
+            return content
+        elif self.is_folder:
+            objects = []
+            for file in os.path.dirname(self.path):
+                objects.append(file)
+            return objects
+
+    def file_touch(self):
+        with open(self.path, 'w+'):
+            os.utime(self.path, None)
+
+    def file_refresh(self, content):
+        # print 'refreshing filename: ' + filename + ' with text: ' + text
+        if content:
+            if not self.is_file(self.path):
+                print 'file {0} not exist, must create'.format(self.path)
+                self.file_touch(self.path)
+            self.object_write(content, 'w+')
+        else:
+            print 'no text to write, skipping file {0}'.format(self.path)
+
+    def object_write(self, content, mode='w+'):
+        if mode != 'w+' or mode != 'a':
+            if 'app' in mode:
+                mode = 'a'
+            else:
+                mode = 'w+'
+        with open(self.path, mode) as target_file:
+            target_file.write(content)
+
+    def object_size(self):
+        # return file size in kilobytes
+        if self.is_file:
+            return '{0:.2f}'.format(os.path.getsize(self.path) / 1024)
+        elif self.is_folder:
+            return 'for all files sum size'
+
+    def object_mod_date(self, format='%Y. %m. %d %H:%M:%S'):
+        return DateTimeObject().date_string_format(os.path.getmtime(self.path), format)
+
+    def create_object_neccesary(path):
+        # must check if path is meaningful name
+        if not os.path.exists(path):
+            os.makedirs(path)
+            print 'directory ' + path + ' folder created ...'
+
+
+class CurrentPlatform:
     def __init__(self):
         self.main = self.which_platform()
+        self.environment = self.get_current_settings()
 
     @staticmethod
     def which_platform():
@@ -138,77 +278,22 @@ class Platform:
         # for debug purposes
         print 'system - {0} / release - {1}'.format(self.which_platform(), self.get_release())
 
+    def get_current_settings(self):
+        return os.environ.get('USERNAME'), os.environ.get('USERDOMAIN')
+
 
 def run_command_line(command):
-    plf = Platform()
-        if 'win' == plf.main:
-            installation_dir = 'C:\\Program Files(x86)\\cherrytree\\'
-            command = installation_dir + command
-        elif 'lnx' == plf.main or 'linux' == plf.main:
-            command = command
-
-
-def directory_lister(directory, output, list_files=False):
-    template_loc = append_dir(one_dir_up(get_current_dir()), 'Structure') + 'HTML_DirectoryList.txt'
-    # print template_loc
-    template = TX74.load_text_from(template_loc)
-    template = template.replace('XXX', directory)
-
-    head = '<table><tr class="Head"><td>List Generated on {0} / Total Folder Size - {1} / {2} Subfolders </td></tr>'
-    table_head = '<table><tr class="Head">{0}<td>{1}</table>'
-    table_row = '<tr class="{0}"><td>{1}</td><td>{2}</td></tr>'
-
-    htm_content = ''
-    total_size = 0
-    folder_count = 0
-    # Walk the directory tree
-    for root, directories, files in os.walk(directory):
-        print root
-        folder_size = 0
-        file_count = 0
-        tmp_content = ''
-        for filename in files:
-            folder_size += (os.path.getsize(root + '/' + filename) / 1024)
-            if list_files:
-                file_size = str('{0:.2f}'.format(os.path.getsize(root + '/' + filename) / 1024)) + ' kb'
-                tmp_content = tmp_content + table_row.format('File', filename, file_size) + '\n'
-            file_count += 1
-        ref = '<a href="file:///' + root + '">' + root + '</a> (' + str(file_count) + ' files in folder)'
-        htm_content = htm_content + '\n' + table_row.format('Fldr', ref, str(folder_size) + ' kb') + '\n' + tmp_content
-        total_size = total_size + folder_size
-        folder_count += 1
-
-    content = head.format(datetime.datetime.now(), str(total_size) + ' kb', folder_count) + '\n' + htm_content
-    # print content
-    # print template
-    file_write(output, content)
-
-
-def get_current_settings():
-    return os.environ.get('USERNAME'), os.environ.get('USERDOMAIN')
+    plf = CurrentPlatform()
+    if 'win' == plf.main:
+        installation_dir = 'C:\\Program Files(x86)\\cherrytree\\'
+        command = installation_dir + command
+    elif 'lnx' == plf.main or 'linux' == plf.main:
+        command = command
+    print 'command: ' + command
 
 
 def get_current_dir():
     return os.path.dirname(os.path.realpath(__file__))
-
-
-def get_another_directory_file(path, another):
-    separator = get_separator_from(path)
-    if os.path.isfile(path):
-        # strip filename from path
-        root_dir = one_dir_up(path)
-        return separator.join(root_dir.split(separator)[0:-1]) + separator + another
-    elif os.path.isdir(path):
-        return separator.join(path.split(separator)[0:-1]) + separator + another
-    else:
-        print 'not this nor that...'
-        return None
-
-
-def one_dir_up(directory):
-    separator = get_separator_from(directory)
-    # strip filename from path
-    return separator.join(directory.split(separator)[0:-1])
 
 
 def compare_directories(dir1, dir2):
@@ -230,82 +315,6 @@ def compare_directories(dir1, dir2):
                     # print 'not found ' + filename
                     found = False
 
-
-def append_dir(path, string):
-    separator = get_separator_from(path)
-    return path + separator + string + separator
-
-
-def get_separator_from(path):
-    if '\\' in path:
-        separator = '\\'
-    elif '/' in path:
-        separator = '/'
-    else:
-        separator = None
-    return separator
-
-
-def is_file(filename):
-    if os.path.isfile(filename):
-        return True
-    else:
-        return False
-
-
-def read_file(filename):
-    with open(filename, 'r') as content_file:
-        content = content_file.read()
-    return content
-
-
-def refresh_file(filename, content):
-    # print 'refreshing filename: ' + filename + ' with text: ' + text
-    if content:
-        if not os.path.isfile(filename):
-            print 'file {0} not exist, must create'.format(filename)
-            touch_file(filename)
-        file_write(filename, content)
-
-    else:
-        print 'no text to write, skipping file {0}'.format(filename)
-
-
-def file_write(filename, content):
-    with open(filename, 'w+') as target_file:
-        target_file.write(content)
-
-
-def file_append(filename, content):
-    with open(filename, 'a') as target_file:
-        target_file.write(content)
-
-
-def get_file_size(file_path):
-    # return file size in kilobytes
-    return '{0:.2f}'.format(os.path.getsize(file_path) / 1024)
-
-
-def get_file_mod_date(file_path, format='%d-%m-%Y'):
-    return date_string_format(os.path.getmtime(file_path), format)
-
-
-def date_string_format(float_num, format):
-    dt_object = datetime.datetime.utcfromtimestamp(float_num)
-    return dt_object.strftime(format)
-
-
-def touch_file(path):    
-    with open(path, 'w+'):
-        os.utime(path, None)
-        
-        
-def create_dir_if_neccesary(path):
-    # must check if path is meaningful name
-    if not os.path.exists(path):
-        os.makedirs(path)
-        print 'directory '+path+' folder created ...'
-        
         
 def center(toplevel):
     toplevel.update_idletasks()
@@ -334,4 +343,5 @@ if __name__ == '__main__':
         center(root)
         app.mainloop()
     elif args.l:
-        directory_lister(args.l, args.f, True)
+        fso = FileSystemObject(args.l, args.f)
+        fso.directory_lister(list_files=True)
