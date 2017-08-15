@@ -108,14 +108,14 @@ def browse_internet(mode, match_dir, url=None):
         url = None
     else:
         final_dir = path_separator.join((match_dir, 'Multimedia', 'WebsCont'))
-    OS74.create_dir_if_neccesary(final_dir)
+    FileSystemObject(final_dir).create_dir_if_neccesary()
     logger.log_operation('proccessing internet content to ' + final_dir)
     process_web_content(mode, final_dir, url)
 
 
 def write_weather_text(html_file, title, content):
     logger.log_operation('writing content {0} to file: {1}'.format(title, html_file))
-    OS74.file_write(html_file, HTML.skelet_titled.format(title, content.encode('utf-8')))
+    FileSystemObject(html_file).file_write(HTML.skelet_titled.format(title, content.encode('utf-8')))
 
 
 if __name__ == '__main__':
@@ -141,7 +141,7 @@ if __name__ == '__main__':
             def_loc = 'Praha, cz'
         o = OpenWeatherMap(def_loc)
         print 'writing content to file: ' + args.w
-        path_separator = OS74.get_separator_from(args.l)
+        path_separator = FileSystemObject(args.l).separator
         write_weather_text(args.w + path_separator + 'index.html', o.heading[0], o.heading[1])
     else:
         browse_internet(args.g, args.w, args.p)

@@ -14,6 +14,7 @@ import lxml.html
 import feedparser
 import requests
 from xml.dom.minidom import parseString
+
 try:
     from bs4 import BeautifulSoup
 except:
@@ -22,17 +23,21 @@ import HTMLParser
 
 import DV72
 import DB74
-import OS74
+from OS74 import FileSystemObject, CurrentPlatform
 from Template import HTML, SQL
 import log
+
+
 # sys.setdefaultencoding('utf-8')
 
 
 class WebContent(HTMLParser.HTMLParser):
     """http://stackoverflow.com/questions/3276040/how-can-i-use-the-python-htmlparser-library-to-extract-data-from-a-specific-div """
+
     def __init__(self, url):
         HTMLParser.HTMLParser.__init__(self)
-        self.headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.90 Safari/537.36'}
+        self.headers = {
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.90 Safari/537.36'}
         self.recording = 0
         self.data = []
         self.div = None
@@ -40,7 +45,7 @@ class WebContent(HTMLParser.HTMLParser):
         self.easier = True  # found BS4
         self.div_text = ''
 
-    def handle_starttag(self, tag, attributes): #, tag_type, tag_name):
+    def handle_starttag(self, tag, attributes):  # , tag_type, tag_name):
         if tag != 'div':
             return
         if self.recording:
@@ -82,7 +87,7 @@ class WebContent(HTMLParser.HTMLParser):
         done = False
         try:
             if 'file:' in self.url:
-                content = OS74.read_file(self.url.split('///')[-1])
+                content = FileSystemObject(self.url.split('///')[-1]).read_object()
                 parsed_content = self.parse_html_text(content)
                 done = True
             else:
@@ -111,15 +116,14 @@ class WebContent(HTMLParser.HTMLParser):
                     self.div = str(html.content)
             else:
                 self.div = None
-                
+
     def write_web_content_to_file(self, file_path, heading):
         if self.div:
             print 'creating ' + file_path + ' from: ' + self.url
             try:
-                OS74.file_write(file_path,
-                                HTML.skelet_titled.format(heading.encode('utf-8'),
-                                self.div.encode('utf-8')))
-                log_path = OS74.get_another_directory_file(file_path, 'logfile.sqlite')
+                FileSystemObject(file_path).file_write(HTML.skelet_titled.format(heading.encode('utf-8'),
+                                                                                 self.div.encode('utf-8')))
+                log_path = FileSystemObject(file_path).get_another_directory_file('logfile.sqlite')
 
                 self.log_to_database(log_path, heading)
             except:
@@ -128,7 +132,7 @@ class WebContent(HTMLParser.HTMLParser):
             print 'no content parsed from: ' + self.url
 
     def log_to_database(self, db_path, heading):
-        user, domain = OS74.get_current_settings()
+        user, domain = CurrentPlatform().get_current_settings()
         time_stamp = datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S')
         tag_content = self.div_text.encode('utf-8').replace('\n\n\n\n', '\n').replace('\n\n', '\n')
         # table structure
@@ -137,8 +141,8 @@ class WebContent(HTMLParser.HTMLParser):
         table_values = values_template.format(heading.encode('utf-8'), 0, tag_content, time_stamp, user, domain)
         sql = SQL.insert.format(table_def, table_values)
         DB74.log_to_database(db_path, 'Log', sql)
-        
-            
+
+
 class RssContent(object):
     def __init__(self, rss_url):
         self.url = rss_url
@@ -169,19 +173,18 @@ class RssContent(object):
                         inner_text += themediacontent["height"]
                         inner_text += themediacontent["width"]
         self.div = inner_text
-    
+
     def write_rss_content_to_file(self, file_path, heading):
         if self.div:
             print 'creating ' + file_path + ' from: ' + self.url
-            OS74.file_write(file_path,
-                            HTML.skelet_titled.format(heading.encode('utf-8'), 
-                            self.div.encode('utf-8')))
-            log_path = OS74.get_another_directory_file(file_path, 'logfile.sqlite')
+            FileSystemObject(file_path).file_refresh(HTML.skelet_titled.format(heading.encode('utf-8'),
+                                                                               self.div.encode('utf-8')))
+            log_path = FileSystemObject(file_path).get_another_directory_file('logfile.sqlite')
 
             # self.log_to_database(log_path, heading)
         else:
             print 'no content parsed from: ' + self.url
-        
+
 
 def replace_line_endings(block_text):
     # replace double carriage return with tildos
@@ -193,8 +196,8 @@ def replace_line_endings(block_text):
     # and finally put back new line characters
     block_text = re.sub(r'~~~', r'\n\n', block_text)
     return block_text
-    
-    
+
+
 def replace_crlf_lf(block_text):
     # replace windows line endings with linux line endings
     if '\r\n' in block_text:
@@ -202,8 +205,8 @@ def replace_crlf_lf(block_text):
     else:
         print 'this text does not have any windows line endings, passing ...'
     return block_text
-    
-    
+
+
 def replace_lf_crlf(block_text):
     # replace linux line endings with windows line endings
     if re.search('\r?\n'):
@@ -211,7 +214,7 @@ def replace_lf_crlf(block_text):
     else:
         print 'this text does not have any linux line endings, passing ...'
     return block_text
-    
+
 
 def trim_line_last_chars(filename):
     new_line = []
@@ -219,7 +222,7 @@ def trim_line_last_chars(filename):
         new_line.append(line[:-2])
     return new_line
 
-    
+
 def filter_lines(textfile, with_filter):
     stream = ''
     for line in textfile:
@@ -228,7 +231,7 @@ def filter_lines(textfile, with_filter):
             stream += line
     return stream
 
-    
+
 def is_html_text(text):
     if text:
         if lxml.html.fromstring(text).find('.//*') is not None:
@@ -238,19 +241,19 @@ def is_html_text(text):
     else:
         return False
 
-        
+
 def load_text_from(filename):
     with open(filename, 'rb') as input_file:
         text = input_file.read()
         # for m in re.findall(r'\n\n', whole_data):
         # print m
     return text
-    
-    
+
+
 def export_text_to(filename, text):
     with open(filename, 'w+') as output_file:
-        output_file.write(text)    
-    
+        output_file.write(text)
+
 
 def writeCSV(file_name, values, timestamp, device):
     """write a CSV file
@@ -275,7 +278,7 @@ def writeCSV(file_name, values, timestamp, device):
         row = str(actime) + ','
         for d, v in vals.iteritems():
             row += str(v) + ','
-        f.write(row+'\n')
+        f.write(row + '\n')
         line += 1
     f.close()
 
@@ -284,7 +287,7 @@ def readCSV(csvfile):
     """read value from csv file
     return in dictionary"""
     try:
-        fileobj = open(csvfile,'r')
+        fileobj = open(csvfile, 'r')
         lines = fileobj.readlines()
         timestamp = DV72.get_time_from_file(csvfile)
         fileobj.close()
@@ -304,9 +307,9 @@ def readCSV(csvfile):
                 # various columns save
                 for i in range(len(hd)):
                     if hd[i] not in ('datetime', None, '\n'):
-                        flds.append('val_'+str(i))
+                        flds.append('val_' + str(i))
                         vels.append(hd[i].strip())
-                        values['val_'+str(i)] = 0
+                        values['val_' + str(i)] = 0
                 val += 1
             else:
                 for fld in flds:
@@ -314,9 +317,9 @@ def readCSV(csvfile):
                     values[fld] = int(values[fld]) + int(hd[idx])
                 val += 1
         for field, sum_vals in values.iteritems():
-            values[field] = sum_vals/val
+            values[field] = sum_vals / val
             # get index of field - change to proper list
-            velocities[vels[flds.index(field)]] = sum_vals/val
+            velocities[vels[flds.index(field)]] = sum_vals / val
         timestamps[timestamp] = velocities
         return timestamps
     except Exception as ex:
@@ -324,20 +327,20 @@ def readCSV(csvfile):
         print 'problem in csv ' + csvfile + ' (line{0})'.format(str(val))
         return None
 
-        
+
 def readJSON(file):
     print 'file: ' + file
     with open(file, 'r') as fh:
-        #first = next(fh).decode()
+        # first = next(fh).decode()
         first = fh.readline()
         print 'got first line' + first
         print '*****************'
         fh.seek(-512, 2)
-        #last = fh.readlines()
+        # last = fh.readlines()
         last = fh.readlines()[-1].decode()
     return (first, last)
 
-    
+
 def writeJSON(location, cols, c):
     # print cols
     columns = cols.split(',')
@@ -362,15 +365,15 @@ def writeJSON(location, cols, c):
             print location + col + '/.json'
         print '-------------------'
         get_ts = SQL.column_select.format('timestamp, ' + col, 'measured')
-        #print get_ts
-        json = open(location + col + '.json','w')
+        # print get_ts
+        json = open(location + col + '.json', 'w')
         json.write('[')
         # fetch dataset
         for ts in c.execute(get_ts).fetchall():
             # write values
             print ts
             json.write('[' + ts[0] + ',' + str(ts[1]) + '],\n')
-        
+
         # finish JSON file
         json.write(']')
 
@@ -386,7 +389,7 @@ def file_content_difference(file1, file2):
         if line not in removed:
             print line
 
-            
+
 def create_file_if_neccesary(filename):
     if os.path.isfile(filename):
         print ' -> ' + filename + ' - exists ...'
@@ -423,22 +426,23 @@ def htm_to_plain_txt(htm_txt):
     soup = BeautifulSoup(htm_txt, 'html.parser')
     # return soup.get_text()
     return soup.body.get_text()
-    
-    
+
+
 def test_utf_special_characters():
     print os.getcwd()
-    veta=u'Žluťoučký kůň pěl ďábelské ódy.'
+    veta = u'Žluťoučký kůň pěl ďábelské ódy.'
     print veta
     log.file_write('aaa.log', 'temp', veta)
-    
-    
+
+
 def similar(seq1, seq2):
     try:
-        return difflib.SequenceMatcher(a=seq1.lower(), 
-        b=seq2.lower()).ratio()  # > 0.9
+        return difflib.SequenceMatcher(a=seq1.lower(),
+                                       b=seq2.lower()).ratio()  # > 0.9
     except:
-        return difflib.SequenceMatcher(a=str(seq1).lower(), 
-        b=str(seq2).lower()).ratio()  # > 0.9
+        return difflib.SequenceMatcher(a=str(seq1).lower(),
+                                       b=str(seq2).lower()).ratio()  # > 0.9
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Text proccess')
