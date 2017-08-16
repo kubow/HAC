@@ -1,10 +1,13 @@
 #import argparse
-#import win32com.client
-import os
+import os, sys
 import socket
-from smtplib import SMTP_SSL as SMTP  # secure SMTP (port 465, uses SSL)
-# from smtplib import SMTP            # standard SMTP (port 25, no enc)
 from email.mime.text import MIMEText
+try:
+    from smtplib import SMTP_SSL as SMTP  # secure SMTP (port 465, uses SSL)
+    # from smtplib import SMTP            # standard SMTP (port 25, no enc)
+    import win32com.client
+except:
+    print 'win specific modules not load'
 
 
 class Message():
@@ -32,7 +35,7 @@ def send_mail():
 
     # Send the message via our own SMTP server
     conn = SMTP(SMTPserver)
-    xonn.set_debuglevel(False)
+    conn.set_debuglevel(False)
 
     s = smtplib.SMTP(m.server)
 

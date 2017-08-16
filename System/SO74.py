@@ -142,7 +142,6 @@ if __name__ == '__main__':
             def_loc = 'Praha, cz'
         o = OpenWeatherMap(def_loc)
         print 'writing content to file: ' + args.w
-        path_separator = FileSystemObject(args.l).separator
-        write_weather_text(args.w + path_separator + 'index.html', o.heading[0], o.heading[1])
+        write_weather_text(FileSystemObject(args.w).append_file('index.html'), o.heading[0], o.heading[1])
     else:
         browse_internet(args.g, args.w, args.p)

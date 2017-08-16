@@ -154,8 +154,11 @@ class FileSystemObject:
         # strip filename / last dir from path
         return self.separator.join(self.path.split(self.separator)[0:-1])
 
-    def append_directory(self, path, directory):
-        return path + self.separator + directory + self.separator
+    def append_directory(self, directory):
+        return self.path + self.separator + directory + self.separator
+
+    def append_file(self, file):
+        return self.path + self.separator + file
 
     def get_another_directory_file(self, another):
         if self.is_file:
