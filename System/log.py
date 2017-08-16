@@ -7,12 +7,10 @@ import logging
 class Log(object):
     def __init__(self, log_file, module, caller_file='log.py', advanced=True):
         self.date_format = '%d.%m.%Y %H:%M:%S'
-        if os.path.isfile(log_file):
-            self.log_file = log_file
-        else:
+        if not os.path.isfile(log_file):
             # print os.path.realpath()
             print log_file + ' does not exist! - create new one in actual path'
-
+        self.log_file = log_file
         self.module = module
         self.line_text = ''
         self.caller_file = caller_file

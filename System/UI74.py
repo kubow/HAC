@@ -4,9 +4,7 @@ import argparse
 # Use Tkinter for python 2, tkinter for python 3
 from Tkinter import *
 from PIL import Image, ImageTk
-# local project imports
-import H808E
-import SO74TX
+
 
 
 class MainWindow:
@@ -271,6 +269,10 @@ def navigate_to(directory):
 
 
 if __name__ == '__main__':
+
+    import H808E
+    import SO74TX
+
     parser = argparse.ArgumentParser(description="run over dir")
     parser.add_argument('-d', help='directory', type=str, default='')
     args = parser.parse_args()

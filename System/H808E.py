@@ -2,12 +2,6 @@
 import os
 import argparse
 # sys.setdefaultencoding('utf-8')
-# H808E modules
-import DB74
-from OS74 import FileSystemObject
-import UI74
-import SO74TX
-from Template import HTML, SQL
 
 
 class h808e(object):
@@ -16,7 +10,6 @@ class h808e(object):
         self.set_active_node(800)
         self.dir_active = 'C:\\_Run\\Script'
         self.dir_folders = self.get_main_directories()
-        
         self.db_path = ''
         self.db_tables = self.get_table()
         self.db_query = 'SELECT * FROM enc_nodes;'
@@ -259,6 +252,13 @@ def build_text_menu(directory):
 
 
 if __name__ == '__main__':
+
+    import DB74
+    from OS74 import FileSystemObject
+    import UI74
+    import SO74TX
+    from Template import HTML, SQL
+
     parser = argparse.ArgumentParser(description="construct h808e")
     parser.add_argument('-c', help='ctb file', type=str, default='')
     parser.add_argument('-d', help='directory', type=str, default='')

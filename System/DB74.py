@@ -1,11 +1,6 @@
 import argparse
 import sqlite3
 
-from OS74 import FileSystemObject
-import SO74TX
-from Template import SQL
-
-
 def open_db_connection(path):
     # conn.row_factory = sqlite3.Row
     # print "Opened database %s" % (path)
@@ -54,7 +49,7 @@ def fetch_one_from_tab(c, sql):
 
 def execute_not_connected(database, sql):
     """execute command and return data set"""
-    if FileSystemObject(database).is_file:
+    try:
         conn = open_db_connection(database)
         curs = conn.execute(sql)
         conn.commit()
@@ -67,7 +62,10 @@ def execute_not_connected(database, sql):
         else:
             # print 'no node connected'
             return None
-    else:
+    except sqlite3.OperationalError:
+        print 'cannot fetch dataset'
+        return None
+    except:
         print 'cannot find the database'
         return None
 
@@ -84,12 +82,14 @@ def execute_many_not_connected(database, sql):
 
 
 def log_to_database(db_path, table_name, sql):
-    if not FileSystemObject(db_path).is_file:
-        # create connection
-        print 'must create table (currently doing nothing...)'
-    else:
-        if db_object_exist_noconnect(table_name, db_path):
-            execute_not_connected(db_path, sql)
+    try:
+        if not db_object_exist_noconnect(table_name, db_path):
+            print 'must create table (currently doing nothing...)'
+        # execute the query
+        execute_not_connected(db_path, sql)
+    except:
+        print 'logging failed (to database {0})'.format(db_path)
+
 
 
 def execute_connected(c, sql, logfile, module, debug=False):
@@ -203,7 +203,11 @@ def temp_connect_database(database, do_some_work=''):
 
 
 if __name__ == '__main__':
+
+    import SO74TX
+    from Template import SQL
     from log import Log
+
     parser = argparse.ArgumentParser(description="Compare two sqlite databases")
     parser.add_argument('-m', help='mode: compare/browse sqlite database', type=str, default='')
     parser.add_argument('-l', help='first file', type=str, default='')

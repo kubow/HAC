@@ -20,14 +20,6 @@ try:
 except:
     print 'using alternative html parser'
 import HTMLParser
-
-import DV72
-import DB74
-from OS74 import FileSystemObject, CurrentPlatform
-from Template import HTML, SQL
-import log
-
-
 # sys.setdefaultencoding('utf-8')
 
 
@@ -432,7 +424,7 @@ def test_utf_special_characters():
     print os.getcwd()
     veta = u'Žluťoučký kůň pěl ďábelské ódy.'
     print veta
-    log.file_write('aaa.log', 'temp', veta)
+    logger.file_write('aaa.log', 'temp', veta)
 
 
 def similar(seq1, seq2):
@@ -445,11 +437,21 @@ def similar(seq1, seq2):
 
 
 if __name__ == '__main__':
+
+    import DV72
+    import DB74
+    from OS74 import FileSystemObject, CurrentPlatform
+    from Template import HTML, SQL
+    from log import Log
+
     parser = argparse.ArgumentParser(description='Text proccess')
     parser.add_argument('-i', help='Input file/dir', type=str, default='')
     parser.add_argument('-o', help='Output file/dir', type=str, default='')
-    parser.add_argument('-l', help='Logic', type=str, default='')
+    parser.add_argument('-m', help='Mode/Logic', type=str, default='')
+    parser.add_argument('-l', help='Logfile', type=str, default='')
     args = parser.parse_args()
+
+    logger = Log(args.l, args.i + ' + ' + args.o, __file__, True)
 
     if os.path.isfile(args.i):
         create_file_if_neccesary(args.o)

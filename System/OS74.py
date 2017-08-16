@@ -17,9 +17,6 @@ except ImportError:
     import tkinter as tk
 
 
-import SO74TX
-
-
 class Window(object):
     """Class for maintain widgets related to directory"""
 
@@ -113,7 +110,7 @@ class app_browser(tk.Frame):
         root.grid_rowconfigure(0, weight=1)
 
 
-class DateTimeObject(object):
+class DateTimeObject:
     def __init__(self):
         self.date = datetime.datetime.now()
 
@@ -122,23 +119,29 @@ class DateTimeObject(object):
         return dt_object.strftime(format)
 
 
-class FileSystemObject(object):
-    def __init__(self, from_path, to_path):
+class FileSystemObject:
+    def __init__(self, from_path, to_path=''):
         if os.path.isfile(from_path):
             self.is_file = True
             self.is_folder = False
+            self.exist = True
         elif os.path.isdir(from_path):
             self.is_file = False
             self.is_folder = True
+            self.exist = True
         else:
             self.is_file = False
             self.is_folder = False
+            self.exist = False
             print 'cannot determine ' + from_path
         self.path = from_path
-        self.destination = to_path
-        self.separator = self.get_separator_from(from_path)
+        if to_path:
+            self.destination = to_path
+        else:
+            self.destination = from_path
+        self.separator = self.get_separator_from_path()
 
-    def get_separator_from(self):
+    def get_separator_from_path(self):
         if '\\' in self.path:
             separator = '\\'
         elif '/' in self.path:
@@ -212,6 +215,34 @@ class FileSystemObject(object):
                 objects.append(file)
             return objects
 
+    def object_write(self, content='', mode='w+'):
+        if self.is_file:
+            if mode != 'w+' or mode != 'a':
+                if 'app' in mode:
+                    mode = 'a'
+                else:
+                    mode = 'w+'
+            with open(self.path, mode) as target_file:
+                target_file.write(content)
+        else:
+            print 'not a file'
+
+    def object_size(self):
+        # return file size in kilobytes
+        if self.is_file:
+            return '{0:.2f}'.format(os.path.getsize(self.path) / 1024)
+        elif self.is_folder:
+            return 'for all files sum size'
+
+    def object_mod_date(self, format='%Y. %m. %d %H:%M:%S'):
+        return DateTimeObject().date_string_format(os.path.getmtime(self.path), format)
+
+    def object_create_neccesary(self):
+        # must check if path is meaningful name
+        if not os.path.exists(self.path):
+            os.makedirs(self.path)
+            print 'directory ' + self.path + ' folder created ...'
+
     def file_touch(self):
         with open(self.path, 'w+'):
             os.utime(self.path, None)
@@ -225,31 +256,6 @@ class FileSystemObject(object):
             self.object_write(content, 'w+')
         else:
             print 'no text to write, skipping file {0}'.format(self.path)
-
-    def object_write(self, content, mode='w+'):
-        if mode != 'w+' or mode != 'a':
-            if 'app' in mode:
-                mode = 'a'
-            else:
-                mode = 'w+'
-        with open(self.path, mode) as target_file:
-            target_file.write(content)
-
-    def object_size(self):
-        # return file size in kilobytes
-        if self.is_file:
-            return '{0:.2f}'.format(os.path.getsize(self.path) / 1024)
-        elif self.is_folder:
-            return 'for all files sum size'
-
-    def object_mod_date(self, format='%Y. %m. %d %H:%M:%S'):
-        return DateTimeObject().date_string_format(os.path.getmtime(self.path), format)
-
-    def create_object_neccesary(path):
-        # must check if path is meaningful name
-        if not os.path.exists(path):
-            os.makedirs(path)
-            print 'directory ' + path + ' folder created ...'
 
 
 class CurrentPlatform:
@@ -330,7 +336,10 @@ def center(toplevel):
 
 
 if __name__ == '__main__':
+
+    import SO74TX
     from log import Log
+
     parser = argparse.ArgumentParser(description="browse/list dirs")
     parser.add_argument('-b', help='browse dir', type=str, default='')
     parser.add_argument('-l', help='list dir', type=str, default='')

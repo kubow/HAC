@@ -3,11 +3,6 @@ import pyowm
 import argparse
 import datetime
 import os
-
-import DB74
-from OS74 import FileSystemObject
-from SO74TX import WebContent, RssContent
-from Template import HTML, SQL
 from osmapi import OsmApi
 
 class OpenWeatherMap(object):
@@ -115,11 +110,17 @@ def browse_internet(mode, match_dir, url=None):
 
 def write_weather_text(html_file, title, content):
     logger.log_operation('writing content {0} to file: {1}'.format(title, html_file))
-    FileSystemObject(html_file).file_write(HTML.skelet_titled.format(title, content.encode('utf-8')))
+    FileSystemObject(html_file).object_write(HTML.skelet_titled.format(title, content.encode('utf-8')), 'w+')
 
 
 if __name__ == '__main__':
+
+    import DB74
+    from OS74 import FileSystemObject
+    from SO74TX import WebContent, RssContent
+    from Template import HTML, SQL
     from log import Log
+
     localization = (" place/location where user wants to read weather\n"
                     "     or a link to a web page, which will be read")
     destination = (" type of file to write (HTML, SQLite, All)\n"

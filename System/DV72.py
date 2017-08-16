@@ -12,11 +12,6 @@ import datetime
 import serial
 import argparse
 
-import DB74
-from OS74 import FileSystemObject
-import SO74TX
-from Template import SQL
-
 
 class Device(object):
     def __init__(self):
@@ -31,15 +26,22 @@ class Device(object):
         self.output_path = os.path.dirname(os.path.realpath(__file__))
 
     def setup_device(self, device, sensor, timeout):
-        # port = port with device
         sub_sql = SQL.get_device_id.format(device)
         sql = SQL.get_driver_loc.format(sub_sql, sensor)
-        self.port = DB74.execute_not_connected(self.setup_db, sql)
-        # br = baud rate
-        self.br = DB74.execute_not_connected(self.setup_db, 'SELECT baud FROM setting;')
+        if FileSystemObject(self.setup_db).is_file:
+            # port = port with device
+            self.port = DB74.execute_not_connected(self.setup_db, sql)
+            # br = baud rate
+            self.br = DB74.execute_not_connected(self.setup_db, 'SELECT baud FROM setting;')
+            # table name, that will hold values
+            self.table_name = DB74.execute_not_connected(self.setup_db, 'SELECT table_name FROM setting;')
+        else:
+            # no available config - using default values
+            self.port = 'COM4'
+            self.br = 9600
+            self.table_name = 'measured'
         # timeout waiting time
         self.timeout = timeout
-        self.table_name = DB74.execute_not_connected(self.setup_db, 'SELECT table_name FROM setting;')
 
     def setup_output_path(self, path):
         self.output_path = path
@@ -56,7 +58,7 @@ class Device(object):
             ser.flushOutput()
             time.sleep(self.timeout)
             print 'running with timeout {0} seconds.'.format(self.timeout)
-            # received = ser.readline().replace('\r\n', ' ') #not used - instead
+            # received = ser.readline().replace('\r\n', ' ')  # not used - instead
             to_read = ser.inWaiting()
             received = ser.read(to_read)
             # parse data
@@ -69,7 +71,7 @@ class Device(object):
                 # checking interval shifts
                 if now > last_run:
                     SO74TX.writeCSV(csv, data_vals, just_now, 'RPi')
-                    data_vals = {} # clear the dictionaries 
+                    data_vals = {}  # clear the dictionaries
                     data_int = {} 
                     last_run = now
 
@@ -97,8 +99,7 @@ class Device(object):
 
     def write_to_database(self, timestamp, value, velocity):
         # check if Archive directory present
-        if not os.path.exists(self.output_path + 'Archive'):
-            os.makedirs(self.output_path + 'Archive')
+        FileSystemObject(self.output_path + 'Archive').object_create_neccesary()
         csv_cnt = 0
         for csv_file in os.listdir(self.output_path):
             if csv_file.split('.')[-1].lower() <> 'csv':
@@ -163,6 +164,13 @@ def min_between(d1, d2):
         
         
 if __name__ == '__main__':
+
+    import DB74
+    from OS74 import FileSystemObject
+    import SO74TX
+    from Template import SQL
+    from log import Log
+
     argd = 'device name reading data'
     argz = 'sensor name'
     argl = 'location to write final data'
@@ -177,8 +185,9 @@ if __name__ == '__main__':
     last_run = args.l + 'last.run'
     if not FileSystemObject(last_run).is_file:
         FileSystemObject(last_run).touch_file()
-    # create class for controlling device
+    # create class for controlling device # logging
     dev = Device()
+    logger = Log(args.l + '/logfile.log', 'device', 'DV72.py',  True)
     # device settings: port, baud rate and timeout
     dev.setup_device(args.d, args.s, 0)
     dev.setup_output_path(args.l)
@@ -192,8 +201,7 @@ if __name__ == '__main__':
         while ready:
             ready = dev.read_serial()
     elif 'agg' in args.m:
-        print 'aggregating values in {0}'.format(args.l)
-        print 'last run ' + str(FileSystemObject(last_run).get_file_mod_date('%Y/%m/%d %H:%M:%S'))
+        print 'aggregating values in {0}, last run: {1}'.format(args.l, str(FileSystemObject(last_run).object_mod_date('%Y/%m/%d %H:%M:%S')))
         dev.write_to_database('now', 0, 'm/s')
     else:
         print 'not possible'

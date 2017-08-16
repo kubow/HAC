@@ -6,7 +6,6 @@ from smtplib import SMTP_SSL as SMTP  # secure SMTP (port 465, uses SSL)
 # from smtplib import SMTP            # standard SMTP (port 25, no enc)
 from email.mime.text import MIMEText
 
-from OS74 import CurrentPlatform
 
 class Message():
     def __init___(self):
@@ -73,37 +72,43 @@ def adodb_conn():
 
     conn.Close(DSN)
 
+
+def socket_networking():
+    HOST = ''  # Symbolic name, meaning all available interfaces
+    PORT = 8642  # H808E Port
+
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    print 'Socket created'
+
+    # Bind socket to local host and port
+    try:
+        s.bind((HOST, PORT))
+    except socket.error as msg:
+        print 'Bind failed. Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
+        sys.exit()
+
+    print 'Socket bind complete'
+
+    # Start listening on socket
+    s.listen(10)
+    print 'Socket now listening'
+
+    # now keep talking with the client
+    while 1:
+        # wait to accept a connection - blocking call
+        conn, addr = s.accept()
+        print 'Connected with ' + addr[0] + ':' + str(addr[1])
+
+    s.close()
+
+
 if __name__ == '__main__':
+
+    from OS74 import CurrentPlatform
+
     #parser = argparse.ArgumentParser(description="Monitor network")
     #parser.add_argument('-d', help='directory', type=str, default='')
     #args = parser.parse_args()
 
     monitor_command_output('net view > conn.tmp')
 
-def socket_networking():
-    HOST = ''   # Symbolic name, meaning all available interfaces
-    PORT = 8642 # H808E Port
-     
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    print 'Socket created'
-     
-    #Bind socket to local host and port
-    try:
-        s.bind((HOST, PORT))
-    except socket.error as msg:
-        print 'Bind failed. Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
-        sys.exit()
-         
-    print 'Socket bind complete'
-     
-    #Start listening on socket
-    s.listen(10)
-    print 'Socket now listening'
-     
-    #now keep talking with the client
-    while 1:
-        #wait to accept a connection - blocking call
-        conn, addr = s.accept()
-        print 'Connected with ' + addr[0] + ':' + str(addr[1])
-         
-    s.close()

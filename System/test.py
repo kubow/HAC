@@ -57,9 +57,9 @@ class TestWeather(unittest.TestCase):
 class TestLocalContent(unittest.TestCase):
     """Check if local data accessible"""
     def test_local_content(self):
-        fso = FileSystemObject()
-        o = WebContent(loc)
-        o.process_url()
+        file_path = 'C:\\_Run\\Script\\Multimedia'
+        fso = FileSystemObject(file_path)
+        self.assertEqual(fso.path, file_path)
 
 
 class TestWebContent(unittest.TestCase):
