@@ -29,6 +29,7 @@ class Device(object):
         sub_sql = SQL.get_device_id.format(device)
         sql = SQL.get_driver_loc.format(sub_sql, sensor)
         if FileSystemObject(self.setup_db).is_file:
+            DataBaseConnection
             # port = port with device
             self.port = DB74.execute_not_connected(self.setup_db, sql)
             # br = baud rate
@@ -166,6 +167,7 @@ def min_between(d1, d2):
 if __name__ == '__main__':
 
     import DB74
+    from DB74 import DataBaseConnection
     from OS74 import FileSystemObject
     import SO74TX
     from Template import SQL

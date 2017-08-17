@@ -21,7 +21,9 @@ except:
     print 'using alternative html parser'
 import HTMLParser
 # sys.setdefaultencoding('utf-8')
-
+from Template import HTML, SQL
+from OS74 import FileSystemObject, CurrentPlatform
+from DB74 import DataBaseObject
 
 class WebContent(HTMLParser.HTMLParser):
     """http://stackoverflow.com/questions/3276040/how-can-i-use-the-python-htmlparser-library-to-extract-data-from-a-specific-div """
@@ -109,15 +111,14 @@ class WebContent(HTMLParser.HTMLParser):
             else:
                 self.div = None
 
-    def write_web_content_to_file(self, file_path, heading):
+    def write_web_content_to_file(self, file_path, heading, log=False):
         if self.div:
             print 'creating ' + file_path + ' from: ' + self.url
             try:
-                FileSystemObject(file_path).file_write(HTML.skelet_titled.format(heading.encode('utf-8'),
-                                                                                 self.div.encode('utf-8')))
-                log_path = FileSystemObject(file_path).get_another_directory_file('logfile.sqlite')
-
-                self.log_to_database(log_path, heading)
+                FileSystemObject(file_path).object_write(HTML.skelet_titled.format(heading.encode('utf-8'),
+                                                                                 self.div.encode('utf-8')), 'w+')
+                if log:
+                    self.log_to_database(log, heading)
             except:
                 print '!!! cannot write/log content'
         else:
@@ -132,7 +133,7 @@ class WebContent(HTMLParser.HTMLParser):
         values_template = '"{0}", "{1}", "{2}", "{3}", "{4}", "{5}"'
         table_values = values_template.format(heading.encode('utf-8'), 0, tag_content, time_stamp, user, domain)
         sql = SQL.insert.format(table_def, table_values)
-        DB74.log_to_database(db_path, 'Log', sql)
+        DataBaseObject(db_path).log_to_database('Log', sql)
 
 
 class RssContent(object):
@@ -439,9 +440,6 @@ def similar(seq1, seq2):
 if __name__ == '__main__':
 
     import DV72
-    import DB74
-    from OS74 import FileSystemObject, CurrentPlatform
-    from Template import HTML, SQL
     from log import Log
 
     parser = argparse.ArgumentParser(description='Text proccess')

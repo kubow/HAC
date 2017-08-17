@@ -1,5 +1,50 @@
 import argparse
 import sqlite3
+from Template import SQL, HTML
+
+class DataBaseObject:
+    def __init__(self, db_path, active=False):
+        self.db_file = db_path.replace('.log', '.sqlite')
+        self.type = 'sqlite3'
+        self.active = active
+        self.sql = SQL.select_tables_in_db
+        self.obj_list = ''
+        if self.active:
+            self.obj_conn = sqlite3.connect(db_path)
+
+    def result_set(self, sql):
+        if self.active:
+            return self.obj_conn.execute(sql)
+        else:
+            return sqlite3.connect(self.db_file).execute(sql)
+
+    def execute(self, sql):
+        if self.active:
+            self.obj_conn.execute(sql)
+            self.obj_conn.commit()
+        else:
+            sqlite3.connect(self.db_file).execute(sql).commit()
+
+    def return_one(self, sql):
+        return self.result_set(sql).fetchone()
+
+    def return_many(self, sql):
+        return self.result_set(sql).fetchall()
+
+    def object_exist(self, object_name):
+        if self.return_one(SQL.table_exist.format(object_name)):
+            return True
+        else:
+            return False
+
+    def log_to_database(self, table_name, sql):
+        if not self.object_exist(table_name):
+            print 'must create table (currently doing nothing...)'
+        self.execute(sql)
+
+
+
+
 
 def open_db_connection(path):
     # conn.row_factory = sqlite3.Row

@@ -22,6 +22,7 @@ class Log(object):
 
     def log_operation(self, text, level=20):
         now = datetime.datetime.now().strftime(self.date_format)
+        print text
         if self.advanced:
             self.logger.log(level, text)
         else:

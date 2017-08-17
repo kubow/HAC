@@ -121,25 +121,28 @@ class DateTimeObject:
 
 class FileSystemObject:
     def __init__(self, from_path, to_path=''):
+        self.path = from_path
+        self.separator = self.get_separator_from_path()
         if os.path.isfile(from_path):
+            self.exist = True
             self.is_file = True
             self.is_folder = False
-            self.exist = True
         elif os.path.isdir(from_path):
+            self.exist = True
             self.is_file = False
             self.is_folder = True
-            self.exist = True
         else:
-            self.is_file = False
-            self.is_folder = False
             self.exist = False
-            print 'cannot determine ' + from_path
-        self.path = from_path
+            if '.' in from_path:
+                self.is_file = True
+                self.is_folder = False
+            else:
+                self.is_file = False
+                self.is_folder = True
         if to_path:
             self.destination = to_path
         else:
-            self.destination = from_path
-        self.separator = self.get_separator_from_path()
+            self.destination = self.one_dir_up()
 
     def get_separator_from_path(self):
         if '\\' in self.path:
@@ -157,8 +160,8 @@ class FileSystemObject:
     def append_directory(self, directory):
         return self.path + self.separator + directory + self.separator
 
-    def append_file(self, file):
-        return self.path + self.separator + file
+    def append_file(self, file_name):
+        return self.path + self.separator + file_name
 
     def get_another_directory_file(self, another):
         if self.is_file:
@@ -278,6 +281,7 @@ class CurrentPlatform:
         else:
             return _platform
 
+    @staticmethod
     def get_release(self):
         return platform.release()
 
