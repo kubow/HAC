@@ -241,7 +241,7 @@ def build_text_menu(directory):
 
         elif keep_alive == "8":
             # running Tkinter GUI
-            print 'universal python in ' + args.d
+            logger.log_operation('universal python in ' + args.d)
             UI74.build_window(args.d)
 
         elif str(keep_alive).lower() == "q":
@@ -253,6 +253,7 @@ def build_text_menu(directory):
 
 if __name__ == '__main__':
 
+    from log import Log
     import DB74
     from OS74 import FileSystemObject
     import UI74
@@ -262,8 +263,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="construct h808e")
     parser.add_argument('-c', help='ctb file', type=str, default='')
     parser.add_argument('-d', help='directory', type=str, default='')
+    parser.add_argument('-l', help='log file', type=str, default='')
     args = parser.parse_args()
-    # he class
+    
+    logger = Log(args.l, 'main', 'h808e', True)
+    
     he = h808e()
     he.set_dir_active(args.d)
     he.set_db_path(args.c)
