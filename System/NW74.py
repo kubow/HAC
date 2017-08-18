@@ -1,6 +1,7 @@
 #import argparse
 import os, sys
 import socket
+import netifaces as ni
 from email.mime.text import MIMEText
 try:
     from smtplib import SMTP_SSL as SMTP  # secure SMTP (port 465, uses SSL)
@@ -41,6 +42,12 @@ def send_mail():
 
     s.sendmail(m.sender, m.reciever, m.message)
     s.quit()
+
+
+def get_eth0_ip():
+    ni.ifaddresses('eth0')
+    ip = ni.ifaddresses('eth0')[2][0]['addr']
+    return ip
 
 def monitor_command_output(cmd):
     os.system(cmd)

@@ -81,7 +81,7 @@ class WebContent(HTMLParser.HTMLParser):
         done = False
         try:
             if 'file:' in self.url:
-                content = FileSystemObject(self.url.split('///')[-1]).read_object()
+                content = FileSystemObject(self.url.split('///')[-1]).object_read()
                 parsed_content = self.parse_html_text(content)
                 done = True
             else:
