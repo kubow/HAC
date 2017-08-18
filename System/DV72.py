@@ -11,6 +11,7 @@ import time
 import datetime
 import serial
 import argparse
+from OS74 import FileSystemObject, CurrentPlatform, DateTimeObject
 
 
 class Device(object):
@@ -24,18 +25,20 @@ class Device(object):
         self.interval_shift = 2
         self.table_name = '_'
         self.output_path = os.path.dirname(os.path.realpath(__file__))
+        current_device = CurrentPlatform()
+        self.device_name = current_device.hostname
+        self.device_user = current_device.environment
+        self.device_platform = current_device.main
 
     def setup_device(self, device, sensor, timeout):
-        sub_sql = SQL.get_device_id.format(device)
-        sql = SQL.get_driver_loc.format(sub_sql, sensor)
         if FileSystemObject(self.setup_db).is_file:
-            DataBaseConnection
+            dbc = DataBaseConnection(self.setup_db)
             # port = port with device
-            self.port = DB74.execute_not_connected(self.setup_db, sql)
+            self.port = dbc.return_one(SQL.get_driver_loc.format(SQL.get_device_id.format(device), sensor))
             # br = baud rate
-            self.br = DB74.execute_not_connected(self.setup_db, 'SELECT baud FROM setting;')
+            self.br = dbc.return_one(SQL.select.format('baud', 'setting'))
             # table name, that will hold values
-            self.table_name = DB74.execute_not_connected(self.setup_db, 'SELECT table_name FROM setting;')
+            self.table_name = dbc.return_one(SQL.select.format('table_name', 'setting'))
         else:
             # no available config - using default values
             self.port = 'COM4'
@@ -107,7 +110,7 @@ class Device(object):
                 continue
                 # only csv files
             ts = SO74TX.readCSV(self.output_path + csv_file)
-            if not DB74.db_object_exist_noconnect(self.table_name, self.output_path + csv_file[:6] + '.sqlite'):
+            if not SO74DB.db_object_exist_noconnect(self.table_name, self.output_path + csv_file[:6] + '.sqlite'):
                 print 'must create table first'
             csv_cnt += 1
             for time_stamp, value in ts.iteritems():
@@ -166,9 +169,9 @@ def min_between(d1, d2):
         
 if __name__ == '__main__':
 
-    import DB74
-    from DB74 import DataBaseConnection
-    from OS74 import FileSystemObject
+    import SO74DB
+    from SO74DB import DataBaseConnection
+
     import SO74TX
     from Template import SQL
     from log import Log

@@ -267,7 +267,8 @@ class FileSystemObject:
 class CurrentPlatform:
     def __init__(self):
         self.main = self.which_platform()
-        self.environment = self.get_current_settings()
+        self.environment = self.get_username_domain()
+        self.hostname = platform.node()
 
     @staticmethod
     def which_platform():
@@ -291,7 +292,7 @@ class CurrentPlatform:
         # for debug purposes
         print 'system - {0} / release - {1}'.format(self.which_platform(), self.get_release())
 
-    def get_current_settings(self):
+    def get_username_domain(self):
         return os.environ.get('USERNAME'), os.environ.get('USERDOMAIN')
 
 

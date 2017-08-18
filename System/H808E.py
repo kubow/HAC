@@ -84,7 +84,7 @@ class h808e(object):
         return True
 
     def load_active_directory_memory(self):
-        conn_mem = DB74.open_db_connection(":memory:")
+        conn_mem = SO74DB.open_db_connection(":memory:")
         curs_mem = conn_mem.cursor()
         curs_mem.execute(SQL.table_create)
         i = 0
@@ -133,14 +133,14 @@ class h808e(object):
                     FileSystemObject(directory + str(essn['code']) + '.html').refresh_file(self.db_data)
 
     def iterate_enc_db_structure(self):
-        conn = DB74.open_db_connection(self.db_path)
+        conn = SO74DB.open_db_connection(self.db_path)
         fathers = conn.execute(SQL.select_father_nodes).fetchall()
         main_fathers = [father[0] for father in fathers]
         root_nodes = conn.execute(SQL.select_root_nodes).fetchall()
         for root_node in root_nodes:
             print root_node[2].encode('utf8') + ' root node / id ' + str(
                 root_node[4]) + ' / sqn ' + str(root_node[5]) + ' level 1'
-        DB74.close_db_connection(conn)
+        SO74DB.close_db_connection(conn)
 
     def get_table(self):
         tables = (None, '')
@@ -152,7 +152,7 @@ class h808e(object):
         query = q.select_node_text.format(node)
         if self.db_path:
             print self.db_path + ' : ' + query
-            return DB74.execute_not_connected(self.db_path, query)
+            return SO74DB.execute_not_connected(self.db_path, query)
         else:
             print 'cannot execute {0} in memory database.'.format(query)
 
@@ -254,7 +254,7 @@ def build_text_menu(directory):
 if __name__ == '__main__':
 
     from log import Log
-    import DB74
+    import SO74DB
     from OS74 import FileSystemObject
     import UI74
     import SO74TX

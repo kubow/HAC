@@ -23,7 +23,7 @@ import HTMLParser
 # sys.setdefaultencoding('utf-8')
 from Template import HTML, SQL
 from OS74 import FileSystemObject, CurrentPlatform
-from DB74 import DataBaseObject
+from SO74DB import DataBaseObject
 
 class WebContent(HTMLParser.HTMLParser):
     """http://stackoverflow.com/questions/3276040/how-can-i-use-the-python-htmlparser-library-to-extract-data-from-a-specific-div """
