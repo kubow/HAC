@@ -37,9 +37,10 @@ class DeviceSetting(unittest.TestCase):
 class TestLocalContent(unittest.TestCase):
     """Check if local data accessible"""
     def test_local_content(self):
-        fso = FileSystemObject('C:\\_Run\\Script\\Multimedia')
+        location = 'C:\\_Run\\Script\\Multimedia'
+        fso = FileSystemObject(location)
         logger = Log(load_platform_based('Script/Multimedia/logfile.log'), 'Folder', 'test.py', False)
-        text = 'Checking folder ({0}) manageable: {1}'.format('C:\\_Run\\Script\\Multimedia', str(1))
+        text = 'Checking folder ({0}) manageable: {1}'.format(location, str(1))
         logger.log_operation(text)
         self.assertEqual(fso.path, 'C:\\_Run\\Script\\Multimedia')
 
@@ -65,12 +66,12 @@ class TestWeather(unittest.TestCase):
 
 
 class TestWebContent(unittest.TestCase):
-    """Check if weather data accessible"""
+    """Check if web data accessible"""
     def test_localhost_content(self):
         o = WebContent(load_platform_based('Web/index.html', 'file:///'))
         o.process_url()
         logger = Log(load_platform_based('Script/Multimedia/logfile.log'), 'Webfile', 'test.py', False)
-        text = 'Checking Web Content of ({0}) : {1}'.format('index.html', o.div)
+        text = 'Checking Web Content of ({0}) : {1}'.format('index.html', o.url)
         logger.log_operation(text)
         self.assertIn('encyklopedie', str(o.div))
 
@@ -78,7 +79,7 @@ class TestWebContent(unittest.TestCase):
         o = WebContent('https://aktualnizpravy.cz/')
         o.process_url()
         logger = Log(load_platform_based('Script/Multimedia/logfile.log'), 'Webfile', 'test.py', False)
-        text = 'Checking Web Content of ({0}) : {1}'.format('index.html', o.div)
+        text = 'Checking Web Content of ({0}) : {1}'.format('index.html', o.url)
         logger.log_operation(text)
         self.assertIn('dnes m', str(o.div))
 

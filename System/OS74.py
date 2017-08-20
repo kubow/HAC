@@ -113,10 +113,14 @@ class app_browser(tk.Frame):
 class DateTimeObject:
     def __init__(self):
         self.date = datetime.datetime.now()
+        self.date_string = self.date_string_format(self.date, '%Y/%m/%d %H:%M:%S')
 
-    def date_string_format(self, float_num, format):
-        dt_object = datetime.datetime.utcfromtimestamp(float_num)
-        return dt_object.strftime(format)
+    def date_string_format(self, float_num, format_str):
+        if isinstance(float_num, float):
+            dt_object = datetime.datetime.utcfromtimestamp(float_num)
+        else:
+            dt_object = float_num
+        return dt_object.strftime(format_str)
 
 
 class FileSystemObject:
@@ -154,8 +158,11 @@ class FileSystemObject:
         return separator
 
     def one_dir_up(self):
+        # avoid separators in the end of path string
+        if self.separator == self.path[-1:]:
+            self.path = self.path[:-1]
         # strip filename / last dir from path
-        return self.separator.join(self.path.split(self.separator)[0:-1])
+        return self.separator.join(self.path.split(self.separator)[:-1]) + self.separator
 
     def append_directory(self, directory):
         return self.path + self.separator + directory + self.separator
@@ -241,13 +248,20 @@ class FileSystemObject:
             return 'for all files sum size'
 
     def object_mod_date(self, format='%Y. %m. %d %H:%M:%S'):
-        return DateTimeObject().date_string_format(os.path.getmtime(self.path), format)
+        if self.exist:
+            return DateTimeObject().date_string_format(os.path.getmtime(self.path), format)
+        else:
+            self.object_create_neccesary()
+            return DateTimeObject().date_string
 
     def object_create_neccesary(self):
         # must check if path is meaningful name
-        if not os.path.exists(self.path):
-            os.makedirs(self.path)
-            print 'directory ' + self.path + ' folder created ...'
+        if not self.exist:
+            if self.is_folder:
+                os.makedirs(self.path)
+                print 'directory ' + self.path + ' folder created ...'
+            else:
+                self.file_touch()
 
     def file_touch(self):
         with open(self.path, 'w+'):

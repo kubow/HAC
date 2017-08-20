@@ -37,6 +37,10 @@ class DataBaseObject:
         else:
             return False
 
+    def object_create(self, object_name):
+        if not self.return_one(SQL.table_exist.format(object_name)):
+            print 'creating object: ' + object_name
+
     def log_to_database(self, table_name, sql):
         if not self.object_exist(table_name):
             print 'must create table (currently doing nothing...)'

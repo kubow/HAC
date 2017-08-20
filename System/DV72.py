@@ -18,13 +18,14 @@ class Device(object):
     def __init__(self):
         self.date_format = '%Y/%m/%d %H:%M:%S'
         self.date_file_format = '%Y%m%d_%H%M'
-        self.setup_db = os.path.dirname(os.path.realpath(__file__)) + '/Settings.sqlite'
+        local_path = os.path.dirname(os.path.realpath(__file__))
+        self.setup_db = local_path + '/Settings.sqlite'
         self.port = 0
         self.br = 0
         self.timeout = 0
         self.interval_shift = 2
         self.table_name = '_'
-        self.output_path = os.path.dirname(os.path.realpath(__file__))
+        self.output_path = local_path
         current_device = CurrentPlatform()
         self.device_name = current_device.hostname
         self.device_user = current_device.environment
@@ -32,7 +33,7 @@ class Device(object):
 
     def setup_device(self, device, sensor, timeout):
         if FileSystemObject(self.setup_db).is_file:
-            dbc = DataBaseConnection(self.setup_db)
+            dbc = DataBaseObject(self.setup_db)
             # port = port with device
             self.port = dbc.return_one(SQL.get_driver_loc.format(SQL.get_device_id.format(device), sensor))
             # br = baud rate
@@ -170,7 +171,7 @@ def min_between(d1, d2):
 if __name__ == '__main__':
 
     import SO74DB
-    from SO74DB import DataBaseConnection
+    from SO74DB import DataBaseObject
 
     import SO74TX
     from Template import SQL
@@ -187,12 +188,17 @@ if __name__ == '__main__':
     parser.add_argument('-l', help=argl, type=str, default='')
     parser.add_argument('-m', help=argl, type=str, default='')
     args = parser.parse_args()
+    FileSystemObject(args.l).object_create_neccesary()
     last_run = args.l + 'last.run'
     if not FileSystemObject(last_run).is_file:
         FileSystemObject(last_run).touch_file()
     # create class for controlling device # logging
     dev = Device()
-    logger = Log(args.l + '/logfile.log', 'device', 'DV72.py',  True)
+    print args.l + ' / '+ FileSystemObject(args.l).one_dir_up() + 'logfile.log' 
+    print dir(FileSystemObject(args.l))
+    print '_________________________________________'
+    log_file = FileSystemObject(args.l).one_dir_up() + 'logfile.log'
+    logger = Log(log_file, 'device', 'DV72.py',  True)
     # device settings: port, baud rate and timeout
     dev.setup_device(args.d, args.s, 0)
     dev.setup_output_path(args.l)
