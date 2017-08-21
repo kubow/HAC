@@ -65,7 +65,7 @@ def close_db_connection(conn):
 
 
 def get_db_objects_list(db):
-    return db.execute(SQL.select_tables_in_db()).fetchall()
+    return db.execute(SQL.select_tables_in_db).fetchall()
 
     
 def db_object_exist_noconnect(obj_name, db_name):
@@ -172,8 +172,10 @@ def get_table_rows(table, db):
 
 
 def get_field_content(condition, field, table, db):
+    print """SELECT {0} FROM {1}
+        WHERE {2};""".format(field, table, condition)
     return db.execute("""SELECT {0} FROM {1}
-        WHERE {2}""".format(field, table, condition)).fetchone()
+        WHERE {2};""".format(field, table, condition)).fetchone()
 
 
 def determine_id_col(table, db):

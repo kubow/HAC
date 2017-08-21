@@ -60,10 +60,10 @@ Processing log files with excel sheet
 ### Tester
 Testing main functions of the whole system
 
-| No tests  | Test class                   | Description                   |
+| File      | Test class                   | Description                   |
 |-----------| ---------------------------- | ------------------------------|
-| 2         | `TestLog()`                  | Default logging testing       |
-| 1         | `TestPlatform()`             | Determine platform            |
+| DV72      | `Device()`                   | Determine device prepare run  |
+| OS74      | `TestPlatform()`             | Determine platform            |
 | 1         | `TestWeather()`              | Retrieve weather              |
 | 1         | `TestWebContent()`           | Retrieve content of a website |
 

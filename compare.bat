@@ -1,5 +1,6 @@
 @echo off
-SET bbb=c:\_Run\Script\
-SET h808e = "c:\_Run\H808E.ctb"
-python %bbb%System\H808E.py
+cls
+SET py_file=%~dp0System\SO74DB.py
+echo python %py_file% -m compare -l %1 -r %2
+python %py_file% -m compare -l %1 -r %2
 pause
