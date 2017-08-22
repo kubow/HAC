@@ -172,8 +172,6 @@ def get_table_rows(table, db):
 
 
 def get_field_content(condition, field, table, db):
-    print """SELECT {0} FROM {1}
-        WHERE {2};""".format(field, table, condition)
     return db.execute("""SELECT {0} FROM {1}
         WHERE {2};""".format(field, table, condition)).fetchone()
 
@@ -197,11 +195,14 @@ def get_field_index(field, table, db):
             i += 1
 
 
-def databases_compare(db1, db2):
+def databases_compare(db1, db2, concrete_table=''):
     db_left = open_db_connection(db1).cursor()
     db_right = open_db_connection(db2).cursor()
 
     table_list = get_db_objects_list(db_left)
+    if concrete_table:
+        one_table_list = [x for x in table_list if concrete_table in x]
+        table_list = one_table_list
 
     for table in table_list:
         if 'sqlite_sequence' in table:
@@ -213,17 +214,21 @@ def databases_compare(db1, db2):
             id_col_id = get_field_index(id_col, table[0], db_left)
             print """table - {0} - ID column identified - {1}
             (index position {2})""".format(table[0], id_col, id_col_id)
-            for row in get_table_rows(table[0], db_left):
+            for row in get_table_rows(table[0], db_left).fetchall():
                 where = id_col + ' = ' + str(row[id_col_id])
                 col_num = 0
                 for column in get_table_structure(table[0], db_left):
-                    if id_col in column:
+                    if id_col in column or 'ts_' in column:
                         col_num += 1
                         continue
                     mirror = get_field_content(where,
                                                column.split(' ')[0], table[0], db_right)
                     if SO74TX.similar(row[col_num], mirror[0]) < 1:
-                        print '!!! difference !!!'
+                        print '=' * 100
+                        print row[col_num]
+                        print '-' * 100
+                        print mirror[0]
+                        print '=' * 100
                     col_num += 1
 
 
@@ -263,8 +268,9 @@ if __name__ == '__main__':
     parser.add_argument('-m', help='mode: compare/browse sqlite database', type=str, default='')
     parser.add_argument('-l', help='first file', type=str, default='')
     parser.add_argument('-r', help='second file', type=str, default='')
+    parser.add_argument('-f', help='focus one table', type=str, default='')
     args = parser.parse_args()
     if 'compare' in args.m:
-        databases_compare(args.l, args.r)
+        databases_compare(args.l, args.r, args.f)
     else:
         temp_connect_database(args.l)

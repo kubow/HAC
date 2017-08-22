@@ -85,7 +85,6 @@ class TestWebContent(unittest.TestCase):
 
     def test_rss_content(self):
         o = RssContent('http://www.root.cz/rss/clanky/')
-
         self.assertIn('root.cz', o.div)
 
 unittest.main()
