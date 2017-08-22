@@ -63,9 +63,18 @@ Testing main functions of the whole system
 | File      | Test class                   | Description                   |
 |-----------| ---------------------------- | ------------------------------|
 | DV72      | `Device()`                   | Determine device prepare run  |
-| OS74      | `TestPlatform()`             | Determine platform            |
-| 1         | `TestWeather()`              | Retrieve weather              |
-| 1         | `TestWebContent()`           | Retrieve content of a website |
+| NW74      | `NetworkObject()`            | Deal with network stuff       |
+| OS74      | `DateTimeObject()`           | Various date time data        |
+| OS74      | `FileSystemObject()`         | Register files and folders    |
+| OS74      | `CurrentPlatform()`          | Determine platform            |
+| SO74DB    | `DataBaseObject()`           | Connect databse, run query    |
+| SO74ML    | `ImageObject()`              | Deal with images              |
+| SO74ML    | `MusicObject()`              | Deal with music               |
+| SO74MP    | `OpenWeatherMap()`           | Retrieve weather              |
+| SO74MP    | `OpenStreetMap()`            | Retrieve location             |
+| SO74TX    | `RssContent()`               | Retrieve content of a feed    |
+| SO74TX    | `WebContent()`               | Retrieve content of a website |
+
 
 And flow charts like this:
 
