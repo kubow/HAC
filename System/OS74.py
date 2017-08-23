@@ -296,17 +296,18 @@ class CurrentPlatform:
         else:
             return _platform
 
-    @staticmethod
-    def get_release(self):
-        return platform.release()
-
     def print_system_description(self):
         # this is not working
         # return platform.version()
         # for debug purposes
         print 'system - {0} / release - {1}'.format(self.which_platform(), self.get_release())
 
-    def get_username_domain(self):
+    @staticmethod
+    def get_release():
+        return platform.release()
+
+    @staticmethod
+    def get_username_domain():
         return os.environ.get('USERNAME'), os.environ.get('USERDOMAIN')
 
 

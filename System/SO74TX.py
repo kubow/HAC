@@ -25,18 +25,20 @@ from Template import HTML, SQL
 from OS74 import FileSystemObject, CurrentPlatform
 from SO74DB import DataBaseObject
 
+
 class WebContent(HTMLParser.HTMLParser):
     """http://stackoverflow.com/questions/3276040/how-can-i-use-the-python-htmlparser-library-to-extract-data-from-a-specific-div """
 
-    def __init__(self, url):
+    def __init__(self, url, log_file=''):
         HTMLParser.HTMLParser.__init__(self)
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.90 Safari/537.36'}
         self.recording = 0
         self.data = []
-        self.div = None
+        self.log_file = log_file
         self.url = url
         self.easier = True  # found BS4
+        self.div = None
         self.div_text = ''
 
     def handle_starttag(self, tag, attributes):  # , tag_type, tag_name):
@@ -111,21 +113,18 @@ class WebContent(HTMLParser.HTMLParser):
             else:
                 self.div = None
 
-    def write_web_content_to_file(self, file_path, heading, log=False):
+    def write_web_content_to_file(self, file_path, heading, log_file=False):
         if self.div:
             print 'creating ' + file_path + ' from: ' + self.url
-            try:
-                FileSystemObject(file_path).object_write(HTML.skelet_titled.format(heading.encode('utf-8'),
+            FileSystemObject(file_path).object_write(HTML.skelet_titled.format(heading.encode('utf-8'),
                                                                                  self.div.encode('utf-8')), 'w+')
-                if log:
-                    self.log_to_database(log, heading)
-            except:
-                print '!!! cannot write/log content'
+            if log_file:
+                self.log_to_database(log_file, heading)
         else:
             print 'no content parsed from: ' + self.url
 
     def log_to_database(self, db_path, heading):
-        user, domain = CurrentPlatform().get_current_settings()
+        user, domain = CurrentPlatform().get_username_domain()
         time_stamp = datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S')
         tag_content = self.div_text.encode('utf-8').replace('\n\n\n\n', '\n').replace('\n\n', '\n')
         # table structure

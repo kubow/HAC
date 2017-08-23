@@ -7,18 +7,18 @@ def process_web_content(mode, final_dir, url=None):
     path_separator = FileSystemObject(final_dir).separator
     settings_db = os.path.dirname(os.path.realpath(__file__)) + path_separator + 'Settings.sqlite'
     log_db = args.l
+    wc = WebContent(url)
     if url:
-        wc = WebContent(url)
         print wc
     else:
         if 'rest' in mode:
             web_objects = SO74DB.execute_many_not_connected(settings_db, 'SELECT * FROM RestActive;')
             for restaurant in web_objects:
                 if restaurant[4]:
-                    wc = WebContent(restaurant[4])
+                    wc.url = restaurant[4]
                     wc.process_url(restaurant[7], restaurant[6])
                 else:
-                    wc = WebContent(restaurant[5])  # zomato style
+                    wc.url = restaurant[5]  # zomato style
                     wc.process_url('id', 'daily-menu-container')
 
                 html_file_path = final_dir + path_separator + restaurant[2].encode('utf-8') + '.html'

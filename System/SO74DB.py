@@ -23,7 +23,8 @@ class DataBaseObject:
             self.obj_conn.execute(sql)
             self.obj_conn.commit()
         else:
-            sqlite3.connect(self.db_file).execute(sql).commit()
+            sqlite3.connect(self.db_file).execute(sql)
+            sqlite3.connect(self.db_file).commit()
 
     def return_one(self, sql):
         return self.result_set(sql).fetchone()
@@ -45,9 +46,6 @@ class DataBaseObject:
         if not self.object_exist(table_name):
             print 'must create table (currently doing nothing...)'
         self.execute(sql)
-
-
-
 
 
 def open_db_connection(path):
@@ -138,7 +136,6 @@ def log_to_database(db_path, table_name, sql):
         execute_not_connected(db_path, sql)
     except:
         print 'logging failed (to database {0})'.format(db_path)
-
 
 
 def execute_connected(c, sql, logfile, module, debug=False):
