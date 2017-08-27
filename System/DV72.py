@@ -66,7 +66,7 @@ class Device(object):
             # received = ser.readline().replace('\r\n', ' ')  # not used - instead
             to_read = ser.inWaiting()
             received = ser.read(to_read)
-            # parse data
+            # parse data / now = rounded to x min intervals
             if len(received) >= 1:
                 vel_val = received.split(':')
                 just_now = datetime.datetime.now()
@@ -111,6 +111,7 @@ class Device(object):
                 continue
                 # only csv files
             ts = SO74TX.readCSV(self.output_path + csv_file)
+            if not DataBaseObject(self
             if not SO74DB.db_object_exist_noconnect(self.table_name, self.output_path + csv_file[:6] + '.sqlite'):
                 print 'must create table first'
             csv_cnt += 1
@@ -170,7 +171,6 @@ def min_between(d1, d2):
         
 if __name__ == '__main__':
 
-    import SO74DB
     from SO74DB import DataBaseObject
 
     import SO74TX

@@ -49,18 +49,25 @@ class TestWeather(unittest.TestCase):
     """Check if weather data accessible"""
     def test_weather(self):
         loc = 'Horni Pocernice,cz'  # 'Necin,cz'
-        o = OpenWeatherMap(loc)
+        try:
+            o = OpenWeatherMap(loc)
+            text = 'Checking weather at location ({0}) manageable: {1}'.format(loc, o.heading[0])
+        except:
+            text = 'Cannot properly get {0} data : {1}'.format(loc, str(None))
         logger = Log(load_platform_based('Script/Multimedia/logfile.log'), 'Weather', 'test.py', False)
-        text = 'Checking weather at location ({0}) manageable: {1}'.format(loc, o.heading[0])
         logger.log_operation(text)
         self.assertIn(loc.split(',')[-1], o.heading[0])
 
     def test_dummy_weather(self):
         """Check if can treat no submitted location"""
         loc = ''  # 'Necin,cz'
-        o = OpenWeatherMap(loc)
+        try:
+            o = OpenWeatherMap(loc)
+            text = 'Checking weather at location ({0}) manageable: {1}'.format(loc, o.heading[0])
+        except:
+            text = 'Cannot properly get {0} data : {1}'.format(loc, str(None))
         logger = Log(load_platform_based('Script/Multimedia/logfile.log'), 'Weather', 'test.py', False)
-        text = 'Checking weather at location ({0}) manageable: {1}'.format(loc, o.heading[0])
+        
         logger.log_operation(text)
         self.assertIn(loc.split(',')[-1], o.heading[0])
 
@@ -68,23 +75,32 @@ class TestWeather(unittest.TestCase):
 class TestWebContent(unittest.TestCase):
     """Check if web data accessible"""
     def test_localhost_content(self):
-        o = WebContent(load_platform_based('Web/index.html', 'file:///'))
-        o.process_url()
+        try:
+            o = WebContent(load_platform_based('Web/index.html', 'file:///'))
+            o.process_url()
+            text = 'Checking Web Content of ({0}) : {1}'.format('index.html', o.url)
+        except:
+            text = 'Cannot properly get {0} from : {1}'.format('Web/index.html', o.url)
         logger = Log(load_platform_based('Script/Multimedia/logfile.log'), 'Webfile', 'test.py', False)
-        text = 'Checking Web Content of ({0}) : {1}'.format('index.html', o.url)
         logger.log_operation(text)
         self.assertIn('encyklopedie', str(o.div))
 
     def test_web_content(self):
-        o = WebContent('https://aktualnizpravy.cz/')
-        o.process_url()
+        try:
+            o = WebContent('https://aktualnizpravy.cz/')
+            o.process_url()
+            text = 'Check Web Content ({0}) : {1}'.format('index.html', o.url)
+        except:
+            text = 'Cannot properly get {0} from : {1}'.format('index.html', o.url)
         logger = Log(load_platform_based('Script/Multimedia/logfile.log'), 'Webfile', 'test.py', False)
-        text = 'Checking Web Content of ({0}) : {1}'.format('index.html', o.url)
         logger.log_operation(text)
         self.assertIn('dnes m', str(o.div))
 
     def test_rss_content(self):
-        o = RssContent('http://www.root.cz/rss/clanky/')
+        try:
+            o = RssContent('http://www.root.cz/rss/clanky/')
+        except:
+            print 'some bad happened'
         self.assertIn('root.cz', o.div)
 
 unittest.main()
