@@ -26,9 +26,11 @@ echo '   /// var right = "Multimedia/RestMenu/sad.html";' >> ${mainHTML}
 
 echo '    var srcs = [' >> ${mainHTML}
 
-for $file in '${mlt_dir}RestMenu/*' do (
-    echo ' "${mlt_dir}RestMenu/${file} , "'  >> ${mainHTML}
-)
+for dir in ${mlt_dir}RestMenu/*/
+do
+    dir=${dir%*/}
+    echo ' "${dir##*/} , "' >> ${mainHTML}
+done
 echo '   ]' >> ${mainHTML}
 
 echo '   document.getElementById("Left").setAttribute("src", srcs[Math.floor(Math.random() * srcs.length));' >> ${mainHTML}

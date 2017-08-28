@@ -194,8 +194,6 @@ if __name__ == '__main__':
     # create class for controlling device # logging
     dev = Device()
     print args.l + ' / '+ FileSystemObject(args.l).one_dir_up() + 'logfile.log' 
-    print dir(FileSystemObject(args.l))
-    print '_________________________________________'
     log_file = FileSystemObject(args.l).one_dir_up() + 'logfile.log'
     logger = Log(log_file, 'device', 'DV72.py',  True)
     # device settings: port, baud rate and timeout
@@ -204,14 +202,16 @@ if __name__ == '__main__':
     # log sql (debug) print sql
     
     if 'read' in args.m or 'ser' in args.m:
-        print 'Reading serial input from: {0} - at {1}'.format(str(dev.port),str(dev.br))
+        text = 'Reading serial input from: {0} - at {1}'.format(str(dev.port),str(dev.br))
+        logger.log_operation(text)
         ready = True
         # compute last read time distance
         FileSystemObject(last_run).touch_file()
         while ready:
             ready = dev.read_serial()
     elif 'agg' in args.m:
-        print 'aggregating values in {0}, last run: {1}'.format(args.l, str(FileSystemObject(last_run).object_mod_date('%Y/%m/%d %H:%M:%S')))
+        text = 'aggregating values in {0}, last run: {1}'.format(args.l, str(FileSystemObject(last_run).object_mod_date('%Y/%m/%d %H:%M:%S')))
+        logger.log_operation(text)
         dev.write_to_database('now', 0, 'm/s')
     else:
         print 'not possible'
