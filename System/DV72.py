@@ -111,8 +111,7 @@ class Device(object):
                 continue
                 # only csv files
             ts = SO74TX.readCSV(self.output_path + csv_file)
-            if not DataBaseObject(self
-            if not SO74DB.db_object_exist_noconnect(self.table_name, self.output_path + csv_file[:6] + '.sqlite'):
+            if not DataBaseObject(self.output_path + + csv_file[:6] + '.sqlite').object_exist(self.table_name):
                 print 'must create table first'
             csv_cnt += 1
             for time_stamp, value in ts.iteritems():
