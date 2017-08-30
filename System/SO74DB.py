@@ -206,7 +206,7 @@ def databases_compare(db1, db2, concrete_table=''):
         if 'sqlite_sequence' in table:
             continue
         if not db_object_exist(table[0], db_right):
-            print 'missing table {0} in {1}'.format(db_right, db2)
+            print 'missing table {0} in {1}'.format(db1, db2)
         else:
             id_col = determine_id_col(table[0], db_left)
             id_col_id = get_field_index(id_col, table[0], db_left)
@@ -221,6 +221,9 @@ def databases_compare(db1, db2, concrete_table=''):
                         continue
                     mirror = get_field_content(where,
                                                column.split(' ')[0], table[0], db_right)
+                    if not mirror:
+                        print '{0}!!cannot get mirrored column: {1}'.format(' ' * 5, column)
+                        continue
                     if SO74TX.similar(row[col_num], mirror[0]) < 1:
                         try:
                             print '=' * 100

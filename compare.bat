@@ -18,7 +18,7 @@ GOTO quit
 :database
 SET py_file=%~dp0System\SO74DB.py
 ECHO python %py_file% -m compare -a %2 -b %3 -f table_name -l logfile
-python %py_file% -m compare -a %2 -b %3 -f enc -l %log_file%
+python %py_file% -m compare -a %2 -b %3 -l %log_file%
 GOTO quit
 
 :directory
