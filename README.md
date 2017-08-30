@@ -62,10 +62,14 @@ Testing main functions of the whole system
 
 | File      | Test class                   | Description                   |
 |-----------| ---------------------------- | ------------------------------|
-| DV72      | `Device()`                   | Determine device prepare run  |
+| DV72      | `Device()`                   | Setup device & prepare for run|
+|           |                              | Control incomming data        |
+|           |                              | Aggregate csv files           |
 | NW74      | `NetworkObject()`            | Deal with network stuff       |
+|           |                              | Send, receive, listen         |
 | OS74      | `DateTimeObject()`           | Various date time data        |
-| OS74      | `FileSystemObject()`         | Register files and folders    |
+| OS74      | `FileSystemObject()`         | Register files & folders      |
+|           |                              | Synchronize files in folder   |
 | OS74      | `CurrentPlatform()`          | Determine platform            |
 | SO74DB    | `DataBaseObject()`           | Connect databse, run query    |
 | SO74ML    | `ImageObject()`              | Deal with images              |

@@ -195,6 +195,7 @@ def get_field_index(field, table, db):
 def databases_compare(db1, db2, concrete_table=''):
     db_left = open_db_connection(db1).cursor()
     db_right = open_db_connection(db2).cursor()
+    logger.log_operation('comparing databases: {0} / {1}'.format(db1, db2))
 
     table_list = get_db_objects_list(db_left)
     if concrete_table:
@@ -221,11 +222,15 @@ def databases_compare(db1, db2, concrete_table=''):
                     mirror = get_field_content(where,
                                                column.split(' ')[0], table[0], db_right)
                     if SO74TX.similar(row[col_num], mirror[0]) < 1:
-                        print '=' * 100
-                        print row[col_num]
-                        print '-' * 100
-                        print mirror[0]
-                        print '=' * 100
+                        try:
+                            print '=' * 100
+                            print row[col_num]
+                            print '-' * 100
+                            print mirror[0]
+                            print '=' * 100
+                        except Exception as ex:
+                            print ex.args[0].replace('\n', ' ')
+                            
                     col_num += 1
 
 
@@ -263,11 +268,13 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description="Compare two sqlite databases")
     parser.add_argument('-m', help='mode: compare/browse sqlite database', type=str, default='')
-    parser.add_argument('-l', help='first file', type=str, default='')
-    parser.add_argument('-r', help='second file', type=str, default='')
+    parser.add_argument('-a', help='first file', type=str, default='') #l
+    parser.add_argument('-b', help='second file', type=str, default='') #r
     parser.add_argument('-f', help='focus one table', type=str, default='')
+    parser.add_argument('-l', help='log file', type=str, default='')
     args = parser.parse_args()
+    logger = Log(args.l, 'Database', __file__, True)
     if 'compare' in args.m:
-        databases_compare(args.l, args.r, args.f)
+        databases_compare(args.a, args.b, args.f)
     else:
-        temp_connect_database(args.l)
+        temp_connect_database(args.a)
