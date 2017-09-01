@@ -12,9 +12,10 @@ try:
     import Tkinter as tk
     import platform
     from sys import platform as _platform
+    import tkinter as tk
 except ImportError:
     print 'some bad import happened'
-    import tkinter as tk
+    
 
 
 class Window(object):

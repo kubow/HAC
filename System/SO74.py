@@ -5,14 +5,14 @@ import os
 
 def process_web_content(mode, final_dir, url=None):
     path_separator = FileSystemObject(final_dir).separator
-    settings_db = os.path.dirname(os.path.realpath(__file__)) + path_separator + 'Settings.sqlite'
+    settings_db = DataBaseObject(os.path.dirname(os.path.realpath(__file__)) + path_separator + 'Settings.sqlite')
     log_db = args.l
     wc = WebContent(url)
     if url:
         print wc
     else:
         if 'rest' in mode:
-            web_objects = SO74DB.execute_many_not_connected(settings_db, 'SELECT * FROM RestActive;')
+            web_objects = settings_db.return_many('SELECT * FROM RestActive;')
             for restaurant in web_objects:
                 if restaurant[4]:
                     wc.url = restaurant[4]
@@ -25,7 +25,7 @@ def process_web_content(mode, final_dir, url=None):
                 wc.write_web_content_to_file(html_file_path, restaurant[3], log_db)
 
         elif 'rss' in mode:
-            web_objects = SO74DB.execute_many_not_connected(settings_db, 'SELECT * FROM RssActive;')
+            web_objects = settings_db.return_many('SELECT * FROM RssActive;')
             for rss in web_objects:
                 if rss[3]:
                     wc = RssContent(rss[3])
@@ -57,8 +57,8 @@ def write_weather_text(html_file, title, content):
 
 if __name__ == '__main__':
 
-    import SO74DB
     from OS74 import FileSystemObject, DateTimeObject
+    from SO74DB import DataBaseObject
     from SO74TX import WebContent, RssContent
     from SO74MP import OpenWeatherMap, OpenStreetMap
     from Template import HTML, SQL

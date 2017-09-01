@@ -84,23 +84,22 @@ class h808e(object):
         return True
 
     def load_active_directory_memory(self):
-        conn_mem = SO74DB.open_db_connection(":memory:")
-        curs_mem = conn_mem.cursor()
-        curs_mem.execute(SQL.table_create)
+        database = DataBaseObject(":memory:", True)
+        database.execute(SQL.table_create)
         i = 0
         
         tab_ins = SQL.insert.format('h808e (reg_name, file_dir)')
         
         for root, directories, files in os.walk(self.dir_active):
-            curs_mem.execute(tab_ins.format('"", ' + root))
+            database.execute(tab_ins.format('"", ' + root))
             i += 1
             for filename in files:
-                curs_mem.execute(tab_ins.format(i, filename, root, 'date date date',
+                database.execute(tab_ins.format(i, filename, root, 'date date date',
                                                 FileSystemObject(root + '/' + filename).object_size()))
                 print '---file {0} registered, checking size.'.format(filename)
                 i += 1
         
-        self.db_data = curs_mem.execute('select * from h808e;')
+        self.db_data = database.return_many('select * from h808e;')
         
     def directory_watcher(self):
         flag = True
@@ -133,14 +132,13 @@ class h808e(object):
                     FileSystemObject(directory + str(essn['code']) + '.html').refresh_file(self.db_data)
 
     def iterate_enc_db_structure(self):
-        conn = SO74DB.open_db_connection(self.db_path)
-        fathers = conn.execute(SQL.select_father_nodes).fetchall()
+        database = DataBaseObject(self.db_path)
+        fathers = database.return_many(SQL.select_father_nodes)
         main_fathers = [father[0] for father in fathers]
-        root_nodes = conn.execute(SQL.select_root_nodes).fetchall()
+        root_nodes = database.return_many(SQL.select_root_nodes)
         for root_node in root_nodes:
             print root_node[2].encode('utf8') + ' root node / id ' + str(
                 root_node[4]) + ' / sqn ' + str(root_node[5]) + ' level 1'
-        SO74DB.close_db_connection(conn)
 
     def get_table(self):
         tables = (None, '')
@@ -152,7 +150,7 @@ class h808e(object):
         query = q.select_node_text.format(node)
         if self.db_path:
             print self.db_path + ' : ' + query
-            return SO74DB.execute_not_connected(self.db_path, query)
+            return DataBaseObject(self.db_path).return_one(query)
         else:
             print 'cannot execute {0} in memory database.'.format(query)
 
@@ -254,7 +252,7 @@ def build_text_menu(directory):
 if __name__ == '__main__':
 
     from log import Log
-    import SO74DB
+    from SO74DB import DataBaseObject
     from OS74 import FileSystemObject
     import UI74
     import SO74TX
