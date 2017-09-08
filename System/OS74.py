@@ -8,11 +8,11 @@ import glob
 import datetime
 
 try:
-    import ttk
     import Tkinter as tk
     import platform
     from sys import platform as _platform
     import tkinter as tk
+    import ttk
 except ImportError:
     print 'some bad import happened'
     
