@@ -39,6 +39,7 @@ class DataBaseObject:
 
     def object_exist(self, object_name):
         if self.return_one(SQL.table_exist.format(object_name)):
+            print 'object {0} exist'.format(object_name)
             return True
         else:
             return False

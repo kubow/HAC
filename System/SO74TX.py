@@ -116,8 +116,12 @@ class WebContent(HTMLParser.HTMLParser):
     def write_web_content_to_file(self, file_path, heading, log_file=False):
         if self.div:
             print 'creating ' + file_path + ' from: ' + self.url
-            FileSystemObject(file_path).object_write(HTML.skelet_titled.format(heading.encode('utf-8'),
+            try:
+                FileSystemObject(file_path).object_write(HTML.skelet_titled.format(heading.encode('utf-8'),
                                                                                  self.div.encode('utf-8')), 'w+')
+            except:
+                FileSystemObject(file_path).object_write(HTML.skelet_titled.format(heading.encode('utf-8'),
+                                                                                 'cannot get text/bad char'), 'w+')
             if log_file:
                 self.log_to_database(log_file, heading)
         else:
@@ -126,7 +130,10 @@ class WebContent(HTMLParser.HTMLParser):
     def log_to_database(self, db_path, heading):
         user, domain = CurrentPlatform().get_username_domain()
         time_stamp = datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S')
-        tag_content = self.div_text.encode('utf-8').replace('\n\n\n\n', '\n').replace('\n\n', '\n')
+        try:
+            tag_content = self.div_text.encode('utf-8').replace('\n\n\n\n', '\n').replace('\n\n', '\n')
+        except:
+            tag_content = 'cannot catch div text...'
         # table structure
         table_def = 'Log (Connection, CPName, Report, LogDate, User, Domain)'
         values_template = '"{0}", "{1}", "{2}", "{3}", "{4}", "{5}"'
