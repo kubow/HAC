@@ -1,4 +1,4 @@
-!/bin/bash
+#!/bin/bash
 
 for sysdevpath in $(find /sys/bus/usb/devices/usb*/ -name dev); do
     (
