@@ -3,7 +3,6 @@
 
 log_dir=${PWD}/Multimedia/
 log_file=${log_dir}logfile.log
-data_dir=${log_dir}Measured/
 system_dir=${PWD}/System/
 
 settings_db=${PWD}/System/Settings.sqlite
@@ -31,7 +30,7 @@ then
     echo 'syntax: '${py_data_file}' -d '${platform}' -l location -m mode(rea/agg)'
 
     echo Running on ${platform} - writing ${YY}${MM}"("${DD}").db"
-    python ${py_data_file} -d ${platform} -l ${data_dir} -m aggregate
+    python ${py_data_file} -d ${platform} -l ${log_dir} -m aggregate
 elif [ "$1" = "s" ]
 then
     echo ==========================
@@ -42,7 +41,7 @@ then
 
     echo Running on ${platform} - writing ${YY}${MM}"("${DD}").db"
     #python ${py_data_file} -d ${weather_mo} -p ${platform}
-    python ${py_data_file} -d ${platform} -l ${data_dir} -m aggregate
+    python ${py_data_file} -d ${platform} -l ${log_dir} -m aggregate
 else
     echo "1st argument - cycle type"
     echo "    b - Big tick / weather + forecast + aggreagte data" 
