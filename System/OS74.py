@@ -4,111 +4,9 @@ TkInter loading when GUI enabled
 """
 import os
 import argparse
-import glob
 import datetime
-
-try:
-    import Tkinter as tk
-    import platform
-    from sys import platform as _platform
-    import tkinter as tk
-    import ttk
-except ImportError:
-    print 'some bad import happened'
-    
-
-
-class Window(object):
-    """Class for maintain widgets related to directory"""
-
-    def populate_tree(self, tree, node):
-        if tree.set(node, "type") != 'directory':
-            return
-
-        path = tree.set(node, "fullpath")
-        tree.delete(*tree.get_children(node))
-
-        parent = tree.parent(node)
-        special_dirs = [] if parent else glob.glob('.') + glob.glob('..')
-
-        for p in special_dirs + os.listdir(path):
-            ptype = None
-            p = os.path.join(path, p).replace('\\', '/')
-            if os.path.isdir(p):
-                ptype = "directory"
-            elif os.path.isfile(p):
-                ptype = "file"
-
-            fname = os.path.split(p)[1]
-            id = tree.insert(node, "end", text=fname, values=[p, ptype])
-
-            if ptype == 'directory':
-                if fname not in ('.', '..'):
-                    tree.insert(id, 0, text="dummy")
-                    tree.item(id, text=fname)
-            elif ptype == 'file':
-                size = os.stat(p).st_size
-                tree.set(id, "size", "%d bytes" % size)
-
-    def populate_roots(self, tree):
-        dir = os.path.abspath('.').replace('\\', '/')
-        node = tree.insert('', 'end', text=dir, values=[dir, "directory"])
-        self.populate_tree(tree, node)
-
-    def update_tree(self, event):
-        tree = event.widget
-        self.populate_tree(tree, tree.focus())
-
-    def change_dir(self, event):
-        tree = event.widget
-        node = tree.focus()
-        if tree.parent(node):
-            path = os.path.abspath(tree.set(node, "fullpath"))
-            if os.path.isdir(path):
-                os.chdir(path)
-                tree.delete(tree.get_children(''))
-                self.populate_roots(tree)
-
-    def autoscroll(self, sbar, first, last):
-        """Hide and show scrollbar as needed."""
-        first, last = float(first), float(last)
-        if first <= 0 and last >= 1:
-            sbar.grid_remove()
-        else:
-            sbar.grid()
-        sbar.set(first, last)
-
-
-class app_browser(tk.Frame):
-    def __init__(self, master):
-        tk.Frame.__init__(self, master)
-
-        w = Window()
-
-        vsb = ttk.Scrollbar(orient="vertical")
-        hsb = ttk.Scrollbar(orient="horizontal")
-
-        tree = ttk.Treeview(columns=("fullpath", "type", "size"),
-                            displaycolumns="size", yscrollcommand=lambda f, l: w.autoscroll(vsb, f, l),
-                            xscrollcommand=lambda f, l: w.autoscroll(hsb, f, l))
-
-        vsb['command'] = tree.yview
-        hsb['command'] = tree.xview
-
-        tree.heading("#0", text="Directory Structure", anchor='w')
-        tree.heading("size", text="File Size", anchor='w')
-        tree.column("size", stretch=0, width=100)
-        
-        w.populate_roots(tree)
-        tree.bind('<<TreeviewOpen>>', w.update_tree)
-        tree.bind('<Double-Button-1>', w.change_dir)
-
-        # Arrange the tree and its scrollbars in the toplevel
-        tree.grid(column=0, row=0, sticky='nswe')
-        vsb.grid(column=1, row=0, sticky='ns')
-        hsb.grid(column=0, row=1, sticky='ew')
-        root.grid_columnconfigure(0, weight=1)
-        root.grid_rowconfigure(0, weight=1)
+import platform
+from sys import platform as _platform
 
 
 class DateTimeObject:
@@ -347,23 +245,11 @@ def compare_directories(dir1, dir2):
                     found = False
 
         
-def center(toplevel):
-    toplevel.update_idletasks()
-    w = toplevel.winfo_screenwidth()
-    h = toplevel.winfo_screenheight()
-    size = tuple(int(_) for _ in toplevel.geometry().split('+')[0].split('x'))
-    x = w/2 - size[0]/2
-    y = h/2 - size[1]/2
-    position = "%dx%d+%d+%d" % (size + (x, y))
-    log_text = 'window position : ' + position + ' - full screen {0}/{1}'.format(str(w), str(h))
-    logger.log_operation(log_text)
-    toplevel.geometry(position)
-
-
 if __name__ == '__main__':
 
     import SO74TX
     from log import Log
+    from UI74 import main_app_view
 
     parser = argparse.ArgumentParser(description="browse/list dirs")
     parser.add_argument('-b', help='browse dir', type=str, default='')
@@ -372,10 +258,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     logger = Log(args.f, 'directory')
     if args.b:
-        root = tk.Tk()
-        app = app_browser(root)
-        center(root)
-        app.mainloop()
+        main_app_view()
     elif args.l:
         fso = FileSystemObject(args.l, args.f)
         fso.directory_lister(list_files=True)

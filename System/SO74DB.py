@@ -29,7 +29,6 @@ class DataBaseObject:
             sqlite3.connect(self.db_file).commit()
 
     def return_one(self, sql):
-        print sql
         return self.result_set(sql).fetchone()
 
     def return_many(self, sql):

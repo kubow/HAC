@@ -112,10 +112,12 @@ class Device(object):
             csv_cnt += 1
             for time_stamp, value in CsvFile(fs.append_file(csv_file), read=True).content.iteritems():
                 self.process_time_series()
+        if csv_cnt < 1:
+            print 'no csv files proccessed ...'
                 
     def process_time_series(self, values):
         for vel, val in values.iteritems():
-            print vel + val
+            print vel + val  # save to database
 
 
 def get_time(timevalue, modnum):
