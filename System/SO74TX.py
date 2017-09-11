@@ -184,6 +184,98 @@ class RssContent(object):
         else:
             print 'no content parsed from: ' + self.url
 
+            
+class CsvFile(object):
+    def __init__(self, file_name, write=False, content=''):
+        self.path = file_name
+        self.time_stamp = self.get_time_from_file()
+        if not write:
+            self.content = self.csv_format()
+        else:
+            self.write(self.path, content)
+
+    def write(self, content='', device=''):
+        """write a CSV file
+        values - in dictionary
+        timestamp of exact time measured
+        device - which perform data read"""
+        fs = FileSystemObject(self.path)
+        if fs.exist:
+            f = open(self.path, 'a')
+            line = 2
+            # TODO: check if header corresponds
+        else:
+            f = open(self.path, 'a+')
+            line = 1
+        # write time series and header
+        for actime, vals in content.iteritems():
+            row = ''
+            if line == 1:
+                for d, v in vals.iteritems():
+                    row += str(d) + ','
+                row = 'datetime, ' + row
+                f.write(row + '\n')
+            row = str(actime) + ','
+            for d, v in vals.iteritems():
+                row += str(v) + ','
+            f.write(row + '\n')
+            line += 1
+        f.close()
+
+    def csv_format(self):
+        """read value from csv file
+            return in dictionary"""
+        try:
+            # load field names as variables
+            val = 0
+            timestamps = {}
+            flds = []  # field number
+            vels = []  # velocities
+            values = {}
+            velocities = {}
+            # load values to dictionary
+            for row in FileSystemObject(self.path).object_read():
+                if not row:
+                    continue
+                hd = row.split(',')
+                if val == 0:
+                    # various columns save
+                    for i in range(len(hd)):
+                        if hd[i] not in ('datetime', None, '\n'):
+                            flds.append('val_' + str(i))
+                            vels.append(hd[i].strip())
+                            values['val_' + str(i)] = 0
+                    val += 1
+                else:
+                    for fld in flds:
+                        idx = int(fld.split('_')[-1])
+                        values[fld] = int(values[fld]) + int(hd[idx])
+                    val += 1
+            for field, sum_vals in values.iteritems():
+                values[field] = sum_vals / val
+                # get index of field - change to proper list
+                velocities[vels[flds.index(field)]] = sum_vals / val
+            timestamps[self.time_stamp] = velocities
+            return timestamps
+        except Exception as ex:
+            print ex.args[0]
+            print 'problem in csv ' + self.path + ' (line{0})'.format(str(val))
+            return None
+
+    def get_time_from_file(self):
+        """build a date-time stamp from file name
+        ... presuming structure <YYYYMMDD_hhmm>"""
+        file_name = self.path.replace('\\', '/').split('/')[-1]
+        not_csv = file_name.split('.')[0]
+        file_date = not_csv.split('_')[0]
+        file_time = not_csv.split('_')[1]
+        file_year = int(file_date[:4])
+        file_month = int(file_date[4:6])
+        file_day = int(file_date[6:])
+        file_hour = int(file_time[:2])
+        file_minute = int(file_time[2:])
+        return datetime.datetime(file_year, file_month, file_day, file_hour, file_minute, 0)
+
 
 def replace_line_endings(block_text):
     # replace double carriage return with tildos
@@ -282,50 +374,6 @@ def writeCSV(file_name, values, timestamp, device):
     f.close()
 
 
-def readCSV(csvfile):
-    """read value from csv file
-    return in dictionary"""
-    try:
-        fileobj = open(csvfile, 'r')
-        lines = fileobj.readlines()
-        timestamp = DV72.get_time_from_file(csvfile)
-        fileobj.close()
-        # load field names as variables
-        val = 0
-        timestamps = {}
-        flds = []  # field number
-        vels = []  # velocities
-        values = {}
-        velocities = {}
-        # load values to dictionary
-        for row in lines:
-            if not row:
-                continue
-            hd = row.split(',')
-            if val == 0:
-                # various columns save
-                for i in range(len(hd)):
-                    if hd[i] not in ('datetime', None, '\n'):
-                        flds.append('val_' + str(i))
-                        vels.append(hd[i].strip())
-                        values['val_' + str(i)] = 0
-                val += 1
-            else:
-                for fld in flds:
-                    idx = int(fld.split('_')[-1])
-                    values[fld] = int(values[fld]) + int(hd[idx])
-                val += 1
-        for field, sum_vals in values.iteritems():
-            values[field] = sum_vals / val
-            # get index of field - change to proper list
-            velocities[vels[flds.index(field)]] = sum_vals / val
-        timestamps[timestamp] = velocities
-        return timestamps
-    except Exception as ex:
-        print ex.args[0]
-        print 'problem in csv ' + csvfile + ' (line{0})'.format(str(val))
-        return None
-
 
 def readJSON(file):
     print 'file: ' + file
@@ -337,7 +385,7 @@ def readJSON(file):
         fh.seek(-512, 2)
         # last = fh.readlines()
         last = fh.readlines()[-1].decode()
-    return (first, last)
+    return first, last
 
 
 def writeJSON(location, cols, c):
@@ -445,7 +493,6 @@ def similar(seq1, seq2):
 
 if __name__ == '__main__':
 
-    import DV72
     from log import Log
 
     parser = argparse.ArgumentParser(description='Text proccess')

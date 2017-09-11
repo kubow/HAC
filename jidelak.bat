@@ -3,6 +3,7 @@ Set mainHTML=%~dp0index.html
 SET mlt_dir=%~dp0Multimedia\
 SET py_file=%~dp0System\SO74.py
 
+rem echo archiving 
 del "%mlt_dir%RestMenu\*.*?"
 rem wscript %~dp0System\Reader\ReaderMenu.vbs --not properly set...
 python %py_file% -g restaurant -w %~dp0 -l %mlt_dir%logfile.log

@@ -52,7 +52,7 @@ class Device(object):
         self.output_path = path
         
     def read_serial(self):
-        '''reading serial line and mirror it to CSV file'''
+        """reading serial line and mirror it to CSV file"""
         data_vals = {}  # dictionary holding all/interval values
         data_int = {}  # clear the dictionary
         last_run = get_time(datetime.datetime.now(), self.interval_shift)
@@ -75,7 +75,7 @@ class Device(object):
                 csv = args.l + csv_fname
                 # checking interval shifts
                 if now > last_run:
-                    SO74TX.writeCSV(csv, data_vals, just_now, 'RPi')
+                    CsvFile(csv, True, data_vals)
                     data_vals = {}  # clear the dictionaries
                     data_int = {} 
                     last_run = now
@@ -104,20 +104,16 @@ class Device(object):
 
     def write_to_database(self, timestamp, value, velocity):
         # check if Archive directory present
-        FileSystemObject(self.output_path + 'Archive').object_create_neccesary()
+        fs = FileSystemObject(self.output_path + 'Measured')
         csv_cnt = 0
-        for csv_file in os.listdir(self.output_path):
-            if csv_file.split('.')[-1].lower() <> 'csv':
-                continue
-                # only csv files
-            ts = SO74TX.readCSV(self.output_path + csv_file)
-            if not DataBaseObject(self.output_path + + csv_file[:6] + '.sqlite').object_exist(self.table_name):
+        for csv_file in fs.object_read():
+            if not DataBaseObject(fs.append_file(csv_file[:6] + '.sqlite')).object_exist(self.table_name):
                 print 'must create table first'
             csv_cnt += 1
-            for time_stamp, value in ts.iteritems():
-                self.process_time_serie()
+            for time_stamp, value in CsvFile(fs.append_file(csv_file), read=True).content.iteritems():
+                self.process_time_series()
                 
-    def process_time_serie(values):
+    def process_time_series(self, values):
         for vel, val in values.iteritems():
             print vel + val
 
@@ -146,21 +142,6 @@ def get_time(timevalue, modnum):
     return value_aggregated
 
     
-def get_time_from_file(file):
-    """build a date-time stamp from file name
-    ... presuming structure <YYYYMMDD_hhmm>"""
-    file_name = file.replace('\\', '/').split('/')[-1]
-    not_csv = file_name.split('.')[0]
-    file_date = not_csv.split('_')[0]
-    file_time = not_csv.split('_')[1]
-    file_year = int(file_date[:4])
-    file_month = int(file_date[4:6])
-    file_day = int(file_date[6:])
-    file_hour = int(file_time[:2])
-    file_minute = int(file_time[2:])
-    return datetime.datetime(file_year, file_month, file_day, file_hour, file_minute, 0)
-
-    
 def min_between(d1, d2):
     """not used for now - just temp"""
     # d1 = datetime.strptime(d1, "%Y-%m-%d")
@@ -172,7 +153,7 @@ if __name__ == '__main__':
 
     from SO74DB import DataBaseObject
 
-    import SO74TX
+    from SO74TX import CsvFile
     from Template import SQL
     from log import Log
 

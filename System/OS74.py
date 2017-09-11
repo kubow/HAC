@@ -225,8 +225,9 @@ class FileSystemObject:
             return content
         elif self.is_folder:
             objects = []
-            for file in os.path.dirname(self.path):
-                objects.append(file)
+            for file in os.listdir(self.path):
+                if '.csv' in file:
+                    objects.append(file)
             return objects
 
     def object_write(self, content='', mode='w+'):
