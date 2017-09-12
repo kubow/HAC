@@ -31,15 +31,23 @@ class Device(object):
         self.device_user = current_device.environment
         self.device_platform = current_device.main
 
-    def setup_device(self, device, sensor, timeout):
+    def setup_device(self, device, sensor=None, timeout=0):
         if FileSystemObject(self.setup_db).is_file:
             dbc = DataBaseObject(self.setup_db)
-            # port = port with device
-            self.port = dbc.return_one(SQL.get_driver_loc.format(SQL.get_device_id.format(device), sensor))
-            # br = baud rate
-            self.br = dbc.return_one(SQL.select.format('baud', 'setting'))
             # table name, that will hold values
-            self.table_name = dbc.return_one(SQL.select.format('table_name', 'setting'))
+            self.table_name = dbc.return_one(SQL.select.format('table_name', 'setting'))[0]
+            # match device name, platform
+            for device_check in dbc.return_many(SQL.get_device_name_list):
+                if not self.device_name.lower() in str(device_check[0]).lower():
+                    continue
+                else:
+                    self.port = dbc.return_one(SQL.get_driver_loc.format(device_check[0]))[0]
+                    self.br = dbc.return_one(SQL.get_driver_br.format(device_check[0]))[0]
+                    break
+            if not self.port:
+                self.port = dbc.return_one(SQL.get_driver_dummy_loc.format(self.device_platform))[0]
+            if not self.br:
+                self.br = dbc.return_one(SQL.get_driver_dummy_loc.format(self.device_platform))[0]
         else:
             # no available config - using default values
             self.port = 'COM4'
@@ -61,24 +69,28 @@ class Device(object):
             ser = serial.Serial(self.port, self.br, timeout=self.timeout)
             ser.flushInput()
             ser.flushOutput()
-            time.sleep(self.timeout)
+            time.sleep(5)
             print 'running with timeout {0} seconds.'.format(self.timeout)
             # received = ser.readline().replace('\r\n', ' ')  # not used - instead
             to_read = ser.inWaiting()
             received = ser.read(to_read)
             # parse data / now = rounded to x min intervals
             if len(received) >= 1:
-                vel_val = received.split(':')
-                just_now = datetime.datetime.now()
-                now = get_time(just_now, self.interval_shift)
-                csv_fname = now.strftime(dev.date_file_format)+'.csv'
-                csv = args.l + csv_fname
-                # checking interval shifts
-                if now > last_run:
-                    CsvFile(csv, True, data_vals)
-                    data_vals = {}  # clear the dictionaries
-                    data_int = {} 
-                    last_run = now
+                for row in received.split('\r\n'):
+                    if row in ('temp', 'luxo', 'humi', 'wind'):
+                        print 'just load value indexes...'
+                    else:
+                        vel_val = received.split(':')
+                        just_now = datetime.datetime.now()
+                        now = get_time(just_now, self.interval_shift)
+                        csv_fname = now.strftime(dev.date_file_format) + '.csv'
+                        csv = args.l + csv_fname
+                        # checking interval shifts
+                        if now > last_run:
+                            CsvFile(csv, True, data_vals)
+                            data_vals = {}  # clear the dictionaries
+                            data_int = {}
+                            last_run = now
 
                 print received + str(just_now.strftime(SQL.date_format))
                 # building dictionary
@@ -86,8 +98,8 @@ class Device(object):
                 data_vals[just_now.strftime(SQL.date_format)] = data_int 
                 return data_vals
             else:
-                print 'received no text !!!!'
-                return None
+                print 'no text to receive ...'
+                return 'some values might come ...'
         except serial.SerialException as se:
             print se.args
             print 'serial communication not accesible!'
@@ -110,7 +122,7 @@ class Device(object):
             if not DataBaseObject(fs.append_file(csv_file[:6] + '.sqlite')).object_exist(self.table_name):
                 print 'must create table first'
             csv_cnt += 1
-            for time_stamp, value in CsvFile(fs.append_file(csv_file), read=True).content.iteritems():
+            for time_stamp, value in CsvFile(fs.append_file(csv_file)).content.iteritems():
                 self.process_time_series()
         if csv_cnt < 1:
             print 'no csv files proccessed ...'
@@ -173,7 +185,7 @@ if __name__ == '__main__':
     FileSystemObject(args.l).object_create_neccesary()
     last_run = args.l + 'last.run'
     if not FileSystemObject(last_run).is_file:
-        FileSystemObject(last_run).touch_file()
+        FileSystemObject(last_run).file_touch()
     # create class for controlling device # logging
     dev = Device()
     print args.l + ' / '+ FileSystemObject(args.l).one_dir_up() + 'logfile.log' 
@@ -189,7 +201,7 @@ if __name__ == '__main__':
         logger.log_operation(text)
         ready = True
         # compute last read time distance
-        FileSystemObject(last_run).touch_file()
+        FileSystemObject(last_run).file_touch()
         while ready:
             ready = dev.read_serial()
     elif 'agg' in args.m:

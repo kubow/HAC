@@ -147,17 +147,29 @@ class SQL(object):
     WHERE device = (
         SELECT ID from device where devicename = '{0}'
     );"""
-    get_driver_loc = """SELECT driverloc 
-    FROM driver 
-    WHERE device = {0} AND drivertype = "{1}";"""
-    get_device_id = '(SELECT ID from device WHERE devicename = "{0}")'
-    get_structure = 'SELECT * FROM structure'
-    get_table_name = 'SELECT table_name FROM setting;'
+
     column_select = 'SELECT {0} FROM {1};'
+    column_select_where = column_select.format('{0}', '{1} WHERE {2}')
+    column_group_select = column_select.format('{0}', '{1} GROUP BY {2}')
+
+    get_structure = column_select.format('*', 'structure')
+    get_table_name = column_select.format('table_name', 'setting')
+
+    get_device_name_list = column_select.format('MachineName', 'Stations')
+    get_device_os_list = column_select.format('OpSystem', 'Stations')
+
+    get_driver_loc = column_select_where.format('ComAddress, ComAddLast', 'Stations', 'Machinename = "{0}"')
+    get_driver_br = column_select_where.format('BaudeRate', 'Stations', 'Machinename = "{0}"')
+    get_driver_dummy_loc = column_select_where.format('ComAddress, ComAddLast', 'Stations',
+                                                      'Machinename LIKE "%cp%" AND OpSysType LIKE "%{0}%"')
+    get_driver_dummy_br = column_select_where.format('BaudeRate', 'Stations',
+                                                      'Machinename LIKE "%cp%" AND OpSysType LIKE "%{0}%"')
+
     group_select = 'SELECT length({0}) AS {1} FROM measured GROUP BY {2};'
     
-    value_select = 'SELECT {0} FROM {1} WHERE timestamp = "{2}";'
-    value_exist = 'SELECT timestamp FROM {0} WHERE timestamp = "{1}";'
+    value_select = column_select_where.format('{0}', '{1}', 'timestamp = "{2}";')
+    value_exist = column_select_where.format('timestamp', '{0}', 'timestamp = "{1}";')
+
     value_insert = 'INSERT INTO {0} VALUES ({1});'
     value_update = 'UPDATE {0} SET {1} WHERE timestamp = "{2}";'
 
