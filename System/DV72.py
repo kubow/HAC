@@ -39,7 +39,7 @@ class Device(object):
             self.table_name = dbc.return_one(SQL.select.format('table_name', 'setting'))[0]
             # match device name, platform
             for device_check in dbc.return_many(SQL.get_device_name_list):
-                if not self.device_name.lower() in str(device_check[0]).lower():
+                if not str(device_check[0]).lower() in self.device_name.lower():
                     continue
                 else:
                     self.port = dbc.return_one(SQL.get_driver_loc.format(device_check[0]))[0]
@@ -66,7 +66,7 @@ class Device(object):
         just_now = datetime.datetime.now()
         now = get_time(just_now, self.interval_shift)
         last_run = get_time(just_now, self.interval_shift)
-        csv = self.output_path + now.strftime(self.date_file_format) + '.csv'
+        csv = self.output_path + 'Measured/' + now.strftime(self.date_file_format) + '.csv'
         try:
             ser = serial.Serial(self.port, self.br, timeout=self.timeout)
             ser.flushInput()
@@ -85,6 +85,7 @@ class Device(object):
                     last_run = now
 
                 data_vals[just_now.strftime(self.date_format)] = sensor_vals
+                CsvFile(csv, True, data_vals)
                 print data_vals
                 return data_vals
             else:
@@ -182,8 +183,6 @@ if __name__ == '__main__':
         ready = 'prepare to run serial read ...'
         while ready:
             ready = dev.read_serial()
-            if isinstance(ready, dict):
-                CsvFile(csv, True, data_vals)
     elif 'agg' in args.m:
         text = 'aggregating values in {0}, last run: {1}'.format(args.l, dev.last_run)
         logger.log_operation(text)

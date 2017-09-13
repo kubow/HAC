@@ -208,6 +208,9 @@ class CsvFile(object):
             f = open(self.path, 'a+')
             line = 1
         # write time series and header
+        if not isinstance(content, dict):
+            print 'no proper content, skipping'
+            return
         for actime, vals in content.iteritems():
             row = ''
             if line == 1:
