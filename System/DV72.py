@@ -11,7 +11,6 @@ import time
 import datetime
 import serial
 import argparse
-from OS74 import FileSystemObject, CurrentPlatform, DateTimeObject
 
 
 class Device(object):
@@ -26,6 +25,8 @@ class Device(object):
         self.interval_shift = 2
         self.table_name = '_'
         self.output_path = local_path
+        self.csv_file = ''
+        self.last_run = FileSystemObject(self.output_path + 'last.run').object_mod_date(self.date_format)
         current_device = CurrentPlatform()
         self.device_name = current_device.hostname
         self.device_user = current_device.environment
@@ -62,40 +63,29 @@ class Device(object):
     def read_serial(self):
         """reading serial line and mirror it to CSV file"""
         data_vals = {}  # dictionary holding all/interval values
-        data_int = {}  # clear the dictionary
-        last_run = get_time(datetime.datetime.now(), self.interval_shift)
-        csv = ''
+        just_now = datetime.datetime.now()
+        now = get_time(just_now, self.interval_shift)
+        last_run = get_time(just_now, self.interval_shift)
+        csv = self.output_path + now.strftime(self.date_file_format) + '.csv'
         try:
             ser = serial.Serial(self.port, self.br, timeout=self.timeout)
             ser.flushInput()
             ser.flushOutput()
             time.sleep(5)
-            print 'running with timeout {0} seconds.'.format(self.timeout)
-            # received = ser.readline().replace('\r\n', ' ')  # not used - instead
+            # received = ser.readline().replace('\r\n', ' ')  # not used - instead read a stack, average with one ts
             to_read = ser.inWaiting()
             received = ser.read(to_read)
             # parse data / now = rounded to x min intervals
             if len(received) >= 1:
-                for row in received.split('\r\n'):
-                    if row in ('temp', 'luxo', 'humi', 'wind'):
-                        print 'just load value indexes...'
-                    else:
-                        vel_val = received.split(':')
-                        just_now = datetime.datetime.now()
-                        now = get_time(just_now, self.interval_shift)
-                        csv_fname = now.strftime(dev.date_file_format) + '.csv'
-                        csv = args.l + csv_fname
-                        # checking interval shifts
-                        if now > last_run:
-                            CsvFile(csv, True, data_vals)
-                            data_vals = {}  # clear the dictionaries
-                            data_int = {}
-                            last_run = now
+                sensor_vals = dict(item.split(":") for item in received.split("\r\n") if len(item) > 1)
+                # for row in received.split('\r\n'):
+                # checking interval shifts
+                if now > last_run:
+                    data_vals = {}  # clear the dictionaries
+                    last_run = now
 
-                print received + str(just_now.strftime(SQL.date_format))
-                # building dictionary
-                data_int[vel_val[0]] = vel_val[-1]
-                data_vals[just_now.strftime(SQL.date_format)] = data_int 
+                data_vals[just_now.strftime(self.date_format)] = sensor_vals
+                print data_vals
                 return data_vals
             else:
                 print 'no text to receive ...'
@@ -112,7 +102,7 @@ class Device(object):
             # print data_vals
             # raw_input("Press enter to continue")
             # os.system("pause")
-            return None
+            return 'however error ocured .. '
 
     def write_to_database(self, timestamp, value, velocity):
         # check if Archive directory present
@@ -165,47 +155,37 @@ def min_between(d1, d2):
         
 if __name__ == '__main__':
 
+    from OS74 import FileSystemObject, CurrentPlatform, DateTimeObject
     from SO74DB import DataBaseObject
-
     from SO74TX import CsvFile
     from Template import SQL
     from log import Log
-
-    argd = 'device name reading data'
-    argz = 'sensor name'
-    argl = 'location to write final data'
-    argm = 'mode (read serial/aggregate values)'
     
     parser = argparse.ArgumentParser(description="Write weather data")
-    parser.add_argument('-d', help=argd, type=str, default='')
-    parser.add_argument('-s', help=argz, type=str, default='')
-    parser.add_argument('-l', help=argl, type=str, default='')
-    parser.add_argument('-m', help=argl, type=str, default='')
+    parser.add_argument('-d', help='device name reading data', type=str, default='')
+    parser.add_argument('-l', help='location to write final data', type=str, default='')
+    parser.add_argument('-m', help='mode (read serial/aggregate values)', type=str, default='')
     args = parser.parse_args()
-    FileSystemObject(args.l).object_create_neccesary()
-    last_run = args.l + 'last.run'
-    if not FileSystemObject(last_run).is_file:
-        FileSystemObject(last_run).file_touch()
     # create class for controlling device # logging
     dev = Device()
-    print args.l + ' / '+ FileSystemObject(args.l).one_dir_up() + 'logfile.log' 
-    log_file = FileSystemObject(args.l).one_dir_up() + 'logfile.log'
+    log_file = args.l + 'logfile.log'
+    # print args.l + ' / '+ log_file
     logger = Log(log_file, 'device', 'DV72.py',  True)
     # device settings: port, baud rate and timeout
-    dev.setup_device(args.d, args.s, 0)
+    dev.setup_device(args.d, "all sensors", 0)
     dev.setup_output_path(args.l)
     # log sql (debug) print sql
     
     if 'read' in args.m or 'ser' in args.m:
         text = 'Reading serial input from: {0} - at {1}'.format(str(dev.port),str(dev.br))
         logger.log_operation(text)
-        ready = True
-        # compute last read time distance
-        FileSystemObject(last_run).file_touch()
+        ready = 'prepare to run serial read ...'
         while ready:
             ready = dev.read_serial()
+            if isinstance(ready, dict):
+                CsvFile(csv, True, data_vals)
     elif 'agg' in args.m:
-        text = 'aggregating values in {0}, last run: {1}'.format(args.l, str(FileSystemObject(last_run).object_mod_date('%Y/%m/%d %H:%M:%S')))
+        text = 'aggregating values in {0}, last run: {1}'.format(args.l, dev.last_run)
         logger.log_operation(text)
         dev.write_to_database('now', 0, 'm/s')
     else:

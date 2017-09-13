@@ -151,6 +151,7 @@ class SQL(object):
     column_select = 'SELECT {0} FROM {1};'
     column_select_where = column_select.format('{0}', '{1} WHERE {2}')
     column_group_select = column_select.format('{0}', '{1} GROUP BY {2}')
+    column_group_select = column_select.format('{0}', '{1} GROUP BY {2}')
 
     get_structure = column_select.format('*', 'structure')
     get_table_name = column_select.format('table_name', 'setting')
