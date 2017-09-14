@@ -192,7 +192,7 @@ class CsvFile(object):
         if not write:
             self.content = self.csv_format()
         else:
-            self.write(self.path, content)
+            self.write(content)
 
     def write(self, content='', device=''):
         """write a CSV file
@@ -225,7 +225,7 @@ class CsvFile(object):
             line += 1
         f.close()
 
-    def csv_format(self):
+    def csv_format(self, separator=','):
         """read value from csv file
             return in dictionary"""
         try:
@@ -237,14 +237,14 @@ class CsvFile(object):
             values = {}
             velocities = {}
             # load values to dictionary
-            for row in FileSystemObject(self.path).object_read():
+            for row in FileSystemObject(self.path).object_read().split('\n'):
                 if not row:
                     continue
                 hd = row.split(',')
                 if val == 0:
                     # various columns save
                     for i in range(len(hd)):
-                        if hd[i] not in ('datetime', None, '\n'):
+                        if len(hd[i]) > 0:
                             flds.append('val_' + str(i))
                             vels.append(hd[i].strip())
                             values['val_' + str(i)] = 0
