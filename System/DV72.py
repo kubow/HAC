@@ -60,12 +60,13 @@ class Device(object):
     def setup_output_path(self, path):
         self.output_path = path
         
-    def read_serial(self, ac_time=datetime.datetime.now()):
+    def read_serial(self):
         """reading serial line and mirror it to CSV file"""
+        ac_time = datetime.datetime.now()
         data_vals = {}  # dictionary holding all/interval values
         just_now = ac_time.strftime(self.date_format)
-        just_now_file = ac_time.strftime(self.date_file_format)
         now = self.time_aggregated(just_now)
+        just_now_file = now.strftime(self.date_file_format)
         #last_run = time_aggregated(just_now, self.interval_shift)
         csv = self.output_path + 'Measured/' + just_now_file + '.csv'
         try:
@@ -128,14 +129,13 @@ class Device(object):
         # decide where to put value
         if modulo >= float(self.interval_shift / 2):
             min_new = minute - modulo + self.interval_shift
-            hour_new = time_value.hour
         else:
             min_new = minute - modulo
-            if min_new > 58:
-                hour_new = time_value.hour + 1
-                min_new = 0
-            else:
-                hour_new = time_value.hour
+        if min_new > 58:
+            hour_new = time_value.hour + 1
+            min_new = 0
+        else:
+            hour_new = time_value.hour
         value_aggregated = datetime.datetime(time_value.year,
                                              time_value.month, time_value.day, hour_new, int(min_new), 0, 0)
         # print 'timestamp: ' + str(time_value) + ' > ' + str(value_aggregated)
@@ -168,7 +168,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
     # create class for controlling device # logging
     dev = Device()
-    # print args.l + ' / '+ log_file
     logger = Log(args.l + 'logfile.log', 'device', 'DV72.py',  True)
     # device settings: port, baud rate and timeout
     dev.setup_device(args.d, "all sensors", 0)
