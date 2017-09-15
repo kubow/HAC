@@ -225,12 +225,13 @@ class CsvFile(object):
             line += 1
         f.close()
 
-    def csv_format(self, separator=','):
+    def csv_format(self, separator=',', first_column_date=True):
         """read value from csv file
             return in dictionary"""
         try:
             # load field names as variables
-            val = 0
+            row_count = 0
+            first_col = 0
             timestamps = {}
             flds = []  # field number
             vels = []  # velocities
@@ -241,28 +242,30 @@ class CsvFile(object):
                 if not row:
                     continue
                 hd = row.split(',')
-                if val == 0:
+                if row_count == 0:
                     # various columns save
                     for i in range(len(hd)):
                         if len(hd[i]) > 0:
                             flds.append('val_' + str(i))
                             vels.append(hd[i].strip())
                             values['val_' + str(i)] = 0
-                    val += 1
+                            row_count += 1
                 else:
                     for fld in flds:
                         idx = int(fld.split('_')[-1])
+                        if idx == 0:
+                            values[fld] = hd[idx]
                         values[fld] = int(values[fld]) + int(hd[idx])
-                    val += 1
+                        row_count += 1
             for field, sum_vals in values.iteritems():
-                values[field] = sum_vals / val
+                values[field] = sum_vals / row_count
                 # get index of field - change to proper list
-                velocities[vels[flds.index(field)]] = sum_vals / val
+                velocities[vels[flds.index(field)]] = sum_vals / row_count
             timestamps[self.time_stamp] = velocities
             return timestamps
         except Exception as ex:
             print ex.args[0]
-            print 'problem in csv ' + self.path + ' (line{0})'.format(str(val))
+            print 'problem in csv ' + self.path + ' (line{0})'.format(str(row_count))
             return None
 
     def get_time_from_file(self):

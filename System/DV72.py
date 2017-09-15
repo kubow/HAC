@@ -114,28 +114,28 @@ class Device(object):
         if csv_cnt < 1:
             print 'no csv files proccessed ...'
 
-    def time_aggregated(self, time_value):
+    def time_aggregated(self, time_value, debug=False):
         """function to return rounded time
         second parameter aggregation time interval """
         # saving in <self.interval_shift> minute intervals
-        print '***************** debug *****************'
-        print 'time_value : ' + time_value
         if isinstance(time_value, str):
             time_value = datetime.datetime.strptime(time_value, self.date_format)
         minute = float(time_value.minute) + float(time_value.second) / 60
         modulo = float(minute % self.interval_shift)
-        print 'minutes : ' + str(minute) + ' / modulo: ' + str(modulo)
-        print '***************** debug *****************'
+        if debug:
+            print '***************** debug *****************'
+            print 'time_value : ' + time_value
+            print 'minutes : ' + str(minute) + ' / modulo: ' + str(modulo)
+            print '***************** debug *****************'
         # decide where to put value
+        hour_new = time_value.hour
         if modulo >= float(self.interval_shift / 2):
             min_new = minute - modulo + self.interval_shift
+            if min_new > 60 - self.interval_shift:
+                hour_new = time_value.hour + 1
+                min_new = 0
         else:
             min_new = minute - modulo
-        if min_new > 58:
-            hour_new = time_value.hour + 1
-            min_new = 0
-        else:
-            hour_new = time_value.hour
         value_aggregated = datetime.datetime(time_value.year,
                                              time_value.month, time_value.day, hour_new, int(min_new), 0, 0)
         # print 'timestamp: ' + str(time_value) + ' > ' + str(value_aggregated)
