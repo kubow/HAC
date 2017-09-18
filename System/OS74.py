@@ -116,7 +116,7 @@ class FileSystemObject:
         # print template
         self.file_write(self.destination, content)
 
-    def object_read(self):
+    def object_read(self, desired_extension='.csv'):
         if self.is_file:
             with open(self.path, 'r') as content_file:
                 content = content_file.read()
@@ -124,7 +124,7 @@ class FileSystemObject:
         elif self.is_folder:
             objects = []
             for file in os.listdir(self.path):
-                if '.csv' in file:
+                if desired_extension in file:
                     objects.append(file)
             return objects
 

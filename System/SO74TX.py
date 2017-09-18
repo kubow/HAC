@@ -6,11 +6,13 @@ XML > HTML
 """
 import re
 import os
+import csv
 import argparse
 import difflib
 import datetime
 import xml.etree.ElementTree as xml_tree
 import lxml.html
+import pandas
 import feedparser
 import requests
 from xml.dom.minidom import parseString
@@ -230,42 +232,11 @@ class CsvFile(object):
             return in dictionary"""
         try:
             # load field names as variables
-            row_count = 0
-            first_col = 0
-            timestamps = {}
-            flds = []  # field number
-            vels = []  # velocities
-            values = {}
-            velocities = {}
-            # load values to dictionary
-            for row in FileSystemObject(self.path).object_read().split('\n'):
-                if not row:
-                    continue
-                hd = row.split(',')
-                if row_count == 0:
-                    # various columns save
-                    for i in range(len(hd)):
-                        if len(hd[i]) > 0:
-                            flds.append('val_' + str(i))
-                            vels.append(hd[i].strip())
-                            values['val_' + str(i)] = 0
-                            row_count += 1
-                else:
-                    for fld in flds:
-                        idx = int(fld.split('_')[-1])
-                        if idx == 0:
-                            values[fld] = hd[idx]
-                        values[fld] = int(values[fld]) + int(hd[idx])
-                        row_count += 1
-            for field, sum_vals in values.iteritems():
-                values[field] = sum_vals / row_count
-                # get index of field - change to proper list
-                velocities[vels[flds.index(field)]] = sum_vals / row_count
-            timestamps[self.time_stamp] = velocities
-            return timestamps
+            csv_object = pandas.read_csv(self.path, parse_dates=True, index_col=0, header=0)
+
         except Exception as ex:
             print ex.args[0]
-            print 'problem in csv ' + self.path + ' (line{0})'.format(str(row_count))
+            print 'problem in csv ' + self.path
             return None
 
     def get_time_from_file(self):

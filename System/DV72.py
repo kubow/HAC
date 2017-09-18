@@ -106,10 +106,12 @@ class Device(object):
         fs = FileSystemObject(self.output_path + 'Measured')
         csv_cnt = 0
         for csv_file in fs.object_read():
-            if not DataBaseObject(fs.append_file(csv_file[:6] + '.sqlite')).object_exist(self.table_name):
+            db = DataBaseObject(fs.append_file(csv_file[:6] + '.sqlite'))
+            if not db.object_exist(self.table_name):
                 print 'must create table first'
             csv_cnt += 1
-            for time_stamp, value in CsvFile(fs.append_file(csv_file)).content.iteritems():
+            csv = CsvFile(fs.append_file(csv_file))
+            for time_stamp, value in csv.content.iteritems():
                 self.process_time_series()
         if csv_cnt < 1:
             print 'no csv files proccessed ...'
@@ -132,8 +134,15 @@ class Device(object):
         if modulo >= float(self.interval_shift / 2):
             min_new = minute - modulo + self.interval_shift
             if min_new > 60 - self.interval_shift:
-                hour_new = time_value.hour + 1
                 min_new = 0
+                hour_new = time_value.hour + 1
+                if hour_new > 23:
+                    hour_new = 0
+                    nd = datetime.date(time_value.year, time_value.month, time_value.day)
+                    ndn = nd + timedelta(days=1)
+                    time_value.year = ndn.year
+                    time_value.month = ndn.month
+                    time_value.day = ndn.day
         else:
             min_new = minute - modulo
         value_aggregated = datetime.datetime(time_value.year,
