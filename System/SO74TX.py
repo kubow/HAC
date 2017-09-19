@@ -188,9 +188,9 @@ class RssContent(object):
 
             
 class CsvFile(object):
-    def __init__(self, file_name, write=False, content=''):
+    def __init__(self, file_name, write=False, content='', date_format='%Y/%m/%d %H:%M:%S'):
         self.path = file_name
-        self.time_stamp = self.get_time_from_file()
+        self.time_stamp = self.get_time_from_file(date_format)
         if not write:
             self.content = self.csv_format()
         else:
@@ -230,16 +230,23 @@ class CsvFile(object):
     def csv_format(self, separator=',', first_column_date=True):
         """read value from csv file
             return in dictionary"""
+        values = {}
         try:
             # load field names as variables
-            csv_object = pandas.read_csv(self.path, parse_dates=True, index_col=0, header=0)
-
+            csv_object = pandas.read_csv(self.path)  # , parse_dates=True, index_col=0, header=0)
+            for column in csv_object.describe().iteritems():
+                if 'unnamed' in column[0].lower():
+                    continue
+                for statistic in column[1].iteritems():
+                    if 'mean' in statistic[0]:
+                        values[column[0]] = statistic[1]
+                        break
+            return values
         except Exception as ex:
-            print ex.args[0]
-            print 'problem in csv ' + self.path
+            print 'problem in csv ' + self.path + ' : ' + ex.args[0]
             return None
 
-    def get_time_from_file(self):
+    def get_time_from_file(self, date_format):
         """build a date-time stamp from file name
         ... presuming structure <YYYYMMDD_hhmm>"""
         file_name = self.path.replace('\\', '/').split('/')[-1]
@@ -251,7 +258,7 @@ class CsvFile(object):
         file_day = int(file_date[6:])
         file_hour = int(file_time[:2])
         file_minute = int(file_time[2:])
-        return datetime.datetime(file_year, file_month, file_day, file_hour, file_minute, 0)
+        return datetime.datetime(file_year, file_month, file_day, file_hour, file_minute, 0).strftime(date_format)
 
 
 def replace_line_endings(block_text):

@@ -13,7 +13,7 @@ SET C_DIR="C:\Users\%USERNAME%\AppData\Local\Google\Chrome\Profiles"
 SET B_NAME=Chrome
 
 REM IF SECOND_PARAMETER = 0
-SET HTML="C:\_Run\Web\400.htm"
+SET HTML="C:\_Run\Web\400.html"
 
 ECHO Using browser - %B_NAME%
 SET BROWSER=%C_BROWSER% 

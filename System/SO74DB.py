@@ -62,7 +62,8 @@ class DataBaseObject:
 
     def log_to_database(self, table_name, sql):
         if not self.object_exist(table_name):
-            print 'must create table (currently doing nothing...)'
+            self.execute(SQL.table_ddl.format(table_name, ))
+            print 'table ' + table_name + 'created'
         self.execute(sql)
 
     def determine_id_col(self, table, field=''):

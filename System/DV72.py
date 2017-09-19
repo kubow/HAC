@@ -16,7 +16,7 @@ import argparse
 
 class Device(object):
     def __init__(self):
-        self.date_format = '%Y/%m/%d %H:%M:%S'
+        self.date_format = '%Y.%m.%d %H:%M:%S'
         self.date_file_format = '%Y%m%d_%H%M'
         local_path = os.path.dirname(os.path.realpath(__file__))
         self.setup_db = local_path + '/Settings.sqlite'
@@ -103,16 +103,21 @@ class Device(object):
 
     def write_to_database(self, timestamp, value, velocity):
         # check if Archive directory present
-        fs = FileSystemObject(self.output_path + 'Measured')
         csv_cnt = 0
+        fs = FileSystemObject(self.output_path + 'Measured')
         for csv_file in fs.object_read():
             db = DataBaseObject(fs.append_file(csv_file[:6] + '.sqlite'))
             if not db.object_exist(self.table_name):
                 print 'must create table first'
+            csv = CsvFile(fs.append_file(csv_file), date_format=self.date_format)
+            into = 'timestamp, '
+            values = '"' + csv.time_stamp + '", '
             csv_cnt += 1
-            csv = CsvFile(fs.append_file(csv_file))
-            for time_stamp, value in csv.content.iteritems():
-                self.process_time_series()
+            for time_series, average in csv.content.iteritems():
+                into += time_series + ', '
+                values += str(average) + ', '
+            into = self.table_name + ' (' + into[:-2] + ')'
+            db.log_to_database(self.table_name, SQL.ins_val.format(into, values[:-2]))
         if csv_cnt < 1:
             print 'no csv files proccessed ...'
 

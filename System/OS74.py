@@ -10,9 +10,9 @@ from sys import platform as _platform
 
 
 class DateTimeObject:
-    def __init__(self):
-        self.date = datetime.datetime.now()
-        self.date_string = self.date_string_format(self.date, '%Y/%m/%d %H:%M:%S')
+    def __init__(self, date_set=datetime.datetime.now(), format='%Y/%m/%d %H:%M:%S'):
+        self.date = date_set
+        self.date_string = self.date_string_format(self.date, format)
 
     def date_string_format(self, float_num, format_str):
         if isinstance(float_num, float):
