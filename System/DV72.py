@@ -15,7 +15,7 @@ import argparse
 
 
 class Device(object):
-    def __init__(self):
+    def __init__(self, aggregate_time_step=2):
         self.date_format = '%Y.%m.%d %H:%M:%S'
         self.date_file_format = '%Y%m%d_%H%M'
         local_path = os.path.dirname(os.path.realpath(__file__))
@@ -23,8 +23,10 @@ class Device(object):
         self.port = 0
         self.br = 0
         self.timeout = 0
-        self.interval_shift = 2
+        self.interval_shift = aggregate_time_step
         self.table_name = '_'
+        self.table_fields = ''
+        self.table_default_val = ''
         self.output_path = local_path
         self.csv_file = ''
         self.last_run = FileSystemObject(self.output_path + 'last.run').object_mod_date(self.date_format)
@@ -37,6 +39,15 @@ class Device(object):
             dbc = DataBaseObject(self.setup_db)
             # table name, that will hold values
             self.table_name = dbc.return_one(SQL.select.format('table_name', 'setting'))[0]
+            # # build table structure
+            col_list = ''  # columns - string to create table
+            col_vals = {}  # columns - default values to insert query
+            for row in dbc.return_many(SQL.select.format('*', 'structure')):
+                col_list += row[1] + ' ' + row[2] + ','
+                col_vals[row[1]] = row[4]
+                # name of table being saved
+            self.table_fields = col_list[:-1]
+            self.table_default_val = col_vals
             # match device name, platform
             for device_check in dbc.return_many(SQL.get_device_name_list):
                 if not str(device_check[0]).lower() in self.device_name.lower():
@@ -105,10 +116,9 @@ class Device(object):
         # check if Archive directory present
         csv_cnt = 0
         fs = FileSystemObject(self.output_path + 'Measured')
-        for csv_file in fs.object_read():
+        fs.object_create_neccesary()
+        for csv_file in fs.object_read(filter='csv'):
             db = DataBaseObject(fs.append_file(csv_file[:6] + '.sqlite'))
-            if not db.object_exist(self.table_name):
-                print 'must create table first'
             csv = CsvFile(fs.append_file(csv_file), date_format=self.date_format)
             into = 'timestamp, '
             values = '"' + csv.time_stamp + '", '
@@ -117,7 +127,8 @@ class Device(object):
                 into += time_series + ', '
                 values += str(average) + ', '
             into = self.table_name + ' (' + into[:-2] + ')'
-            db.log_to_database(self.table_name, SQL.ins_val.format(into, values[:-2]))
+            db.log_to_database(self.table_name, SQL.insert.format(into, values[:-2]), self.table_fields)
+            csv.archive(fs.append_directory('Archive'))
         if csv_cnt < 1:
             print 'no csv files proccessed ...'
 

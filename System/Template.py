@@ -99,13 +99,23 @@ class SQL(object):
     """ First H808 queries / device controller"""
     
     table_ddl = 'CREATE TABLE {0} ({1});'
-    tab_fld = """ ID int,
+    table_ddl_dir = """ ID int,
         reg_name text,
         file_dir int, --boolean
         last_change text, --date
         size int
         """
-    table_create = table_ddl.format('dirlist', tab_fld)
+    table_ddl_log = ("`ID`	INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+                     "	`Connection`	VARCHAR(255) DEFAULT NULL,\n"
+                     "	`LogDate`	DATETIME DEFAULT NULL,\n"
+                     "	`User`	VARCHAR(255) DEFAULT NULL,\n"
+                     "	`Succesful`	BOOLEAN DEFAULT 0,\n"
+                     "	`Tag`	VARCHAR(255) DEFAULT NULL,\n"
+                     "	`CPName`	VARCHAR(255) DEFAULT NULL,\n"
+                     "	`Report`	TEXT,\n"
+                     "	`Domain`	VARCHAR(255) DEFAULT NULL,\n"
+                     "	`Ping`	BOOLEAN DEFAULT 0")
+    table_create = table_ddl.format('dirlist', table_ddl_dir)
 
     select = 'SELECT {0} FROM ({1});'
     select_where = 'SELECT {0} FROM ({1}) WHERE {2};'
@@ -168,8 +178,8 @@ class SQL(object):
 
     group_select = 'SELECT length({0}) AS {1} FROM measured GROUP BY {2};'
     
-    value_select = column_select_where.format('{0}', '{1}', 'timestamp = "{2}";')
-    value_exist = column_select_where.format('timestamp', '{0}', 'timestamp = "{1}";')
+    value_select = column_select_where.format('{0}', '{1}', 'timestamp = "{2}"')
+    value_exist = column_select_where.format('timestamp', '{0}', 'timestamp = "{1}"')
 
     value_insert = 'INSERT INTO {0} VALUES ({1});'
     value_update = 'UPDATE {0} SET {1} WHERE timestamp = "{2}";'

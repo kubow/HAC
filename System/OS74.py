@@ -6,11 +6,12 @@ import os
 import argparse
 import datetime
 import platform
+import shutil
 from sys import platform as _platform
 
 
 class DateTimeObject:
-    def __init__(self, date_set=datetime.datetime.now(), format='%Y/%m/%d %H:%M:%S'):
+    def __init__(self, date_set=datetime.datetime.now(), format='%d.%m.%Y %H:%M:%S'):
         self.date = date_set
         self.date_string = self.date_string_format(self.date, format)
 
@@ -63,6 +64,9 @@ class FileSystemObject:
         # strip filename / last dir from path
         return self.separator.join(self.path.split(self.separator)[:-1]) + self.separator
 
+    def last_part(self):
+        return self.path.split(self.separator)[-1]
+
     def append_directory(self, directory):
         return self.path + self.separator + directory + self.separator
 
@@ -79,6 +83,15 @@ class FileSystemObject:
         else:
             print 'not file nor folder ...'
             return None
+
+    def move_file_to(self, another_directory, filename=''):
+        if not filename:
+            filename = FileSystemObject(self.path).last_part()
+        if self.is_file:
+            shutil.move(self.path, FileSystemObject(another_directory).append_file(filename))
+            print 'file ' + self.path + ' archived'
+        else:
+            print 'directory move not implemented'
 
     def directory_lister(self, list_files=False):
         template_loc = self.append_directory(self.one_dir_up(get_current_dir()), 'Structure') + 'HTML_DirectoryList.txt'
@@ -111,12 +124,12 @@ class FileSystemObject:
             total_size = total_size + folder_size
             folder_count += 1
 
-        content = head.format(datetime.datetime.now(), str(total_size) + ' kb', folder_count) + '\n' + htm_content
+        content = head.format(DateTimeObject.date_string, str(total_size) + ' kb', folder_count) + '\n' + htm_content
         # print content
         # print template
         self.file_write(self.destination, content)
 
-    def object_read(self, desired_extension='.csv'):
+    def object_read(self, filter=''):
         if self.is_file:
             with open(self.path, 'r') as content_file:
                 content = content_file.read()
@@ -124,7 +137,7 @@ class FileSystemObject:
         elif self.is_folder:
             objects = []
             for file in os.listdir(self.path):
-                if desired_extension in file:
+                if filter in file:
                     objects.append(file)
             return objects
 
@@ -138,7 +151,7 @@ class FileSystemObject:
             with open(self.path, mode) as target_file:
                 target_file.write(content)
         else:
-            print 'not a file'
+            print 'is not a file, cannot write: ' + self.path
 
     def object_size(self):
         # return file size in kilobytes

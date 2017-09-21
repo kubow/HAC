@@ -25,8 +25,9 @@ class DataBaseObject:
             self.obj_conn.execute(sql)
             self.obj_conn.commit()
         else:
-            sqlite3.connect(self.db_file).execute(sql)
-            sqlite3.connect(self.db_file).commit()
+            conn = sqlite3.connect(self.db_file)
+            conn.cursor().execute(sql)
+            conn.commit()
 
     def return_one(self, sql):
         return self.result_set(sql).fetchone()
@@ -38,10 +39,11 @@ class DataBaseObject:
         return self.return_one(SQL.select_where.format(field, table, condition))
 
     def object_exist(self, object_name):
-        if self.return_one(SQL.table_exist.format(object_name)):
-            print 'object {0} exist'.format(object_name)
+        if self.return_one(SQL.table_exist.format(object_name))[0]:
+            # print 'object {0} exist'.format(object_name)
             return True
         else:
+            # print 'object {0} does not exist'.format(object_name)
             return False
 
     def object_structure(self, object_name, object_type=''):
@@ -60,11 +62,24 @@ class DataBaseObject:
     def object_all_rows(self, object_name):
         return self.return_many(SQL.select.format('*', object_name))
 
-    def log_to_database(self, table_name, sql):
+    def log_to_database(self, table_name, sql, ddl=''):
+        time_stamp = sql.split('VALUES (')[-1].split(',')[0][1:-1]
         if not self.object_exist(table_name):
-            self.execute(SQL.table_ddl.format(table_name, ))
-            print 'table ' + table_name + 'created'
-        self.execute(sql)
+            if 'log' in table_name.lower():
+                ddl_command = SQL.table_ddl_log
+            elif 'dirlist' in table_name.lower():
+                ddl_command = SQL.table_ddl_dir
+            elif ddl:
+                ddl_command = ddl
+            else:
+                print 'please submit table ddl command, table not exist'
+
+            self.execute(SQL.table_ddl.format(table_name, ddl_command))
+            print 'table ' + table_name + ' created'
+        if not self.return_one(SQL.value_exist.format(table_name, time_stamp)):
+            self.execute(sql)
+        else:
+            print 'table {0} already contains ({1})'.format(table_name, time_stamp)
 
     def determine_id_col(self, table, field=''):
         i = 0
@@ -143,9 +158,10 @@ def get_query_type(sql, qry_type):
 def temp_connect_database(database, do_some_work=''):
     # connect to database
     try:
-        conn = open_db_connection(database)
+        db = DataBaseObject(database)
         if not do_some_work:
             do_some_work = 'explore'
+            print db.return_many(db.sql)
         # show the text menu
     except:
         print 'cannot find main db file! > ' + database + ' ?'
@@ -158,7 +174,6 @@ def temp_connect_database(database, do_some_work=''):
 if __name__ == '__main__':
 
     import SO74TX
-    from Template import SQL
     from log import Log
 
     parser = argparse.ArgumentParser(description="Compare two sqlite databases")

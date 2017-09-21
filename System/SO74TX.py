@@ -6,7 +6,6 @@ XML > HTML
 """
 import re
 import os
-import csv
 import argparse
 import difflib
 import datetime
@@ -15,7 +14,8 @@ import lxml.html
 import pandas
 import feedparser
 import requests
-from xml.dom.minidom import parseString
+# import csv
+# from xml.dom.minidom import parseString
 
 try:
     from bs4 import BeautifulSoup
@@ -191,10 +191,14 @@ class CsvFile(object):
     def __init__(self, file_name, write=False, content='', date_format='%Y/%m/%d %H:%M:%S'):
         self.path = file_name
         self.time_stamp = self.get_time_from_file(date_format)
+        self.read_success = False
         if not write:
             self.content = self.csv_format()
         else:
             self.write(content)
+
+    def archive(self, folder):
+        FileSystemObject(self.path).move_file_to(folder)
 
     def write(self, content='', device=''):
         """write a CSV file
@@ -233,7 +237,7 @@ class CsvFile(object):
         values = {}
         try:
             # load field names as variables
-            csv_object = pandas.read_csv(self.path)  # , parse_dates=True, index_col=0, header=0)
+            csv_object = pandas.read_csv(self.path, error_bad_lines=False)  # , parse_dates=True, index_col=0, header=0)
             for column in csv_object.describe().iteritems():
                 if 'unnamed' in column[0].lower():
                     continue
@@ -241,6 +245,7 @@ class CsvFile(object):
                     if 'mean' in statistic[0]:
                         values[column[0]] = statistic[1]
                         break
+            self.read_success = True
             return values
         except Exception as ex:
             print 'problem in csv ' + self.path + ' : ' + ex.args[0]
@@ -335,7 +340,7 @@ def writeCSV(file_name, values, timestamp, device):
     values - in dictionary
     timestamp of exact time measured
     device - which perform data read"""
-    if os.path.exists(file_name):
+    if FileSystemObject(file_name).exist:
         f = open(file_name, 'a')
         line = 2
         # TODO: check if header corresponds
@@ -390,7 +395,7 @@ def writeJSON(location, cols, c):
         print bypass
         # prepare JSON file to HTML graphs
         print '-------------------'
-        if os.path.isfile(location + col + '.json'):
+        if FileSystemObject(location + col + '.json').is_file:
             print readJSON(location + col + '.json')
         else:
             print location + col + '/.json'
@@ -422,12 +427,7 @@ def file_content_difference(file1, file2):
 
 
 def create_file_if_neccesary(filename):
-    if os.path.isfile(filename):
-        print ' -> ' + filename + ' - exists ...'
-    else:
-        print ' -> ' + filename + ' - creating new file ...'
-        with open(filename, 'a'):
-            os.utime(filename, None)
+    FileSystemObject(filename).object_create_neccesary()
 
 
 def xml_to_html(xml_text):
@@ -460,7 +460,6 @@ def htm_to_plain_txt(htm_txt):
 
 
 def test_utf_special_characters():
-    print os.getcwd()
     veta = u'Žluťoučký kůň pěl ďábelské ódy.'
     print veta
     logger.file_write('aaa.log', 'temp', veta)
@@ -487,11 +486,12 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     logger = Log(args.l, args.i + ' + ' + args.o, __file__, True)
+    input_object = FileSystemObject(args.i)
 
-    if os.path.isfile(args.i):
+    if input_object.is_file:
         create_file_if_neccesary(args.o)
         export_text_to(args.o, replace_line_endings(load_text_from(args.i)))
-    elif os.path.isdir(args.i):
+    elif input_object.is_folder:
         for filename in os.listdir(args.i):
             file_path = args.i + '/' + filename
             print file_path
