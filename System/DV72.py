@@ -29,7 +29,7 @@ class Device(object):
         self.table_default_val = ''
         self.output_path = local_path
         self.csv_file = ''
-        self.last_run = FileSystemObject(self.output_path + 'last.run').object_mod_date(self.date_format)
+        self.last_run = ''
         self.device_name = CurrentPlatform().hostname
         self.device_user = CurrentPlatform().environment
         self.device_platform = CurrentPlatform().main
@@ -67,6 +67,9 @@ class Device(object):
             self.table_name = 'measured'
         # timeout waiting time
         self.timeout = timeout
+        # last run file
+        last_run_file = FileSystemObject(self.output_path).append_file('last.run')
+        self.last_run = FileSystemObject(last_run_file).object_mod_date(self.date_format)
 
     def setup_output_path(self, path):
         self.output_path = path
@@ -194,9 +197,9 @@ if __name__ == '__main__':
     # create class for controlling device # logging
     dev = Device()
     logger = Log(args.l + 'logfile.log', 'device', 'DV72.py',  True)
+    dev.setup_output_path(args.l)
     # device settings: port, baud rate and timeout
     dev.setup_device(args.d, "all sensors", 0)
-    dev.setup_output_path(args.l)
     # log sql (debug) print sql
     
     if 'read' in args.m or 'ser' in args.m:
