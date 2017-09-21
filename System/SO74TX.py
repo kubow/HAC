@@ -489,8 +489,11 @@ if __name__ == '__main__':
     input_object = FileSystemObject(args.i)
 
     if input_object.is_file:
-        create_file_if_neccesary(args.o)
-        export_text_to(args.o, replace_line_endings(load_text_from(args.i)))
+        if not args.o:
+            export_text_to(args.i+'2', replace_line_endings(load_text_from(args.i)))
+        else:
+            create_file_if_neccesary(args.o)
+            export_text_to(args.o, replace_line_endings(load_text_from(args.i)))
     elif input_object.is_folder:
         for filename in os.listdir(args.i):
             file_path = args.i + '/' + filename
