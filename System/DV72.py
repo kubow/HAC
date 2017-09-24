@@ -118,6 +118,7 @@ class Device(object):
     def write_to_database(self, timestamp, value, velocity):
         # check if Archive directory present
         csv_cnt = 0
+        ac_time = self.time_aggregated(datetime.datetime.now()).strftime(self.date_format)
         fs = FileSystemObject(self.output_path + 'Measured')
         fs.object_create_neccesary()
         for csv_file in fs.object_read(filter='csv'):
@@ -125,15 +126,19 @@ class Device(object):
             csv = CsvFile(fs.append_file(csv_file), date_format=self.date_format)
             into = 'timestamp, '
             values = '"' + csv.time_stamp + '", '
-            csv_cnt += 1
             for time_series, average in csv.content.iteritems():
                 into += time_series + ', '
                 values += str(average) + ', '
             into = self.table_name + ' (' + into[:-2] + ')'
+            if ac_time == csv.time_stamp:
+                continue
             db.log_to_database(self.table_name, SQL.insert.format(into, values[:-2]), self.table_fields)
             csv.archive(fs.append_directory('Archive'))
+            csv_cnt += 1
         if csv_cnt < 1:
             print 'no csv files proccessed ...'
+        else:
+            print '{0} files processed ...'.format(str(csv_cnt))
 
     def time_aggregated(self, time_value, debug=False):
         """function to return rounded time
