@@ -11,18 +11,25 @@ import difflib
 import datetime
 import xml.etree.ElementTree as xml_tree
 import lxml.html
-import pandas
+
 import feedparser
 import requests
-# import csv
 # from xml.dom.minidom import parseString
 
 try:
     from bs4 import BeautifulSoup
-except:
+except ImportError:
     print 'using alternative html parser'
-import HTMLParser
+finally:
+    import HTMLParser
 # sys.setdefaultencoding('utf-8')
+try:
+    import pandas
+except ImportError:
+    print 'using alternative csv parser'
+finally:
+    import csv
+
 from Template import HTML, SQL
 from OS74 import FileSystemObject, CurrentPlatform
 from SO74DB import DataBaseObject
@@ -187,7 +194,7 @@ class RssContent(object):
             print 'no content parsed from: ' + self.url
 
             
-class CsvFile(object):
+class CsvContent(object):
     def __init__(self, file_name, write=False, content='', date_format='%Y/%m/%d %H:%M:%S'):
         self.path = file_name
         self.time_stamp = self.get_time_from_file(date_format)
@@ -217,14 +224,14 @@ class CsvFile(object):
         if not isinstance(content, dict):
             print 'no proper content, skipping'
             return
-        for actime, vals in content.iteritems():
+        for ac_time, vals in content.iteritems():
             row = ''
             if line == 1:
                 for d, v in vals.iteritems():
                     row += str(d) + ','
                 row = 'datetime, ' + row
                 f.write(row + '\n')
-            row = str(actime) + ','
+            row = str(ac_time) + ','
             for d, v in vals.iteritems():
                 row += str(v) + ','
             f.write(row + '\n')
@@ -266,46 +273,48 @@ class CsvFile(object):
         return datetime.datetime(file_year, file_month, file_day, file_hour, file_minute, 0).strftime(date_format)
 
 
-def replace_line_endings(block_text):
-    # replace double carriage return with tildos
-    block_text = re.sub(r'\n\n', r'~~~', block_text)
-    # then remove dash followed with carriage return
-    block_text = re.sub(r'-\n', r'', block_text)
-    # then replace all remaining carriage returns with space
-    block_text = re.sub(r'\n', r' ', block_text)
-    # and finally put back new line characters
-    block_text = re.sub(r'~~~', r'\n\n', block_text)
-    return block_text
+class TextContent(object):
+    def __init__(self, block_text):
+        self.block_text = block_text
+
+    def replace_line_endings(self):
+        # replace double carriage return with tildos
+        block_text = re.sub(r'\n\n', r'~~~', self.block_text)
+        # then remove dash followed with carriage return
+        block_text = re.sub(r'-\n', r'', block_text)
+        # then replace all remaining carriage returns with space
+        block_text = re.sub(r'\n', r' ', block_text)
+        # and finally put back new line characters
+        block_text = re.sub(r'~~~', r'\n\n', block_text)
+        return block_text
+
+    def replace_crlf_lf(self):
+        # replace windows line endings with linux line endings
+        if '\r\n' in self.block_text:
+            return self.block_text.replace('\r\n', '\n')
+        else:
+            print 'this text does not have any windows line endings, passing ...'
+            return self.block_text
+
+    def replace_lf_crlf(self):
+        # replace linux line endings with windows line endings
+        if re.search('\r?\n'):
+            return re.sub('\r?\n', '\r\n', self.block_text)
+        else:
+            print 'this text does not have any linux line endings, passing ...'
+            return self.block_text
 
 
-def replace_crlf_lf(block_text):
-    # replace windows line endings with linux line endings
-    if '\r\n' in block_text:
-        block_text.replace('\r\n', '\n')
-    else:
-        print 'this text does not have any windows line endings, passing ...'
-    return block_text
-
-
-def replace_lf_crlf(block_text):
-    # replace linux line endings with windows line endings
-    if re.search('\r?\n'):
-        block_text = re.sub('\r?\n', '\r\n', block_text)
-    else:
-        print 'this text does not have any linux line endings, passing ...'
-    return block_text
-
-
-def trim_line_last_chars(filename):
+def trim_line_last_chars(file_name):
     new_line = []
-    for line in load_text_from(filename):
+    for line in load_text_from(file_name):
         new_line.append(line[:-2])
     return new_line
 
 
-def filter_lines(textfile, with_filter):
+def filter_lines(text_file, with_filter):
     stream = ''
-    for line in textfile:
+    for line in text_file:
         if re.search('Dumpfile name', line) or re.search('DUMP is complete', line) or re.search(
                 'Dump phase number 1 completed', line):
             stream += line
@@ -322,8 +331,8 @@ def is_html_text(text):
         return False
 
 
-def load_text_from(filename):
-    with open(filename, 'rb') as input_file:
+def load_text_from(file_name):
+    with open(file_name, 'rb') as input_file:
         text = input_file.read()
         # for m in re.findall(r'\n\n', whole_data):
         # print m
@@ -333,35 +342,6 @@ def load_text_from(filename):
 def export_text_to(filename, text):
     with open(filename, 'w+') as output_file:
         output_file.write(text)
-
-
-def writeCSV(file_name, values, timestamp, device):
-    """write a CSV file
-    values - in dictionary
-    timestamp of exact time measured
-    device - which perform data read"""
-    if FileSystemObject(file_name).exist:
-        f = open(file_name, 'a')
-        line = 2
-        # TODO: check if header corresponds
-    else:
-        f = open(file_name, 'a+')
-        line = 1
-    # write time series and header
-    for actime, vals in values.iteritems():
-        row = ''
-        if line == 1:
-            for d, v in vals.iteritems():
-                row += str(d) + ','
-            row = 'datetime, ' + row
-            f.write(row + '\n')
-        row = str(actime) + ','
-        for d, v in vals.iteritems():
-            row += str(v) + ','
-        f.write(row + '\n')
-        line += 1
-    f.close()
-
 
 
 def readJSON(file):
@@ -489,20 +469,22 @@ if __name__ == '__main__':
     input_object = FileSystemObject(args.i)
 
     if input_object.is_file:
+        input_text = load_text_from(args.i)
         if not args.o:
-            export_text_to(args.i+'2', replace_line_endings(load_text_from(args.i)))
+            output_object = args.i+'2'
         else:
             create_file_if_neccesary(args.o)
-            export_text_to(args.o, replace_line_endings(load_text_from(args.i)))
+            output_object = args.o
+        export_text_to(output_object, TextContent(input_text).replace_line_endings())
     elif input_object.is_folder:
         for filename in os.listdir(args.i):
-            file_path = args.i + '/' + filename
-            print file_path
+            input_text = load_text_from(args.i + '/' + filename)
+            output_object = args.o + '/' + filename
             if 'lin' in args.l:
-                export_text_to(args.o + '/' + filename, replace_crlf_lf(load_text_from(file_path)))
+                export_text_to(output_object, TextContent(input_text).replace_crlf_lf())
             elif 'win' in args.l:
-                export_text_to(args.o + '/' + filename, replace_lf_crlf(load_text_from(file_path)))
+                export_text_to(output_object, TextContent(input_text).replace_lf_crlf())
             else:
-                export_text_to(args.o + '/' + filename, replace_lf_crlf(load_text_from(file_path)))
+                export_text_to(output_object, TextContent(input_text).replace_lf_crlf())
     else:
         print args.i + ' -> input file/dir does not exist ...'

@@ -35,6 +35,7 @@ class Device(object):
         self.device_platform = CurrentPlatform().main
 
     def setup_device(self, device, sensor=None, timeout=0):
+        # override values: table_fields, table_default_val, port, br, timeout, last_run
         if FileSystemObject(self.setup_db).is_file:
             dbc = DataBaseObject(self.setup_db)
             # table name, that will hold values
@@ -87,7 +88,7 @@ class Device(object):
             ser = serial.Serial(self.port, self.br, timeout=self.timeout)
             ser.flushInput()
             ser.flushOutput()
-            time.sleep(5)
+            time.sleep(self.timeout)
             # received = ser.readline().replace('\r\n', ' ')  # not used - instead read a stack, average with one ts
             to_read = ser.inWaiting()
             received = ser.read(to_read)
@@ -96,7 +97,7 @@ class Device(object):
                 data_vals[just_now] = dict(item.split(":") for item in received.split("\r\n") if len(item) > 1)
                 # for row in received.split('\r\n'):
                 # checking interval shifts
-                CsvFile(csv, write=True, content=data_vals)
+                CsvContent(csv, write=True, content=data_vals)
                 print data_vals
                 return data_vals
             else:
@@ -123,7 +124,7 @@ class Device(object):
         fs.object_create_neccesary()
         for csv_file in fs.object_read(filter='csv'):
             db = DataBaseObject(fs.append_file(csv_file[:6] + '.sqlite'))
-            csv = CsvFile(fs.append_file(csv_file), date_format=self.date_format)
+            csv = CsvContent(fs.append_file(csv_file), date_format=self.date_format)
             into = 'timestamp, '
             values = '"' + csv.time_stamp + '", '
             for time_series, average in csv.content.iteritems():
@@ -190,7 +191,7 @@ if __name__ == '__main__':
 
     from OS74 import FileSystemObject, CurrentPlatform, DateTimeObject
     from SO74DB import DataBaseObject
-    from SO74TX import CsvFile
+    from SO74TX import CsvContent
     from Template import SQL
     from log import Log
     
