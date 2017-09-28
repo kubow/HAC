@@ -132,7 +132,7 @@ class Device(object):
                 values += str(average) + ', '
             into = self.table_name + ' (' + into[:-2] + ')'
             if ac_time == csv.time_stamp:
-                continue
+                continue  # avoid just being written files
             db.log_to_database(self.table_name, SQL.insert.format(into, values[:-2]), self.table_fields)
             csv.archive(fs.append_directory('Archive'))
             csv_cnt += 1
@@ -191,7 +191,7 @@ if __name__ == '__main__':
 
     from OS74 import FileSystemObject, CurrentPlatform, DateTimeObject
     from SO74DB import DataBaseObject
-    from SO74TX import CsvContent
+    from SO74TX import CsvContent, JsonContent
     from Template import SQL
     from log import Log
     
@@ -218,5 +218,6 @@ if __name__ == '__main__':
         text = 'aggregating values in {0}, last run: {1}'.format(args.l, dev.last_run)
         logger.log_operation(text)
         dev.write_to_database('now', 0, 'm/s')
+        JsonContent(args.l + 'Measured', write=True)
     else:
         print 'not possible'

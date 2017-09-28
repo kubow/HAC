@@ -117,8 +117,8 @@ class SQL(object):
                      "	`Ping`	BOOLEAN DEFAULT 0")
     table_create = table_ddl.format('dirlist', table_ddl_dir)
 
-    select = 'SELECT {0} FROM ({1});'
-    select_where = 'SELECT {0} FROM ({1}) WHERE {2};'
+    select = 'SELECT {0} FROM {1};'
+    select_where = 'SELECT {0} FROM {1} WHERE {2};'
 
     select_node_text = select_where.format('txt', '"enc_nodes"', 'code = {0}')
     select_tables_in_db = select_where.format('tbl_name, type', '"sqlite_master"', 'type = "table"')
@@ -176,7 +176,7 @@ class SQL(object):
     get_driver_dummy_br = column_select_where.format('BaudeRate', 'Stations',
                                                       'Machinename LIKE "%cp%" AND OpSysType LIKE "%{0}%"')
 
-    group_select = 'SELECT length({0}) AS {1} FROM measured GROUP BY {2};'
+    measured_column_count = column_group_select.format('length({0}) AS {1}', 'measured', '{2}')
     
     value_select = column_select_where.format('{0}', '{1}', 'timestamp = "{2}"')
     value_exist = column_select_where.format('timestamp', '{0}', 'timestamp = "{1}"')

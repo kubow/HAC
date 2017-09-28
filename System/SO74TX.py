@@ -273,6 +273,56 @@ class CsvContent(object):
         return datetime.datetime(file_year, file_month, file_day, file_hour, file_minute, 0).strftime(date_format)
 
 
+class JsonContent(object):
+    def __init__(self, location, write=False):
+        self.path = location
+        self.json_skeleton = '[\n{0}\n]'
+        self.json_row = '[{0}, {1}],\n'
+        if not write:
+            self.content = self.json_format()
+        else:
+            self.process()
+
+    def process(self):
+        fs = FileSystemObject(self.path)
+        for database in fs.object_read(filter='sqlite'):
+            db = DataBaseObject(FileSystemObject(self.path).append_file(database))
+            for velocity in db.object_structure('measured'):
+                if 'timestamp' in velocity or 'device' in velocity or not velocity:
+                    continue
+                velocity_name = velocity.split(' ')[0]
+                if not db.return_one(SQL.measured_column_count.format(velocity_name, velocity_name, velocity_name))[0]:
+                    continue  # determine if column contains data
+                velocity_values = {}
+                for value in db.return_many(SQL.column_select.format('timestamp, ' + velocity_name, 'measured')):
+                    velocity_values[value[0]] = value[1]
+                self.write(fs.append_file(velocity_name + '.json'), velocity_values)
+
+
+    def json_format(self):
+        print 'file: ' + self.path
+        with open(self.path, 'r') as fh:
+            # first = next(fh).decode()
+            first = fh.readline()
+            print 'got first line' + first
+            print '*****************'
+            fh.seek(-512, 2)
+            # last = fh.readlines()
+            last = fh.readlines()[-1].decode()
+        return first, last
+
+    def write(self, file_name,  content=''):
+        json_file = FileSystemObject(file_name)
+        final_content = ''
+        for record in content:
+            final_content += self.json_row.format(record, content[record])
+        if json_file.exist:
+            if JsonContent(file_name).json_format():
+                final_content = 'read_whole_file' + final_content
+                print 'implement appending .. not now yet'
+        json_file.object_write(self.json_skeleton.format(final_content))
+
+
 class TextContent(object):
     def __init__(self, block_text):
         self.block_text = block_text
@@ -339,59 +389,9 @@ def load_text_from(file_name):
     return text
 
 
-def export_text_to(filename, text):
-    with open(filename, 'w+') as output_file:
+def export_text_to(file_name, text):
+    with open(file_name, 'w+') as output_file:
         output_file.write(text)
-
-
-def readJSON(file):
-    print 'file: ' + file
-    with open(file, 'r') as fh:
-        # first = next(fh).decode()
-        first = fh.readline()
-        print 'got first line' + first
-        print '*****************'
-        fh.seek(-512, 2)
-        # last = fh.readlines()
-        last = fh.readlines()[-1].decode()
-    return first, last
-
-
-def writeJSON(location, cols, c):
-    # print cols
-    columns = cols.split(',')
-    for column in columns:
-        col = column.split(' ')[0]
-        # avoid some column names
-        if col in ('timestamp', None) or not col:
-            continue
-        # determine if column contains data
-        loc = c.execute(SQL.group_select.format(col, col, col)).fetchall()
-        col_data = '(%s)' % ', '.join(map(str, loc))
-        bypass = column + ' : ' + col_data
-        if 'None' in col_data:
-            print bypass + ' - bypassing, found None data'
-            continue
-        print bypass
-        # prepare JSON file to HTML graphs
-        print '-------------------'
-        if FileSystemObject(location + col + '.json').is_file:
-            print readJSON(location + col + '.json')
-        else:
-            print location + col + '/.json'
-        print '-------------------'
-        get_ts = SQL.column_select.format('timestamp, ' + col, 'measured')
-        # print get_ts
-        json = open(location + col + '.json', 'w')
-        json.write('[')
-        # fetch dataset
-        for ts in c.execute(get_ts).fetchall():
-            # write values
-            print ts
-            json.write('[' + ts[0] + ',' + str(ts[1]) + '],\n')
-
-        # finish JSON file
-        json.write(']')
 
 
 def file_content_difference(file1, file2):
@@ -406,8 +406,8 @@ def file_content_difference(file1, file2):
             print line
 
 
-def create_file_if_neccesary(filename):
-    FileSystemObject(filename).object_create_neccesary()
+def create_file_if_neccesary(file_name):
+    FileSystemObject(file_name).object_create_neccesary()
 
 
 def xml_to_html(xml_text):
@@ -477,9 +477,9 @@ if __name__ == '__main__':
             output_object = args.o
         export_text_to(output_object, TextContent(input_text).replace_line_endings())
     elif input_object.is_folder:
-        for filename in os.listdir(args.i):
-            input_text = load_text_from(args.i + '/' + filename)
-            output_object = args.o + '/' + filename
+        for file_name in os.listdir(args.i):
+            input_text = load_text_from(args.i + '/' + file_name)
+            output_object = args.o + '/' + file_name
             if 'lin' in args.l:
                 export_text_to(output_object, TextContent(input_text).replace_crlf_lf())
             elif 'win' in args.l:
