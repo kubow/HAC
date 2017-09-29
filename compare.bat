@@ -29,8 +29,8 @@ SET py_file=%~dp0System\OS74.py
 REM echo '-b', help='browse dir', type=str, default='')
 REM echo '-l', help='list dir', type=str, default='')
 REM echo '-f', help='file output', type=str, default='')
-ECHO python %py_file% -b %mlt_dir% -f %log_file%
-python %py_file% -b %mlt_dir% -f %log_file%
+ECHO python %py_file% -i %mlt_dir% -f %log_file% -m True
+python %py_file% -i %mlt_dir% -f %log_file%
 
 :text
 ECHO pure DOS version

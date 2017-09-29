@@ -257,7 +257,7 @@ def compare_directories(dir1, dir2):
                     # print 'not found ' + filename
                     found = False
 
-        
+
 if __name__ == '__main__':
 
     import SO74TX
@@ -265,13 +265,17 @@ if __name__ == '__main__':
     from UI74 import main_app_view
 
     parser = argparse.ArgumentParser(description="browse/list dirs")
-    parser.add_argument('-b', help='browse dir', type=str, default='')
-    parser.add_argument('-l', help='list dir', type=str, default='')
+    parser.add_argument('-i', help='input dir', type=str, default='')
+    parser.add_argument('-m', help='extra graphic mode', type=str, default='')
     parser.add_argument('-f', help='file output', type=str, default='')
+    parser.add_argument('-l', help='log file', type=str, default='')
     args = parser.parse_args()
-    logger = Log(args.f, 'directory')
-    if args.b:
+    logger = Log(args.l, 'directory')
+    if args.m:
+        logger.log_operation('opening new window - browse: ' + args.i)
         main_app_view()
-    elif args.l:
-        fso = FileSystemObject(args.l, args.f)
+    elif args.i:
+        fso = FileSystemObject(args.i, args.f)
         fso.directory_lister(list_files=True)
+    else:
+        print 'please specify at least input file ...'

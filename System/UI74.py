@@ -2,17 +2,18 @@
 import os
 import argparse
 import glob
+
 # Use Tkinter for python 2, tkinter for python 3
-from Tkinter import *
-from PIL import Image, ImageTk
 try:
     import Tkinter as tk
-    import tkinter as tk
-    import ttk
 except ImportError:
-    print 'some bad import happened'
+    print 'using small tkinter'
+    import tkinter as tk
+finally:
+    import ttk
+from PIL import Image, ImageTk
 
-
+from log import Log
 
 class MainWindow:
     def __init__(self, master):
@@ -126,16 +127,16 @@ class MainWindow:
             # self.master.update_idletasks()
 
 
-class SimpleTable(Frame):
+class SimpleTable(tk.Frame):
     def __init__(self, master, rows=5, columns=3):
         # use black background so it "peeks through" to form grid lines
         self.master = master
-        Frame.__init__(self, self.master.master, background="black")
+        tk.Frame.__init__(self, self.master.master, background="black")
         self._widgets = []
         for row in range(rows):
             current_row = []
             for column in range(columns):
-                label = Label(self, text="%s/%s" % (row+2, column+2),
+                label = tk.Label(self, text="%s/%s" % (row+2, column+2),
                                  borderwidth=0, width=10)
                 label.grid(row=row+2, column=column+2, sticky="nsew", padx=1, pady=1)
                 current_row.append(label)
@@ -212,7 +213,7 @@ class Window(object):
 
 class app_browser(tk.Frame):
     def __init__(self, master):
-        tk.Frame.__init__(self, master=tk.Tk())
+        tk.Frame.__init__(self, master)
 
         w = Window()
 
@@ -238,8 +239,8 @@ class app_browser(tk.Frame):
         tree.grid(column=0, row=0, sticky='nswe')
         vsb.grid(column=1, row=0, sticky='ns')
         hsb.grid(column=0, row=1, sticky='ew')
-        root.grid_columnconfigure(0, weight=1)
-        root.grid_rowconfigure(0, weight=1)
+        master.grid_columnconfigure(0, weight=1)
+        master.grid_rowconfigure(0, weight=1)
 
 
 def main_app_view():
@@ -257,12 +258,11 @@ def center(toplevel):
     y = h/2 - size[1]/2
     position = "%dx%d+%d+%d" % (size + (x, y))
     log_text = 'window position : ' + position + ' - full screen {0}/{1}'.format(str(w), str(h))
-    logger.log_operation(log_text)
     toplevel.geometry(position)
 
 
 def build_window(init_directory):
-    root = Tk()
+    root = tk.Tk()
 
     root.title('Hvězdná encyklopedie')
     root.resizable(0, 0)
@@ -342,7 +342,7 @@ def build_categories(he, parent_node):
 
 def insert_menu_item(level, node):
     # label = Label(root, text=str(node))
-    label = Button(root, text=node, command=on_button_click)
+    label = tk.Button(root, text=node, command=on_button_click)
     label["command"] = 'goto direcotry'
     label.grid(row=0, column=level + 1, pady=1)
 
@@ -388,12 +388,10 @@ def navigate_to(directory):
 
 
 if __name__ == '__main__':
-
-    import H808E
     import SO74TX
 
     parser = argparse.ArgumentParser(description="run over dir")
     parser.add_argument('-d', help='directory', type=str, default='')
     args = parser.parse_args()
-
+    logger = Log(args.l, 'directory')
     build_window(args.d)
