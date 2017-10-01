@@ -1,10 +1,15 @@
 @echo off
+SET log_file=%~dp0Multimedia\logfile.log
+SET mlt_dir='C:\_Run\Web'
+
 IF /I '%1%'=='h' GOTO HANA
+IF /I '%1%'=='s' GOTO SQLite
 
 GOTO MENU
 
 :MENU
-
+echo h - HANA 
+echo s - SQLite
 GOTO QUIT
 
 
@@ -14,8 +19,6 @@ python %py_file%
 GOTO MENU
 
 
-SET log_file=%~dp0Multimedia\logfile.log
-SET mlt_dir='C:\_Run\Web'
 SET py_file=%~dp0System\OS74.py
 
 REM echo '-b', help='browse dir', type=str, default='')
@@ -26,6 +29,9 @@ python %py_file% -b %mlt_dir% -f %log_file%
 
 REM echo pure DOS version
 REM dir /s/b *.mp3 > dir.txt
+
+:SQLite
+SET py_file=%~dp0System\SO74DB.py
 
 :QUIT
 REM EXIT

@@ -261,21 +261,6 @@ def center(toplevel):
     toplevel.geometry(position)
 
 
-def build_window(init_directory):
-    root = tk.Tk()
-
-    root.title('Hvězdná encyklopedie')
-    root.resizable(0, 0)
-    root.geometry('900x750')
-
-    global directory
-    directory = init_directory
-    # global mlt_lib
-    # mlt_lib = get_mlt_lib(navigate_to(directory))
-
-    MainWindow(root)  # .pack(side="top", fill="both", expand=True)
-    root.mainloop()
-
 
 def get_directory_content(path_to):
     """return multimedia library in format:
@@ -386,7 +371,21 @@ def navigate_to(directory):
 
     return checked_directory
 
+    
+def build_window(init_directory):
+    root = tk.Tk()
 
+    root.title('Hvězdná encyklopedie')
+    root.resizable(0, 0)
+    root.geometry('900x750')
+
+    global directory
+    directory = init_directory
+
+    MainWindow(root)  # .pack(side="top", fill="both", expand=True)
+    root.mainloop()
+
+    
 if __name__ == '__main__':
     import SO74TX
 

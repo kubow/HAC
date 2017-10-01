@@ -161,7 +161,7 @@ def temp_connect_database(database, do_some_work=''):
         db = DataBaseObject(database)
         if not do_some_work:
             do_some_work = 'explore'
-            print db.return_many(db.sql)
+            print db.obj_list
         # show the text menu
     except:
         print 'cannot find main db file! > ' + database + ' ?'
@@ -183,8 +183,16 @@ if __name__ == '__main__':
     parser.add_argument('-f', help='focus one table', type=str, default='')
     parser.add_argument('-l', help='log file', type=str, default='')
     args = parser.parse_args()
-    logger = Log(args.l, 'Database', __file__, True)
-    if 'compare' in args.m:
-        databases_compare(args.a, args.b, args.f)
+    if args.l:
+        logger = Log(args.l, 'Database', __file__, True)
+        if not args.m:
+            temp_connect_database(args.a)
+        else:
+            if 'compare' in args.m:
+                databases_compare(args.a, args.b, args.f)
+            else:
+                print 'method not implemented :' + args.m + ':'
+        else:
+            
     else:
-        temp_connect_database(args.a)
+        print 'please submit log file location'
