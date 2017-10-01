@@ -1,6 +1,6 @@
 @echo off
 SET log_file=%~dp0Multimedia\logfile.log
-SET mlt_dir='C:\_Run\Web'
+
 
 IF /I '%1%'=='h' GOTO HANA
 IF /I '%1%'=='s' GOTO SQLite
@@ -19,6 +19,7 @@ python %py_file%
 GOTO MENU
 
 
+SET mlt_dir='C:\_Run\Web'
 SET py_file=%~dp0System\OS74.py
 
 REM echo '-b', help='browse dir', type=str, default='')
