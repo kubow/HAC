@@ -13,6 +13,9 @@ class DataBaseObject:
         self.obj_list = self.return_many(self.sql)
         if self.active:
             self.obj_conn = sqlite3.connect(db_path)
+            print 'succesfully connected to database ' + db_path
+        else:
+            print 'cannot connect to database ' + db_path
 
     def result_set(self, sql):
         if self.active:
@@ -157,19 +160,10 @@ def get_query_type(sql, qry_type):
 
 def temp_connect_database(database, do_some_work=''):
     # connect to database
-    try:
-        db = DataBaseObject(database)
-        if not do_some_work:
-            do_some_work = 'explore'
-            print db.obj_list
-        # show the text menu
-    except:
-        print 'cannot find main db file! > ' + database + ' ?'
-        # make connection to a temporary database?
-        conn = sqlite3.connect(':memory:')
-    finally:
-        conn.close()
-
+    db = DataBaseObject(database, active=True)
+    if not do_some_work:
+        do_some_work = 'explore'
+        print db.obj_list
 
 if __name__ == '__main__':
 
@@ -192,7 +186,5 @@ if __name__ == '__main__':
                 databases_compare(args.a, args.b, args.f)
             else:
                 print 'method not implemented :' + args.m + ':'
-        else:
-            
     else:
         print 'please submit log file location'
