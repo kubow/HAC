@@ -21,7 +21,10 @@ class DataBaseObject:
         if self.active:
             return self.obj_conn.execute(sql)
         else:
-            return sqlite3.connect(self.db_file).execute(sql)
+            try:
+                return sqlite3.connect(self.db_file).execute(sql)
+            except sqlite3.OperationalError:
+                print 'error on: ' + sql
 
     def execute(self, sql):
         if self.active:
