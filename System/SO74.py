@@ -36,7 +36,7 @@ def process_web_content(mode, final_dir, url=None):
 
 
 def browse_internet(mode, match_dir, url=None):
-    path_separator = FileSystemObject(args.l).separator
+    path_separator = FileSystemObject(match_dir).separator
     if 'rest' in mode:
         final_dir = path_separator.join((match_dir, 'Multimedia', 'RestMenu'))
         url = None

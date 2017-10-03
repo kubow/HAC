@@ -163,7 +163,7 @@ def get_query_type(sql, qry_type):
 
 def temp_connect_database(database, do_some_work=''):
     # connect to database
-    db = DataBaseObject(database, active=True)
+    db = DataBaseObject(database, active=False)
     if not do_some_work:
         do_some_work = 'explore'
         print db.obj_list

@@ -1,5 +1,6 @@
 # HAC (Home Automation Central)
 [![Architecture x64|ARM](https://img.shields.io/badge/Architecture-x64|ARM-yellowgreen.svg)](http://www.arm.com/products/processors/instruction-set-architectures/index.php) [![Platform Linux|Win](https://img.shields.io/badge/Platform-Linux|Win-orange.svg)](https://sqlite.org/features.html) [![Data SQLite|XML](https://img.shields.io/badge/Data-SQLite|XML|JSON|CSV-green.svg)](https://sqlite.org/features.html) [![Bash Script](https://img.shields.io/badge/Heartbeat-shellscripts*sh|cmd-blue.svg)](https://www.gnu.org/software/bash/) [![Python 2.x|3.x](https://img.shields.io/badge/Python-2.x%20%7C%203.x-yellow.svg)](https://www.python.org/) [![HTML [5]](https://img.shields.io/badge/HTML-%5B5%5D-brightgreen.svg)](http://www.w3schools.com/html/default.asp) [![CSS [3]](https://img.shields.io/badge/CSS-%5B3%5D-ff69b4.svg)](http://www.w3schools.com/css/default.asp)
+[![Donate|Paypal](paypal.me/kubow)](paypal.me/kubow)
 
 <i class="icon-file"></i><i class="icon-pencil"></i><i class="icon-refresh"></i><i class="icon-cog"></i>
 
