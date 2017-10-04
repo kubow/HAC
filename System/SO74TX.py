@@ -36,7 +36,7 @@ from SO74DB import DataBaseObject
 
 
 class WebContent(HTMLParser.HTMLParser):
-    """http://stackoverflow.com/questions/3276040/how-can-i-use-the-python-htmlparser-library-to-extract-data-from-a-specific-div """
+    """http://stackoverflow.com/questions/3276040/how-can-i-use-the-python-htmlparser-library-to-extract-data-from-a-specific-div"""
 
     def __init__(self, url, log_file=''):
         HTMLParser.HTMLParser.__init__(self)
@@ -480,10 +480,10 @@ if __name__ == '__main__':
         for file_name in os.listdir(args.i):
             input_text = load_text_from(args.i + '/' + file_name)
             output_object = args.o + '/' + file_name
-            if 'lin' in args.l:
+            if 'lin' in args.m:
                 export_text_to(output_object, TextContent(input_text).replace_crlf_lf())
-            elif 'win' in args.l:
-                export_text_to(output_object, TextContent(input_text).replace_lf_crlf())
+            elif 'win' in args.m:
+                export_text_to(output_object, TextContent(input_text).replace_lf_crlf()) 
             else:
                 export_text_to(output_object, TextContent(input_text).replace_lf_crlf())
     else:

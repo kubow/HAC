@@ -94,7 +94,7 @@ class FileSystemObject:
             print 'directory move not implemented'
 
     def directory_lister(self, list_files=False):
-        template_loc = self.append_directory(self.one_dir_up(get_current_dir()), 'Structure') + 'HTML_DirectoryList.txt'
+        template_loc = self.append_directory(self.one_dir_up(), 'Structure') + 'HTML_DirectoryList.txt'
         # print template_loc
         template = SO74TX.load_text_from(template_loc)
         template = template.replace('XXX', self.path)
@@ -270,7 +270,7 @@ if __name__ == '__main__':
     parser.add_argument('-f', help='file output', type=str, default='')
     parser.add_argument('-l', help='log file', type=str, default='')
     args = parser.parse_args()
-    logger = Log(args.l, 'directory')
+    logger = Log(args.l, 'directory', __file__, True)
     if args.m:
         logger.log_operation('opening new window - browse: ' + args.i)
         main_app_view()
