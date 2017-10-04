@@ -122,7 +122,7 @@ class WebContent(HTMLParser.HTMLParser):
             else:
                 self.div = None
 
-    def write_web_content_to_file(self, file_path, heading, log_file=False):
+    def write_web_content_to_file(self, file_path, heading, log_file=''):
         if self.div:
             print 'creating ' + file_path + ' from: ' + self.url
             try:
@@ -132,7 +132,7 @@ class WebContent(HTMLParser.HTMLParser):
                 FileSystemObject(file_path).object_write(HTML.skelet_titled.format(heading.encode('utf-8'),
                                                                                  'cannot get text/bad char'), 'w+')
             if log_file:
-                self.log_to_database(log_file, heading)
+                self.log_to_database(log_file.replace('.log', '.sqlite'), heading)
         else:
             print 'no content parsed from: ' + self.url
 

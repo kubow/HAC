@@ -179,7 +179,7 @@ class SQL(object):
     measured_column_count = column_group_select.format('length({0}) AS {1}', 'measured', '{2}')
     
     value_select = column_select_where.format('{0}', '{1}', 'timestamp = "{2}"')
-    value_exist = column_select_where.format('timestamp', '{0}', 'timestamp = "{1}"')
+    log_value_exist = column_select_where.format('timestamp', '{0}', 'timestamp = {1} AND Connection = {2}')
 
     value_insert = 'INSERT INTO {0} VALUES ({1});'
     value_update = 'UPDATE {0} SET {1} WHERE timestamp = "{2}";'

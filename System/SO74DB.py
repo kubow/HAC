@@ -14,15 +14,25 @@ class DataBaseObject:
         if self.active:
             self.obj_conn = sqlite3.connect(db_path)
             print 'succesfully connected to database ' + db_path
-        else:
-            print 'cannot connect to database ' + db_path
+        # else:
+        #     print 'database ' + db_path + ' without active connection'
 
-    def result_set(self, sql):
+    def result_set(self, sql, just_one=True):
         if self.active:
-            return self.obj_conn.execute(sql)
+            execution = self.obj_conn.execute(sql)
+            if just_one:
+                return execution.fetchone()
+            else:
+                return execution.fetchall()
         else:
             try:
-                return sqlite3.connect(self.db_file).execute(sql)
+                conn = sqlite3.connect(self.db_file)
+                if just_one:
+                    result = conn.execute(sql).fetchone()
+                else:
+                    result = conn.execute(sql).fetchall()
+                conn.close()
+                return result
             except sqlite3.OperationalError:
                 print 'error on: ' + sql
 
@@ -34,12 +44,13 @@ class DataBaseObject:
             conn = sqlite3.connect(self.db_file)
             conn.cursor().execute(sql)
             conn.commit()
+            conn.close()
 
     def return_one(self, sql):
-        return self.result_set(sql).fetchone()
+        return self.result_set(sql, just_one=True)
 
     def return_many(self, sql):
-        return self.result_set(sql).fetchall()
+        return self.result_set(sql, just_one=False)
 
     def return_field_content(self, table, field, condition):
         return self.return_one(SQL.select_where.format(field, table, condition))
@@ -69,7 +80,8 @@ class DataBaseObject:
         return self.return_many(SQL.select.format('*', object_name))
 
     def log_to_database(self, table_name, sql, ddl=''):
-        time_stamp = sql.split('VALUES (')[-1].split(',')[0][1:-1]
+        time_stamp = sql.split('VALUES (')[-1].split(',')[-3].strip()
+        object_name = sql.split('VALUES (')[-1].split(',')[0].strip()
         if not self.object_exist(table_name):
             if 'log' in table_name.lower():
                 ddl_command = SQL.table_ddl_log
@@ -82,7 +94,7 @@ class DataBaseObject:
 
             self.execute(SQL.table_ddl.format(table_name, ddl_command))
             print 'table ' + table_name + ' created'
-        if not self.return_one(SQL.value_exist.format(table_name, time_stamp)):
+        if not self.return_one(SQL.log_value_exist.format(table_name, time_stamp, object_name)):
             self.execute(sql)
         else:
             print 'table {0} already contains ({1})'.format(table_name, time_stamp)

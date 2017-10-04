@@ -6,7 +6,7 @@ import os
 def process_web_content(mode, final_dir, url=None):
     path_separator = FileSystemObject(final_dir).separator
     settings_db = DataBaseObject(os.path.dirname(os.path.realpath(__file__)) + path_separator + 'Settings.sqlite')
-    log_db = args.l
+    log_file = str(args.l)
     wc = WebContent(url)
     if url:
         print wc
@@ -22,7 +22,7 @@ def process_web_content(mode, final_dir, url=None):
                     wc.process_url('id', 'daily-menu-container')
 
                 html_file_path = final_dir + path_separator + restaurant[2].encode('utf-8') + '.html'
-                wc.write_web_content_to_file(html_file_path, restaurant[3], log_db)
+                wc.write_web_content_to_file(html_file_path, restaurant[3], log_file)
 
         elif 'rss' in mode:
             web_objects = settings_db.return_many('SELECT * FROM RssActive;')
