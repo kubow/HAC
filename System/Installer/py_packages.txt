@@ -1,1 +1,1 @@
-numpy scipy PySide pyqtgraph matplotlib dropbox xlwings pyowm osmapi sqlalchemy pandas ipython pyserial wx Tkinter lxml feedparser
+numpy scipy matplotlib dropbox xlwings pyowm osmapi sqlalchemy pandas PySide pyqtgraph ipython pyserial wx Tkinter lxml feedparser
