@@ -32,10 +32,12 @@ REM echo '-l', help='list dir', type=str, default='')
 REM echo '-f', help='file output', type=str, default='')
 ECHO python %py_file% -i %mlt_dir% -l %log_file% -m True
 python %py_file% -i %mlt_dir% -l %log_file%
+GOTO quit
 
 :text
 ECHO pure DOS version
 DIR /s/b *.mp3 > dir.txt
+GOTO quit
 
 :quit
 REM EXIT

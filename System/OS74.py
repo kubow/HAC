@@ -24,7 +24,10 @@ class DateTimeObject:
 
 
 class FileSystemObject:
-    def __init__(self, from_path, to_path=''):
+    def __init__(self, from_path='', to_path=''):
+        if not from_path:
+            from_path = os.path.dirname(os.path.realpath(__file__))
+            print 'using path relative to running script location ...' + from_path
         self.path = from_path
         self.separator = self.get_separator_from_path()
         if os.path.isfile(from_path):
@@ -46,7 +49,7 @@ class FileSystemObject:
         if to_path:
             self.destination = to_path
         else:
-            self.destination = self.one_dir_up()
+            self.destination = self.path
 
     def get_separator_from_path(self):
         if '\\' in self.path:
@@ -93,11 +96,13 @@ class FileSystemObject:
         else:
             print 'directory move not implemented'
 
-    def directory_lister(self, list_files=False):
-        template_loc = self.append_directory(self.one_dir_up(), 'Structure') + 'HTML_DirectoryList.txt'
-        # print template_loc
-        template = SO74TX.load_text_from(template_loc)
-        template = template.replace('XXX', self.path)
+    def directory_lister(self, list_files=False, final_file=''):
+        template_fld = FileSystemObject().one_dir_up()
+        template_file = FileSystemObject(template_fld).append_directory('Structure') + 'HTML_DirectoryList.txt'
+        if not final_file:
+            final_file = FileSystemObject(template_fld).append_directory('Multimedia') + 'DirectoryList.html'
+        print template_file + ' - will be writing to: ' + final_file
+        template = SO74TX.load_text_from(template_file).replace('XXX', self.path)
 
         head = '<table><tr class="Head"><td>List Generated on {0} / Total Folder Size - {1} / {2} Subfolders </td></tr>'
         table_head = '<table><tr class="Head">{0}<td>{1}</table>'
@@ -124,10 +129,10 @@ class FileSystemObject:
             total_size = total_size + folder_size
             folder_count += 1
 
-        content = head.format(DateTimeObject.date_string, str(total_size) + ' kb', folder_count) + '\n' + htm_content
+        content = head.format(DateTimeObject().date_string, str(total_size) + ' kb', folder_count) + '\n' + htm_content
         # print content
         # print template
-        self.file_write(self.destination, content)
+        FileSystemObject(final_file).object_write(content)
 
     def object_read(self, filter=''):
         if self.is_file:
@@ -148,10 +153,10 @@ class FileSystemObject:
                     mode = 'a'
                 else:
                     mode = 'w+'
-            with open(self.path, mode) as target_file:
+            with open(self.destination, mode) as target_file:
                 target_file.write(content)
         else:
-            print 'is not a file, cannot write: ' + self.path
+            print 'is not a file, cannot write: ' + self.destination
 
     def object_size(self):
         # return file size in kilobytes
@@ -232,10 +237,6 @@ def run_command_line(command):
     elif 'lnx' == plf.main or 'linux' == plf.main:
         command = command
     print 'command: ' + command
-
-
-def get_current_dir():
-    return os.path.dirname(os.path.realpath(__file__))
 
 
 def compare_directories(dir1, dir2):
