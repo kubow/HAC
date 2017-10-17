@@ -15,60 +15,61 @@ from PIL import Image, ImageTk
 
 from log import Log
 
+
 class MainWindow:
     def __init__(self, master):
         self.master = master
-        self.frame = Frame(self.master, background="yellow")
+        self.frame = tk.Frame(self.master, background="yellow")
         self.directory = directory
 
         # upper menu
-        self.bar_main = Label(self.master, text=' Main Menu ...')
-        self.bar_node = Label(self.master, text='Location : {0}'.format(directory))
-        self.bar_main.grid(row=0, column=0, sticky=W)
-        self.bar_node.grid(row=0, column=1, sticky=E)
+        self.bar_main = tk.Label(self.master, text=' Main Menu ...')
+        self.bar_node = tk.Label(self.master, text='Location : {0}'.format(directory))
+        self.bar_main.grid(row=0, column=0, sticky='w')
+        self.bar_node.grid(row=0, column=1, sticky='e')
 
         # buttons upper right
-        self.one_up = Button(self.master, text='one level up', command=self.on_up_select)
-        self.one_up.grid(row=0, column=2, sticky=W)
+        self.one_up = tk.Button(self.master, text='one level up', command=self.on_up_select)
+        self.one_up.grid(row=0, column=2, sticky='w')
 
         # related data table down right
         self.rel_data = SimpleTable(self, 5, 3)
-        self.rel_data.grid(row=2, column=1, sticky=N + S + E)
+        self.rel_data.grid(row=2, column=1, sticky='nse')
         self.rel_data.set(0, 0, 'gggg')
 
         # multimedia view window
-        self.canvas = Canvas(self.master, bd=0, highlightthickness=0, width=600, height=600, background="white")
+        self.canvas = tk.Canvas(self.master, bd=0, highlightthickness=0, width=600, height=600, background="white")
         self.canvas.create_line(55, 85, 155, 85, 105, 180, 55, 85)
-        self.canvas.create_text(20, 30, anchor=W, font="Purisa", text="Most relationships seem so transitory")
-        self.canvas.grid(row=1, column=0, rowspan=2, columnspan=2, sticky=N + S + W, pady=(10, 10), padx=(10, 10))
+        self.canvas.create_text(20, 30, anchor='w', font="Purisa", text="Most relationships seem so transitory")
+        self.canvas.grid(row=1, column=0, rowspan=2, columnspan=2, sticky='nsw', pady=(10, 10), padx=(10, 10))
 
         # multimedia file list
-        self.file_list = Listbox(self.master, height=7)
+        self.file_list = tk.Listbox(self.master, height=7)
         self.file_list.bind('<<ListboxSelect>>', self.on_file_select)
-        self.file_scroll = Scrollbar(self.master, orient=VERTICAL)
+        self.file_scroll = tk.Scrollbar(self.master, orient='vertical')
         self.file_list['yscrollcommand'] = self.file_scroll.set
         self.file_scroll['command'] = self.file_list.yview
         # place the widget
-        self.file_list.grid(row=1, column=2, rowspan=1, columnspan=2, sticky=N + S + E)
-        self.file_scroll.grid(row=1, column=2, rowspan=1, columnspan=2, sticky=N + S + E)
+        self.file_list.grid(row=1, column=2, rowspan=1, columnspan=2, sticky='nse')
+        self.file_scroll.grid(row=1, column=2, rowspan=1, columnspan=2, sticky='nse')
 
         # sub-directories list
-        self.dir_list = Listbox(self.master, height=3)
+        self.dir_list = tk.Listbox(self.master, height=3)
         self.dir_list.bind('<<ListboxSelect>>', self.on_dir_select)
-        self.dir_scroll = Scrollbar(self.master, orient=VERTICAL)
+        self.dir_scroll = tk.Scrollbar(self.master, orient='vertical')
         self.dir_list['yscrollcommand'] = self.dir_scroll.set
         self.dir_scroll['command'] = self.dir_list.yview
         # place the widget
-        self.dir_list.grid(row=1, column=4, rowspan=1, columnspan=1, sticky=N + S + E)
-        self.dir_scroll.grid(row=1, column=4, rowspan=1, columnspan=1, sticky=N + S + E)
+        self.dir_list.grid(row=1, column=4, rowspan=1, columnspan=1, sticky='nse')
+        self.dir_scroll.grid(row=1, column=4, rowspan=1, columnspan=1, sticky='nse')
 
         # refresh list widgets
         self.mlt_lib = get_directory_content(self.directory)
         self.refresh_list_items()
 
     def refresh_list_items(self):
-        self.file_list.delete(0, END)
-        self.dir_list.delete(0, END)
+        self.file_list.delete(0, 'end')
+        self.dir_list.delete(0, 'end')
         self.bar_node['text'] = 'Location : {0}'.format(self.directory)
         for mlt_file in self.mlt_lib.keys():
             if os.path.isdir(self.mlt_lib[mlt_file]):
@@ -104,11 +105,11 @@ class MainWindow:
         self.canvas.delete('all')
         if 'gif' in value or '.jpg' in value or '.png' in value:
             if 'gif' in value:
-                image_obj = PhotoImage(file=self.mlt_lib[value])
+                image_obj = ImageTk.PhotoImage(file=self.mlt_lib[value])
             elif '.jpg' in value or '.png' in value:
                 image_obj = ImageTk.PhotoImage(Image.open(self.mlt_lib[value]))
             else:
-                image_obj = PhotoImage(file=self.mlt_lib[value])
+                image_obj = ImageTk.PhotoImage(file=self.mlt_lib[value])
             if image_obj._PhotoImage__size[0] > 200:
                 if image_obj._PhotoImage__size[0] > 600:
                     x = 0  # must resize picture
@@ -308,10 +309,11 @@ def get_directory_from_file(path):
 
 def get_separator_from(path):
     if '\\' in path:
-        separator = '\\'
+        return '\\'
     elif '/' in path:
-        separator = '/'
-    return separator
+        return '/'
+    else:
+        return '/'
 
 
 def build_categories(he, parent_node):
