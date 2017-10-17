@@ -8,8 +8,10 @@ IF /I '%1%'=='s' GOTO SQLite
 GOTO MENU
 
 :MENU
+echo 1st parameter:
 echo h - HANA 
 echo s - SQLite
+echo 2nd parameter: database location
 GOTO QUIT
 
 
@@ -33,6 +35,8 @@ REM dir /s/b *.mp3 > dir.txt
 
 :SQLite
 SET py_file=%~dp0System\SO74DB.py
+echo python %py_file% -l %log_file% -a %2%
+python %py_file% -l %log_file% -a %2%
 
 :QUIT
 REM EXIT
