@@ -59,7 +59,7 @@ if __name__ == '__main__':
     parser.add_argument('-t', help='Text to log', type=str, default='')
     args = parser.parse_args()
     logger = Log(args.l, args.m, 'log.py', True)
-    if logger.advanced:
+    if not args.m or not args.t:
         advanced_logger_test()
     else:
         logger.log_operation(args.t)
