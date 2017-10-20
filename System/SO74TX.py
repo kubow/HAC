@@ -99,6 +99,8 @@ class WebContent(HTMLParser.HTMLParser):
                 html = requests.get(self.url, timeout=(10, 5), headers=self.headers)
                 parsed_content = self.parse_html_text(html.content)
                 done = True
+            self.div = ''
+            self.div_text = ''
             if self.easier:
                 if not tag_name:
                     self.div = parsed_content.find('body')
@@ -120,7 +122,8 @@ class WebContent(HTMLParser.HTMLParser):
                 elif html:
                     self.div = str(html.content)
             else:
-                self.div = None
+                self.div = ''
+                self.div_text = ''
 
     def write_web_content_to_file(self, file_path, heading, log_file=''):
         if self.div:

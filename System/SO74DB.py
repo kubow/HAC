@@ -34,7 +34,8 @@ class DataBaseObject:
                 conn.close()
                 return result
             except sqlite3.OperationalError:
-                print 'error on: ' + sql
+                pass
+                #print 'error on: ' + sql
 
     def execute(self, sql):
         if self.active:
