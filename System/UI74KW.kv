@@ -1,0 +1,41 @@
+#:kivy 1.7.1
+<ShowEnc>:
+    orientation: 'vertical'
+    button_font_size: '20sp'
+    padding: root.width * 0.02, root.width * 0.02
+    canvas:
+        Color:
+            rgba: 1, .3, .8, .5
+    main_text: main_text
+    Label:
+        text: 'H808E'
+        font_size: '25sp'
+        size_hint: 1, None
+        height: self.texture_size[1] + (2 * root.padding[1])
+    TextInput:
+        id: main_text
+        text: 'Hello, world!'
+        font_size: str(font_slider.value)+'sp'
+    Slider:
+        id: font_slider
+        orientation: 'horizontal'
+        min: 1
+        max: 100
+        value: 10
+        size_hint: 1, None
+    BoxLayout:
+        orientation: 'horizontal'
+        size_hint: 1, None
+        height: sayit_button.height
+        Button:
+            id: sayit_button
+            text: 'Say it!'
+            font_size: root.button_font_size
+            size_hint: 1, None
+            height: self.texture_size[1] + (2 * root.padding[1])
+        Button:
+            text: 'Clear'
+            font_size: root.button_font_size
+            size_hint: 1, None
+            height: self.texture_size[1] + (2 * root.padding[1])
+            on_press: root.clear()
