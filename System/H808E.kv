@@ -1,0 +1,62 @@
+#:kivy 1.7.1
+<ShowEnc>:
+    orientation: 'vertical'
+    button_font_size: '20sp'
+    padding: root.width * 0.02, root.width * 0.02
+    canvas:
+        Color:
+            rgba: 1, .9, .7, .5
+    main_text: main_text
+    
+    BoxLayout:
+        orientation: 'horizontal'
+        height: (root.height / 3) - (root.padding[1])
+        
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: 1, None
+            
+            Label:
+                id: main_menu
+                text: 'Main menu'
+                size_hint: 1, None
+        
+            Label:
+                id: actual_directory
+                text: 'The direcotry is: '
+                size_hint: 1, None
+        
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: 1, None
+                    
+            Button:
+                text: 'One dir up'
+                font_size: root.button_font_size
+                size_hint: 1, None
+                on_press: root.clear()
+                
+            Label:
+                id: menu_tools
+                text: '...'
+                font_size: 1
+                size_hint: 1, None
+
+    BoxLayout:
+        orientation: 'horizontal'
+        size_hint: 1, None
+        height: (root.height * 2 / 3) - (root.padding[1])
+        
+        TextInput:
+            id: main_text
+            text: 'Type to search..!'
+            font_size: str(font_slider.value)+'sp'
+    Slider:
+        id: font_slider
+        orientation: 'horizontal'
+        min: 1
+        max: 100
+        value: 10
+        size_hint: 1, None
+        height: 10
+    

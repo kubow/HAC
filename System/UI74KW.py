@@ -1,5 +1,5 @@
 from kivy.lang import Builder
-Builder.load_file('UI74KW.kv')
+Builder.load_file('H808E.kv')
 #import kivy
 #kivy.require('1.7.1')
 
@@ -19,6 +19,7 @@ class ShowEnc(BoxLayout):
 
 
 class MainApp(App):
+    title = 'H808E'
     def build(self):
         return ShowEnc()
     
