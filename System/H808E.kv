@@ -37,6 +37,7 @@
         Button:
             text: 'Other function'
             size_hint: .5, None
+            on_press: root.multimedia_content()
             font_size: str(font_slider.value)+'sp'
             
     BoxLayout:
@@ -50,12 +51,12 @@
             font_size: str(font_slider.value)+'sp'
             
         ListView:
-            size_hint_x: .4
+            size_hint_x: .35
             item_strings: ['aaa', 'bbb', 'ccc', 'ddd', 'eee', 'aaa', 'bbb', 'ccc', 'ddd', 'eee', 'aaa', 'bbb', 'ccc', 'ddd', 'eee', 'aaa', 'bbb', 'ccc', 'ddd', 'eee', 'aaa', 'bbb', 'ccc', 'ddd', 'eee']
             font_size: str(font_slider.value)+'sp'
                 
         ListView:
-            size_hint_x: .4
+            size_hint_x: .35
             item_strings: ['aaa', 'bbb', 'ccc', 'ddd', 'eee', 'aaa', 'bbb', 'ccc', 'ddd', 'eee', 'aaa', 'bbb', 'ccc', 'ddd', 'eee', 'aaa', 'bbb', 'ccc', 'ddd', 'eee', 'aaa', 'bbb', 'ccc', 'ddd', 'eee']
             font_size: str(font_slider.value)+'sp'
         

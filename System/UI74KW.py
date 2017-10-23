@@ -13,6 +13,7 @@ from kivy.uix.boxlayout import BoxLayout
 #from kiwi.uix.floatlayout import FloatLayout #good na 3d
 from kivy.uix.gridlayout import GridLayout
 
+import os
 from OS74 import FileSystemObject
 
 class ShowEnc(GridLayout):
@@ -20,6 +21,7 @@ class ShowEnc(GridLayout):
     
     def multimedia_content(self):
         self.mlt_lib = get_directory_content(FileSystemObject().path)
+        self.media_content = self.mlt_lib
     
     def clear(self):
         self.main_text.text = ""
