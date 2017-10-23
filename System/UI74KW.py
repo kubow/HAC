@@ -5,12 +5,16 @@ Builder.load_file('H808E.kv')
 
 from kivy.app import App
 from kivy.properties import ObjectProperty
-from kivy.uix.boxlayout import BoxLayout
 
 #from kiwi.uix.scatter import Scatter
+from kivy.uix.listview import ListItemButton
+from kivy.adapters.listadapter import ListAdapter
+from kivy.uix.boxlayout import BoxLayout
 #from kiwi.uix.floatlayout import FloatLayout #good na 3d
+from kivy.uix.gridlayout import GridLayout
 
-class ShowEnc(BoxLayout):
+
+class ShowEnc(GridLayout):
     main_text = ObjectProperty(None)
     
     def clear(self):

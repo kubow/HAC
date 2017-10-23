@@ -1,62 +1,79 @@
 #:kivy 1.7.1
 <ShowEnc>:
-    orientation: 'vertical'
-    button_font_size: '20sp'
-    padding: root.width * 0.02, root.width * 0.02
-    canvas:
-        Color:
-            rgba: 1, .9, .7, .5
+    padding: root.width * 0.01, root.width * 0.01
+    width: self.width
+    cols: 1
+    font_size: str(font_slider.value)+'sp'
     main_text: main_text
     
     BoxLayout:
+        id: topup
         orientation: 'horizontal'
-        height: (root.height / 3) - (root.padding[1])
-        
-        BoxLayout:
-            orientation: 'horizontal'
-            size_hint: 1, None
-            
-            Label:
-                id: main_menu
-                text: 'Main menu'
-                size_hint: 1, None
-        
-            Label:
-                id: actual_directory
-                text: 'The direcotry is: '
-                size_hint: 1, None
-        
-        BoxLayout:
-            orientation: 'horizontal'
-            size_hint: 1, None
-                    
-            Button:
-                text: 'One dir up'
-                font_size: root.button_font_size
-                size_hint: 1, None
-                on_press: root.clear()
-                
-            Label:
-                id: menu_tools
-                text: '...'
-                font_size: 1
-                size_hint: 1, None
-
-    BoxLayout:
-        orientation: 'horizontal'
+        width: self.width
         size_hint: 1, None
-        height: (root.height * 2 / 3) - (root.padding[1])
         
+        Label:
+            text: '... main' 
+            size_hint: .2, None
+            font_size: str(font_slider.value)+'sp'
+            
         TextInput:
             id: main_text
+            size_hint: .3, .5
             text: 'Type to search..!'
             font_size: str(font_slider.value)+'sp'
-    Slider:
-        id: font_slider
+        
+        Label:
+            text: 'location is '
+            size_hint: .5, None
+            font_size: str(font_slider.value)+'sp'
+            
+        Button:
+            text: 'One dir up'
+            size_hint: .5, None
+            on_press: root.clear()
+            font_size: str(font_slider.value)+'sp'
+            
+        Button:
+            text: 'Other function'
+            size_hint: .5, None
+            font_size: str(font_slider.value)+'sp'
+            
+    BoxLayout:
+        id: middle
         orientation: 'horizontal'
-        min: 1
-        max: 100
-        value: 10
-        size_hint: 1, None
-        height: 10
-    
+        width: self.width
+        
+        Label:
+            id: media_content
+            text: '... media_content'
+            font_size: str(font_slider.value)+'sp'
+            
+        ListView:
+            size_hint_x: .4
+            item_strings: ['aaa', 'bbb', 'ccc', 'ddd', 'eee', 'aaa', 'bbb', 'ccc', 'ddd', 'eee', 'aaa', 'bbb', 'ccc', 'ddd', 'eee', 'aaa', 'bbb', 'ccc', 'ddd', 'eee', 'aaa', 'bbb', 'ccc', 'ddd', 'eee']
+            font_size: str(font_slider.value)+'sp'
+                
+        ListView:
+            size_hint_x: .4
+            item_strings: ['aaa', 'bbb', 'ccc', 'ddd', 'eee', 'aaa', 'bbb', 'ccc', 'ddd', 'eee', 'aaa', 'bbb', 'ccc', 'ddd', 'eee', 'aaa', 'bbb', 'ccc', 'ddd', 'eee', 'aaa', 'bbb', 'ccc', 'ddd', 'eee']
+            font_size: str(font_slider.value)+'sp'
+        
+    BoxLayout:
+        id: bottom
+        orientation: 'horizontal'
+        width: self.width
+        size_hint: .5, None
+        
+        Label:
+            text: '... main'
+            font_size: str(font_slider.value)+'sp'
+            
+        Slider:
+            id: font_slider
+            orientation: 'horizontal'
+            min: 1
+            max: 100
+            value: 10
+            size_hint: 1, None
+            height: 10
