@@ -123,7 +123,7 @@ class Device(object):
         ac_time = self.time_aggregated(datetime.datetime.now()).strftime(self.date_format)
         fs = FileSystemObject(self.output_path + 'Measured')
         fs.object_create_neccesary()
-        for csv_file in fs.object_read(filter='csv'):
+        for csv_file in fs.object_read(filter='csv').iterkeys():
             db = DataBaseObject(fs.append_file(csv_file[:6] + '.sqlite'))
             csv = CsvContent(fs.append_file(csv_file), date_format=self.date_format)
             into = 'timestamp, '

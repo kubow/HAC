@@ -9,8 +9,8 @@
     BoxLayout:
         id: topup
         orientation: 'horizontal'
-        width: self.width
         size_hint: 1, None
+        width: self.width
         
         Label:
             text: '... main' 
@@ -51,11 +51,13 @@
             font_size: str(font_slider.value)+'sp'
             
         ListView:
+            id: file_list
             size_hint_x: .35
             item_strings: ['aaa', 'bbb', 'ccc', 'ddd', 'eee', 'aaa', 'bbb', 'ccc', 'ddd', 'eee', 'aaa', 'bbb', 'ccc', 'ddd', 'eee', 'aaa', 'bbb', 'ccc', 'ddd', 'eee', 'aaa', 'bbb', 'ccc', 'ddd', 'eee']
             font_size: str(font_slider.value)+'sp'
                 
         ListView:
+            id: dir_list
             size_hint_x: .35
             item_strings: ['aaa', 'bbb', 'ccc', 'ddd', 'eee', 'aaa', 'bbb', 'ccc', 'ddd', 'eee', 'aaa', 'bbb', 'ccc', 'ddd', 'eee', 'aaa', 'bbb', 'ccc', 'ddd', 'eee', 'aaa', 'bbb', 'ccc', 'ddd', 'eee']
             font_size: str(font_slider.value)+'sp'
@@ -63,8 +65,9 @@
     BoxLayout:
         id: bottom
         orientation: 'horizontal'
+        size_hint: 1, None
         width: self.width
-        size_hint: .5, None
+        height: root.height / 10
         
         Label:
             text: '... main'

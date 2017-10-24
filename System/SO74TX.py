@@ -288,7 +288,7 @@ class JsonContent(object):
 
     def process(self):
         fs = FileSystemObject(self.path)
-        for database in fs.object_read(filter='sqlite'):
+        for database in fs.object_read(filter='sqlite').iterkeys():
             db = DataBaseObject(FileSystemObject(self.path).append_file(database))
             for velocity in db.object_structure('measured'):
                 if 'timestamp' in velocity or 'device' in velocity or not velocity:

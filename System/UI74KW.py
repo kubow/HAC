@@ -19,8 +19,8 @@ from OS74 import FileSystemObject
 class ShowEnc(GridLayout):
     main_text = ObjectProperty(None)
     
-    def multimedia_content(self):
-        self.mlt_lib = get_directory_content(FileSystemObject().path)
+    def multimedia_content(self, directory=''):
+        self.mlt_lib = FileSystemObject(directory)
         self.media_content = self.mlt_lib
     
     def clear(self):
@@ -39,13 +39,14 @@ def get_directory_content(path_to):
     mlt_lib = {'filename': '/path/to/filename'}
     mlt_lib = {'/dirname': '/path/to/dir'}
     """
-    path_to = get_proper_dir_path(path_to)
+    # path_to = get_proper_dir_path(path_to)
     mlt_lib = {}
     for mlt_file in os.listdir(path_to):
         if os.path.isdir(path_to + mlt_file):
             mlt_lib[mlt_file] = path_to + mlt_file
         else:
             mlt_lib[mlt_file] = path_to + mlt_file
+    print mlt_lib
     return mlt_lib
 
         

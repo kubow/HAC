@@ -140,11 +140,11 @@ class FileSystemObject:
                 content = content_file.read()
             return content
         elif self.is_folder:
-            objects = []
+            obj_lib = {}
             for file in os.listdir(self.path):
-                if filter in file:
-                    objects.append(file)
-            return objects
+                if filter in file or not filter:
+                    obj_lib[file] = self.path + file
+            return obj_lib
 
     def object_write(self, content='', mode='w+'):
         if self.is_file:
