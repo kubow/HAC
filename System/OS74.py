@@ -141,9 +141,9 @@ class FileSystemObject:
             return content
         elif self.is_folder:
             obj_lib = {}
-            for file in os.listdir(self.path):
-                if filter in file or not filter:
-                    obj_lib[file] = self.path + file
+            for file_name in os.listdir(self.path):
+                if filter in file_name or not filter:
+                    obj_lib[file_name] = self.path + self.separator + file_name
             return obj_lib
 
     def object_write(self, content='', mode='w+'):

@@ -1,4 +1,11 @@
 #:kivy 1.7.1
+
+#: import ListAdapter kivy.adapters.listadapter.ListAdapter
+#: import ListItemButton kivy.uix.listview.ListItemButton
+
+<ListItemButton>:
+    on_press: app.root.file_on_select(*args)
+
 <ShowEnc>:
     padding: root.width * 0.01, root.width * 0.01
     width: self.width
@@ -53,8 +60,12 @@
         ListView:
             id: file_list
             size_hint_x: .35
-            item_strings: ['aaa', 'bbb', 'ccc', 'ddd', 'eee', 'aaa', 'bbb', 'ccc', 'ddd', 'eee', 'aaa', 'bbb', 'ccc', 'ddd', 'eee', 'aaa', 'bbb', 'ccc', 'ddd', 'eee', 'aaa', 'bbb', 'ccc', 'ddd', 'eee']
             font_size: str(font_slider.value)+'sp'
+            adapter:
+                ListAdapter(data=root.my_data,
+                selection_mode='single',
+                allow_empty_selection=False,
+                cls=ListItemButton)
                 
         ListView:
             id: dir_list
