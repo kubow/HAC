@@ -2,6 +2,8 @@
 
 #: import ListAdapter kivy.adapters.listadapter.ListAdapter
 #: import ListItemButton kivy.uix.listview.ListItemButton
+#: import label kivy.uix.label
+#: import sla kivy.adapters.simplelistadapter
 
 <ListItemButton>:
     on_press: app.root.file_on_select(*args)
@@ -62,10 +64,7 @@
             size_hint_x: .35
             font_size: str(font_slider.value)+'sp'
             adapter:
-                ListAdapter(data=root.my_data,
-                selection_mode='single',
-                allow_empty_selection=False,
-                cls=ListItemButton)
+                sla.SimpleListAdapter(data=root.mlt_lib, cls=label.Label)
                 
         ListView:
             id: dir_list
