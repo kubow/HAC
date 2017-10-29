@@ -1,5 +1,6 @@
 #:kivy 1.7.1
 
+#: import BoxLayout kivy.uix.boxlayout.BoxLayout
 #: import ListAdapter kivy.adapters.listadapter.ListAdapter
 #: import ListItemButton kivy.uix.listview.ListItemButton
 #: import label kivy.uix.label
@@ -64,7 +65,7 @@
             size_hint_x: .35
             font_size: str(font_slider.value)+'sp'
             adapter:
-                sla.SimpleListAdapter(data=root.mlt_lib, cls=label.Label)
+                sla.SimpleListAdapter(data=root.mlt_lib)
                 
         ListView:
             id: dir_list

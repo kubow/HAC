@@ -8,7 +8,7 @@ from kivy.properties import ObjectProperty
 
 #from kiwi.uix.scatter import Scatter
 from kivy.uix.listview import ListItemButton
-from kivy.adapters.listadapter import ListAdapter
+#from kivy.adapters.listadapter import ListAdapter
 from kivy.uix.boxlayout import BoxLayout
 #from kiwi.uix.floatlayout import FloatLayout #good na 3d
 from kivy.uix.gridlayout import GridLayout
@@ -24,6 +24,8 @@ class ShowEnc(GridLayout):
     folder_select = StringProperty('Select a folder')
     file_list = ListProperty([])
     file_select = StringProperty('Select a file')
+    mlt_lib = FileSystemObject().object_read()
+    print type(mlt_lib)
     
     def multimedia_content(self, directory=''):
         self.mlt_lib = FileSystemObject(directory).object_read()
