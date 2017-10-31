@@ -134,6 +134,17 @@ class FileSystemObject:
         # print template
         FileSystemObject(final_file).object_write(content)
 
+    def object_read_split(self):
+        folder_list = []
+        file_list = []
+        object_dict = self.object_read()
+        for object in object_dict:
+            if FileSystemObject(object_dict[object]).is_folder:
+                folder_list.append(object)
+            else:
+                file_list.append(object)
+        return folder_list, file_list
+    
     def object_read(self, filter=''):
         if self.is_file:
             with open(self.path, 'r') as content_file:

@@ -24,8 +24,8 @@ class ShowEnc(GridLayout):
     folder_select = StringProperty('Select a folder')
     file_list = ListProperty([])
     file_select = StringProperty('Select a file')
-    mlt_lib = FileSystemObject().object_read()
-    print type(mlt_lib)
+    fldr_lib, file_lib = FileSystemObject().object_read_split()
+    
     
     def multimedia_content(self, directory=''):
         self.mlt_lib = FileSystemObject(directory).object_read()
