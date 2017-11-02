@@ -357,12 +357,14 @@ class TextContent(object):
             print 'this text does not have any linux line endings, passing ...'
             return self.block_text
 
+    def trim_line_last_n_chars(self, n=1):
+        n_chars = (-1*n)-1
+        block_text = []
+        for line in self.block_text:
+            block_text.append(line[:n_chars])
+        return block_text
 
-def trim_line_last_chars(file_name):
-    new_line = []
-    for line in load_text_from(file_name):
-        new_line.append(line[:-2])
-    return new_line
+
 
 
 def filter_lines(text_file, with_filter):
@@ -442,10 +444,11 @@ def htm_to_plain_txt(htm_txt):
     return soup.body.get_text()
 
 
-def test_utf_special_characters():
+def test_utf_special_characters(logger=''):
     veta = u'Žluťoučký kůň pěl ďábelské ódy.'
     print veta
-    logger.file_write('aaa.log', 'temp', veta)
+    if logger:
+        logger.file_write('aaa.log', 'temp', veta)
 
 
 def similar(seq1, seq2):
