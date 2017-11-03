@@ -5,6 +5,7 @@
 #: import SimpleListAdapter kivy.adapters.simplelistadapter.SimpleListAdapter
 #: import ListItemButton kivy.uix.listview.ListItemButton
 #: import Label kivy.uix.label.Label
+#: import AsyncImage kivy.uix.image.AsyncImage
 
 
 <ListItemButton>:
@@ -56,6 +57,9 @@
         orientation: 'horizontal'
         width: self.width
         
+        AsyncImage:
+            
+            
         Label:
             id: media_content
             text: '... media_content'
