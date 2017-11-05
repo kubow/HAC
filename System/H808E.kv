@@ -5,6 +5,7 @@
 #: import SimpleListAdapter kivy.adapters.simplelistadapter.SimpleListAdapter
 #: import ListItemButton kivy.uix.listview.ListItemButton
 #: import Label kivy.uix.label.Label
+#: import Image kivy.uix.image.Image
 #: import AsyncImage kivy.uix.image.AsyncImage
 
 
@@ -25,7 +26,7 @@
         width: self.width
         
         Label:
-            text: '... main' 
+            text: '... main menu' 
             size_hint: .2, None
             font_size: str(font_slider.value)+'sp'
             
@@ -36,18 +37,18 @@
             font_size: str(font_slider.value)+'sp'
         
         Label:
-            text: 'location is '
+            text: 'location is '+root.actual_location
             size_hint: .5, None
             font_size: str(font_slider.value)+'sp'
             
         Button:
-            text: 'One dir up'
+            text: 'Other function'
             size_hint: .5, None
             on_press: root.clear()
             font_size: str(font_slider.value)+'sp'
             
         Button:
-            text: 'Other function'
+            text: 'One dir up'
             size_hint: .5, None
             on_press: root.multimedia_content()
             font_size: str(font_slider.value)+'sp'
@@ -57,20 +58,23 @@
         orientation: 'horizontal'
         width: self.width
         
-        AsyncImage:
-            
-            
-        Label:
-            id: media_content
-            text: '... media_content'
-            font_size: str(font_slider.value)+'sp'
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: 1, 1
+            canvas:
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            Image:
+                source: 'tim.jpg'
             
         ListView:
             id: file_list
             size_hint_x: .35
             font_size: str(font_slider.value)+'sp'
             adapter:
-                ListAdapter(data=root.file_lib, cls=ListItemButton)
+                ListAdapter(data=root.file_lib, cls=ListItemButton, sorted_keys=[])
+                
                 
         ListView:
             id: dir_list

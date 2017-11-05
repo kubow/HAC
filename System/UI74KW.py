@@ -25,11 +25,20 @@ class ShowEnc(GridLayout):
     file_list = ListProperty([])
     file_select = StringProperty('Select a file')
     fldr_lib, file_lib = FileSystemObject().object_read_split()
+    actual_location = FileSystemObject().path
     
-    
-    def multimedia_content(self, directory=''):
-        self.mlt_lib = FileSystemObject(directory).object_read()
-        self.media_content = self.mlt_lib
+    def multimedia_content(self):
+        print self.actual_location
+        directory = FileSystemObject(self.actual_location).one_dir_up()
+        self.fldr_lib, self.file_lib = FileSystemObject(directory).object_read_split()
+        # self.do_layout()
+        print dir(self)
+        print '-'*20
+        print dir(self.file_list)
+        print '-'*20
+        print dir(self.folder_list)
+        self.file_list.append(self.file_lib)
+        self.folder_list.append(self.fldr_lib)
     
     def folder_on_select(self, change_value):
         self.selected_value = "Selected: {0}".format(change_value.text)
