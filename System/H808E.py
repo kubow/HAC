@@ -70,7 +70,7 @@ class h808e(object):
 
     def is_registered_directory(self):
         print 'just check if table exists'
-        if os.path.isdir(self.dir_active):
+        if FileSystemObject(self.dir_active).is_folder:
             print 'table do not exist'
             return False
         else:
@@ -103,7 +103,7 @@ class h808e(object):
         
     def directory_watcher(self):
         flag = True
-        if os.path.isdir(self.dir_active):
+        if FileSystemObject(self.dir_active).is_folder:
             if not self.is_registered_directory():
                 while flag:
                     flag = self.directory_register()
@@ -178,7 +178,7 @@ class h808e(object):
 
     def set_db_path(self, db_path):
         # print '? - ' + db_path
-        if os.path.isfile(db_path):
+        if FileSystemObject(db_path).is_file:
             self.db_path = db_path
         else:
             self.db_path = ':memory:'
