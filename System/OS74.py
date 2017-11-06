@@ -9,6 +9,8 @@ import platform
 import shutil
 from sys import platform as _platform
 
+from Template import SQL
+
 
 class DateTimeObject:
     def __init__(self, date_set=datetime.datetime.now(), format='%d.%m.%Y %H:%M:%S'):
@@ -89,7 +91,7 @@ class FileSystemObject:
 
     def move_file_to(self, another_directory, filename=''):
         if not filename:
-            filename = FileSystemObject(self.path).last_part()
+            filename = self.last_part()
         if self.is_file:
             shutil.move(self.path, FileSystemObject(another_directory).append_file(filename))
             print 'file ' + self.path + ' archived'
@@ -205,6 +207,21 @@ class FileSystemObject:
             self.object_write(content, 'w+')
         else:
             print 'no text to write, skipping file {0}'.format(self.path)
+
+
+class CurrentPlatformControl(CurrentPlatform):
+    def __init__(self, application=''):
+        CurrentPlatform.__init__(self)
+        self.app_name = application
+        d = os.path.dirname(os.path.realpath(__file__)) + '/Settings.sqlite'
+        sql = SQL().get_app_command.format(application, self.main)
+        self.app_run_path = DataBaseObject(d).return_one(sql)[0]
+        
+    def run_at_command_line(self, arg_1='', arg_2=''):
+        if self.main == 'lnx':
+            os.path
+        elif self.main == 'win':
+        
 
 
 class CurrentPlatform:

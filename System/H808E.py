@@ -222,6 +222,7 @@ def build_text_menu(directory):
         keep_alive = raw_input("Please run:")
         if keep_alive == "1":
             print("\n Opening cherrytree ...")
+            cherry = cpc('cherrytree')
             # OS74.run_command_line('cherrytree %s' % args.c)
         elif keep_alive == "2":
             print("\n Opening sqlite browser\n")
@@ -253,7 +254,7 @@ if __name__ == '__main__':
 
     from log import Log
     from SO74DB import DataBaseObject
-    from OS74 import FileSystemObject
+    from OS74 import FileSystemObject, CurrentPlatformControl as cpc
     import UI74
     import SO74TX
     from Template import HTML, SQL

@@ -169,6 +169,7 @@ class SQL(object):
     get_device_name_list = column_select.format('MachineName', 'Stations')
     get_device_os_list = column_select.format('OpSystem', 'Stations')
 
+    get_app_command = column_select_where.format('app_command_run', 'Applications', 'app_name = "{0}" AND app_platform={1}')
     get_driver_loc = column_select_where.format('ComAddress, ComAddLast', 'Stations', 'Machinename = "{0}"')
     get_driver_br = column_select_where.format('BaudeRate', 'Stations', 'Machinename = "{0}"')
     get_driver_dummy_loc = column_select_where.format('ComAddress, ComAddLast', 'Stations',
