@@ -115,7 +115,7 @@ class SQL(object):
                      "	`Report`	TEXT,\n"
                      "	`Domain`	VARCHAR(255) DEFAULT NULL,\n"
                      "	`Ping`	BOOLEAN DEFAULT 0")
-    table_create = table_ddl.format('dirlist', table_ddl_dir)
+    table_create = table_ddl.format('h808e', table_ddl_dir)
 
     select = 'SELECT {0} FROM {1};'
     select_where = 'SELECT {0} FROM {1} WHERE {2};'
@@ -150,7 +150,8 @@ class SQL(object):
     insert = 'INSERT INTO {0} VALUES ({1});'
     
     ins_val = '"{0}", "{1}", "{2}", "{3}", {4}'
-    dashline = '---------------------------------------------------------'
+    dashline = '-' * 30
+    table_insert = insert.format('h808e (ID, reg_name, file_dir, last_change, size)', '{0}')
 
     get_settings = """SELECT drivertype, driverloc 
     FROM driver 
@@ -169,7 +170,7 @@ class SQL(object):
     get_device_name_list = column_select.format('MachineName', 'Stations')
     get_device_os_list = column_select.format('OpSystem', 'Stations')
 
-    get_app_command = column_select_where.format('app_command_run', 'Applications', 'app_name = "{0}" AND app_platform={1}')
+    get_app_command = column_select_where.format('app_command_run', 'Applications', 'app_name = "{0}" AND app_platform="{1}"')
     get_driver_loc = column_select_where.format('ComAddress, ComAddLast', 'Stations', 'Machinename = "{0}"')
     get_driver_br = column_select_where.format('BaudeRate', 'Stations', 'Machinename = "{0}"')
     get_driver_dummy_loc = column_select_where.format('ComAddress, ComAddLast', 'Stations',

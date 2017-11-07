@@ -10,12 +10,13 @@ class DataBaseObject:
         self.type = 'sqlite3'
         self.active = active
         self.sql = SQL.select_tables_in_db
-        self.obj_list = self.return_many(self.sql)
         if self.active:
             self.obj_conn = sqlite3.connect(db_path)
             print 'succesfully connected to database ' + db_path
         # else:
         #     print 'database ' + db_path + ' without active connection'
+        self.obj_list = self.return_many(self.sql)
+
 
     def result_set(self, sql, just_one=True):
         if self.active:

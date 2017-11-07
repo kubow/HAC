@@ -327,8 +327,14 @@ class JsonContent(object):
 
 
 class TextContent(object):
-    def __init__(self, block_text):
-        self.block_text = block_text
+    def __init__(self, block_text='', file_name=''):
+        if file_name:
+            self.file_name = file_name
+            with open(file_name, 'rb') as input_file:
+                self.block_text = input_file.read()
+        else:
+            self.block_text = block_text
+            self.file_name = ''
 
     def replace_line_endings(self):
         # replace double carriage return with tildos

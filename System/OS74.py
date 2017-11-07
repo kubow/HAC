@@ -7,10 +7,11 @@ import argparse
 import datetime
 import platform
 import shutil
+from subprocess import call
 from sys import platform as _platform
 
 from Template import SQL
-
+from SO74DB import DataBaseObject
 
 class DateTimeObject:
     def __init__(self, date_set=datetime.datetime.now(), format='%d.%m.%Y %H:%M:%S'):
@@ -104,7 +105,7 @@ class FileSystemObject:
         if not final_file:
             final_file = FileSystemObject(template_fld).append_directory('Multimedia') + 'DirectoryList.html'
         print template_file + ' - will be writing to: ' + final_file
-        template = SO74TX.load_text_from(template_file).replace('XXX', self.path)
+        template = TextObject(file_name=template_file).replace('XXX', self.path)
 
         head = '<table><tr class="Head"><td>List Generated on {0} / Total Folder Size - {1} / {2} Subfolders </td></tr>'
         table_head = '<table><tr class="Head">{0}<td>{1}</table>'
@@ -209,21 +210,6 @@ class FileSystemObject:
             print 'no text to write, skipping file {0}'.format(self.path)
 
 
-class CurrentPlatformControl(CurrentPlatform):
-    def __init__(self, application=''):
-        CurrentPlatform.__init__(self)
-        self.app_name = application
-        d = os.path.dirname(os.path.realpath(__file__)) + '/Settings.sqlite'
-        sql = SQL().get_app_command.format(application, self.main)
-        self.app_run_path = DataBaseObject(d).return_one(sql)[0]
-        
-    def run_at_command_line(self, arg_1='', arg_2=''):
-        if self.main == 'lnx':
-            os.path
-        elif self.main == 'win':
-        
-
-
 class CurrentPlatform:
     def __init__(self):
         self.main = self.which_platform()
@@ -256,7 +242,26 @@ class CurrentPlatform:
     def get_username_domain():
         return os.environ.get('USERNAME'), os.environ.get('USERDOMAIN')
 
+        
+class CurrentPlatformControl(CurrentPlatform):
+    def __init__(self, application=''):
+        CurrentPlatform.__init__(self)
+        self.app_name = application
+        d = os.path.dirname(os.path.realpath(__file__)) + '/Settings.sqlite'
+        sql = SQL.get_app_command.format(application, self.main)
+        #print sql
+        self.app_run_path = DataBaseObject(d).return_one(sql)[0]
+        # print ': ' + self.app_run_path
+        
+    def run_with_argument(self, arg_1='', arg_2=''):
+        command = self.app_run_path + ' %s' % arg_1
+        call([self.app_run_path, arg_1])
+        # if self.main == 'lnx':
+            # call([self.app_run_path, arg_1])
+        # elif self.main == 'win':
+            # call([self.app_run_path, arg_1])
 
+            
 def run_command_line(command):
     plf = CurrentPlatform()
     if 'win' == plf.main:
@@ -289,8 +294,8 @@ def compare_directories(dir1, dir2):
 
 if __name__ == '__main__':
 
-    import SO74TX
     from log import Log
+    from SO74TX import TextObject
     from UI74 import main_app_view
 
     parser = argparse.ArgumentParser(description="browse/list dirs")

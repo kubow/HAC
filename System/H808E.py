@@ -5,7 +5,7 @@ import argparse
 
 
 class h808e(object):
-    def __init__(self):
+    def __init__(self, debug=False):
         self.enc = self.create_structure()
         self.set_active_node(800)
         self.dir_active = 'C:\\_Run\\Script'
@@ -14,6 +14,7 @@ class h808e(object):
         self.db_tables = self.get_table()
         self.db_query = 'SELECT * FROM enc_nodes;'
         # self.db_data = None
+        self.debug = debug
 
     @staticmethod
     def create_structure():
@@ -69,7 +70,8 @@ class h808e(object):
                 print 'get all directories for {0}'.format(main_node)
 
     def is_registered_directory(self):
-        print 'just check if table exists'
+        if self.debug:
+            print 'just check if table exists'
         if FileSystemObject(self.dir_active).is_folder:
             print 'table do not exist'
             return False
@@ -88,14 +90,12 @@ class h808e(object):
         database.execute(SQL.table_create)
         i = 0
         
-        tab_ins = SQL.insert.format('h808e (reg_name, file_dir)')
-        
         for root, directories, files in os.walk(self.dir_active):
-            database.execute(tab_ins.format('"", ' + root))
+            database.execute(SQL.table_insert.format('"", "", "' + root + '", "", ""'))
             i += 1
             for filename in files:
-                database.execute(tab_ins.format(i, filename, root, 'date date date',
-                                                FileSystemObject(root + '/' + filename).object_size()))
+                database.execute(SQL.table_insert.format(str(i) + ', "' + filename + '", "' + root + '", "date date date", "' +
+                                                FileSystemObject(root + '/' + filename).object_size() + '"'))
                 print '---file {0} registered, checking size.'.format(filename)
                 i += 1
         
@@ -115,21 +115,21 @@ class h808e(object):
             print '--' * int(en['level']) + str(en['code'])
             self.set_active_node(en['code'])
             self.set_db_data(self.get_node_content(str(en['code'])))
-            FileSystemObject(directory + str(en['code']) + '.html').refresh_file(self.db_data)
+            FileSystemObject(directory + str(en['code']) + '.html').object_write(self.db_data)
 
             for esn in en['child']:
                 # 2. level
                 print '--' * int(esn['level']) + str(esn['code'])
                 self.set_active_node(esn['code'])
                 self.set_db_data(self.get_node_content(str(esn['code'])))
-                FileSystemObject(directory + str(esn['code']) + '.html').refresh_file(self.db_data)
+                FileSystemObject(directory + str(esn['code']) + '.html').object_write(self.db_data)
 
                 for essn in esn['child']:
                     # 3. level
                     print '--' * int(essn['level']) + str(essn['code'])
                     self.set_active_node(essn['code'])
                     self.set_db_data(self.get_node_content(str(essn['code'])))
-                    FileSystemObject(directory + str(essn['code']) + '.html').refresh_file(self.db_data)
+                    FileSystemObject(directory + str(essn['code']) + '.html').object_write(self.db_data)
 
     def iterate_enc_db_structure(self):
         database = DataBaseObject(self.db_path)
@@ -147,9 +147,10 @@ class h808e(object):
 
     def get_node_content(self, node):
         # print 'load node content from id: ' + str(node)
-        query = q.select_node_text.format(node)
+        query = SQL.select_node_text.format(node)
         if self.db_path:
-            print self.db_path + ' : ' + query
+            if self.debug:
+                print self.db_path + ' : ' + query
             return DataBaseObject(self.db_path).return_one(query)
         else:
             print 'cannot execute {0} in memory database.'.format(query)
@@ -201,7 +202,7 @@ class h808e(object):
         self.node = node
 
 
-def build_text_menu(directory):
+def build_text_menu(he):
     keep_alive = True
     while keep_alive:
         print("""       ============= -H_808_E- =============
@@ -221,28 +222,33 @@ def build_text_menu(directory):
         ==========PRESS 'Q' TO QUIT==========""")
         keep_alive = raw_input("Please run:")
         if keep_alive == "1":
-            print("\n Opening cherrytree ...")
+            print("\n    Opening cherrytree ...\n")
             cherry = cpc('cherrytree')
-            # OS74.run_command_line('cherrytree %s' % args.c)
+            cherry.run_with_argument(arg_1=args.c)
+            print("\n    Cherrytree closed ...\n")
         elif keep_alive == "2":
-            print("\n Opening sqlite browser\n")
-
+            print("\n    Opening sqlite browser\n")
+            sqlitedb = cpc('sqlitedb')
+            sqlitedb.run_with_argument(arg_1=args.c)
+            print("\n    Closing sqlite browser\n")
         elif keep_alive == "3":
-            print("\n Synchronize directories")
+            print("\n    Synchronize directories\n")
             # dropbox synchronizer
         elif keep_alive == "4":
             print 'generate structure'
             he.iterate_enc_structure()
-
         elif keep_alive == "5":
-            print 'register direcotry'
+            print("\n    Register directories\n")
             he.directory_watcher()
-
         elif keep_alive == "8":
             # running Tkinter GUI
             logger.log_operation('universal python in ' + args.d)
             UI74.build_window(args.d)
-
+        elif keep_alive == "9":
+            print("\n    Opening web browser\n")
+            browser = cpc('web')
+            browser.run_with_argument(arg_1=args.c)
+            print("\n    Closing web browser\n")
         elif str(keep_alive).lower() == "q":
             print("\n Goodbye")
             keep_alive = False
