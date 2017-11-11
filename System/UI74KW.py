@@ -1,7 +1,14 @@
-from kivy.lang import Builder
-Builder.load_file('H808E.kv')
+import os.path
+from kivy.resources import resource_add_path
+
+KV_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__)))
+resource_add_path(KV_PATH)
+print KV_PATH
 #import kivy
 #kivy.require('1.7.1')
+from kivy.lang import Builder
+Builder.load_file('H808E.kv')
+
 
 from kivy.app import App
 from kivy.properties import ObjectProperty
@@ -14,8 +21,8 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 
 from  kivy.properties import ListProperty, StringProperty
-
 import os
+
 from OS74 import FileSystemObject
 
 class ShowEnc(GridLayout):
