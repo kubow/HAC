@@ -255,6 +255,7 @@ class CurrentPlatformControl(CurrentPlatform):
         
     def run_with_argument(self, arg_1='', arg_2=''):
         command = self.app_run_path + ' %s' % arg_1
+        print command
         call([self.app_run_path, arg_1])
         # if self.main == 'lnx':
             # call([self.app_run_path, arg_1])

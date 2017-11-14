@@ -229,7 +229,7 @@ def build_text_menu(he):
         elif keep_alive == "2":
             print("\n    Opening sqlite browser\n")
             sqlitedb = cpc('sqlitedb')
-            sqlitedb.run_with_argument(arg_1=args.c)
+            sqlitedb.run_with_argument(arg_1=str(args.c).replace('.ctb', '_tab.db'))
             print("\n    Closing sqlite browser\n")
         elif keep_alive == "3":
             print("\n    Synchronize directories\n")
