@@ -8,9 +8,9 @@ from Template import HTML, SQL
 class OpenWeatherMap(object):
     def __init__(self, location):
         # syntax = pyowm.OWM(API_key='your-API-key', subscription_type='pro')
-        owm_api = '1050e850fbcc463dd98a726d6af37134'
+        owm_api = 'd254a5bf0a3d45dd84cf2e21de759b31'
         owm = pyowm.OWM(owm_api)
-        print 'OpenWeatherMap.org - validate API-key disabled'
+        print 'OpenWeatherMap.org - validate API-key disabled - location: ' + location
         if not location:
             location = 'Horni Pocernice,cz'  # 'Necin,cz'
         self.place_obj = owm.weather_at_place(location)._location
