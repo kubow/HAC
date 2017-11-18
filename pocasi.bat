@@ -40,17 +40,17 @@ python %py_forecast_file% -g weather -p %location% -w %~dp0 -l %log_file%
 ECHO ====================
 ECHO python aggregate data 
 ECHO ====================
-ECHO syntax: %py_data_file% -d %platform% -l location -m mode(rea/agg)
+ECHO syntax: %py_data_file% -l location -m mode(rea/agg)
 ECHO ...............
-python %py_data_file% -m aggregate -d "%platform%" -l %log_dir%
+python %py_data_file% -m aggregate -l %log_dir%
 
 :small
 ECHO ====================
 ECHO python aggregate data 
 ECHO ====================
-ECHO syntax: %py_data_file% -d %platform% -l location -m mode(rea/agg)
+ECHO syntax: %py_data_file% -l location -m mode(rea/agg)
 ECHO ...............
-python %py_data_file% -m aggregate -d "%platform%" -l %log_dir%
+python %py_data_file% -m aggregate -l %log_dir%
 
 :quit
 REM EXIT

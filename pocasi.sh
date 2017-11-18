@@ -27,21 +27,21 @@ then
     echo python write proccessed data
     echo ==========================
     platform='linux'
-    echo 'syntax: '${py_data_file}' -d '${platform}' -l location -m mode(rea/agg)'
+    echo 'syntax: '${py_data_file}' -l location -m mode(rea/agg)'
 
     echo Running on ${platform} - writing ${YY}${MM}"("${DD}").db"
-    python ${py_data_file} -d ${platform} -l ${log_dir} -m aggregate
+    python ${py_data_file} -l ${log_dir} -m aggregate
 elif [ "$1" = "s" ]
 then
     echo ==========================
     echo python write proccessed data
     echo ==========================
     platform='linux'
-    echo 'syntax: '${py_data_file}' -d '${platform}' -l location -m mode(rea/agg)'
+    echo 'syntax: '${py_data_file}' -l location -m mode(rea/agg)'
 
     echo Running on ${platform} - writing ${YY}${MM}"("${DD}").db"
     #python ${py_data_file} -d ${weather_mo} -p ${platform}
-    python ${py_data_file} -d ${platform} -l ${log_dir} -m aggregate
+    python ${py_data_file} -l ${log_dir} -m aggregate
 else
     echo "1st argument - cycle type"
     echo "    b - Big tick / weather + forecast + aggreagte data" 
