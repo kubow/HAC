@@ -22,36 +22,36 @@
     BoxLayout:
         id: topup
         orientation: 'horizontal'
-        size_hint: 1, None
+        size_hint: 1, .1
         width: self.width
         
         Label:
             text: '... main menu' 
-            size_hint: .2, None
+            size_hint: .1, None
             font_size: str(font_slider.value)+'sp'
             
         TextInput:
             id: main_text
-            size_hint: .3, .5
+            size_hint: .3, None
             text: 'Type to search..!'
             font_size: str(font_slider.value)+'sp'
         
         Label:
             text: 'location is '+root.actual_location
-            size_hint: .5, None
+            size_hint: .3, None
             text_size: self.width, None
             height: self.texture_size[1]
             font_size: str(font_slider.value)+'sp'
             
         Button:
             text: 'Other function'
-            size_hint: .5, None
+            size_hint: .1, None
             on_press: root.clear()
             font_size: str(font_slider.value)+'sp'
             
         Button:
             text: 'One dir up'
-            size_hint: .5, None
+            size_hint: .1, None
             on_press: root.multimedia_content()
             font_size: str(font_slider.value)+'sp'
             
