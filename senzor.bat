@@ -8,5 +8,5 @@ SET py_data_file=%script_dir%DV72.py
 ECHO ==========================
 ECHO serial read data
 ECHO ==========================
-ECHO syntax: %py_data_file% -d %platform% -l %log_dir% -m mode(read/aggregate)
-python %py_data_file% -d "%platform%" -l %log_dir% -m read
+ECHO syntax: %py_data_file% -l %log_dir% -m mode(read/aggregate)
+python %py_data_file% -l %log_dir% -m read

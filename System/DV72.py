@@ -217,8 +217,6 @@ if __name__ == '__main__':
         ready = 'prepare to run serial read ...'
         while ready:
             ready = dev.read_serial()
-        if not ready:
-            logger.log_operation(ready)
     elif 'agg' in args.m:
         text = 'aggregating values in {0}, last run: {1}'.format(args.l, dev.last_run)
         logger.log_operation(text)
