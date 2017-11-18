@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TestIP="192.168.88.199"
+TestIP="192.168.0.104"
 
 # Loop forever (until break is issued)
 while true; do

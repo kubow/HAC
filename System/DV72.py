@@ -12,7 +12,7 @@ import time
 import datetime
 import serial
 import argparse
-from OS74 import FileSystemObject, CurrentPlatform, DateTimeObject
+from OS74 import FileSystemObject, CurrentPlatform, CurrentPlatformControl
 
 
 class Device(object):
@@ -34,6 +34,7 @@ class Device(object):
         self.device_name = CurrentPlatform().hostname
         self.device_user = CurrentPlatform().environment
         self.device_platform = CurrentPlatform().main
+        self.usb_list = CurrentPlatformControl().list_attached_peripherals()
 
     def setup_device(self, device, sensor=None, timeout=0):
         # override values: table_fields, table_default_val, port, br, timeout, last_run
@@ -86,7 +87,7 @@ class Device(object):
         just_now = ac_time.strftime(self.date_format)
         now = self.time_aggregated(just_now)
         just_now_file = now.strftime(self.date_file_format)
-        #last_run = time_aggregated(just_now, self.interval_shift)
+        # last_run = time_aggregated(just_now, self.interval_shift)
         csv = self.output_path + 'Measured/' + just_now_file + '.csv'
         try:
             ser = serial.Serial(self.port, self.br, timeout=self.timeout)
@@ -109,7 +110,8 @@ class Device(object):
                 return 'some values might come ...'
         except serial.SerialException as se:
             logger.log_operation(se.args[-1])
-            #print 'serial communication not accesible!'
+            logger.log_operation(','.join(d['tag'] for d in dev.usb_list))
+            # print 'serial communication not accesible!'
             return None
         except Exception as ex:
             print ex.args[0].replace('\n', ' ')
@@ -214,7 +216,7 @@ if __name__ == '__main__':
     if 'read' in args.m or 'ser' in args.m:
         text = 'Reading serial input from: {0} - at {1}'.format(str(dev.port),str(dev.br))
         logger.log_operation(text)
-        ready = 'prepare to run serial read ...'
+        ready = 'prepare to run serial read ... '
         while ready:
             ready = dev.read_serial()
     elif 'agg' in args.m:
@@ -223,4 +225,4 @@ if __name__ == '__main__':
         dev.write_to_database('now', 0, 'm/s')
         JsonContent(args.l + 'Measured', write=True)
     else:
-        print 'not possible'
+        logger.log_operation(','.join(d['tag'] for d in dev.usb_list))

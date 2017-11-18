@@ -7,9 +7,14 @@ import argparse
 import datetime
 import platform
 import shutil
-from subprocess import call
+import re
+import subprocess
 from sys import platform as _platform
 
+try:
+    import win32com.client
+except ImportError:
+    print 'not a windows platform'
 from Template import SQL
 from SO74DB import DataBaseObject
 
@@ -246,32 +251,42 @@ class CurrentPlatform:
 class CurrentPlatformControl(CurrentPlatform):
     def __init__(self, application=''):
         CurrentPlatform.__init__(self)
-        self.app_name = application
-        d = os.path.dirname(os.path.realpath(__file__)) + '/Settings.sqlite'
-        sql = SQL.get_app_command.format(application, self.main)
-        #print sql
-        self.app_run_path = DataBaseObject(d).return_one(sql)[0]
-        # print ': ' + self.app_run_path
+        if application:
+            self.app_name = application
+            d = os.path.dirname(os.path.realpath(__file__)) + '/Settings.sqlite'
+            sql = SQL.get_app_command.format(application, self.main)
+            #print sql
+            self.app_run_path = DataBaseObject(d).return_one(sql)[0]
+        else:
+            self.app_name = 'not_defined'
+            self.app_run_path = 'must find out'
         
     def run_with_argument(self, arg_1='', arg_2=''):
         command = self.app_run_path + ' %s' % arg_1
         print command
-        call([self.app_run_path, arg_1])
+        subprocess.call([self.app_run_path, arg_1])
         # if self.main == 'lnx':
-            # call([self.app_run_path, arg_1])
+            # subprocess.call([self.app_run_path, arg_1])
         # elif self.main == 'win':
-            # call([self.app_run_path, arg_1])
+            # subprocess.call([self.app_run_path, arg_1])
 
-            
-def run_command_line(command):
-    plf = CurrentPlatform()
-    if 'win' == plf.main:
-        installation_dir = 'C:\\Program Files(x86)\\cherrytree\\'
-        command = installation_dir + command
-    elif 'lnx' == plf.main or 'linux' == plf.main:
-        command = command
-    print 'command: ' + command
-
+    def list_attached_peripherals(self):
+        if self.main == 'win':
+            wmi = win32com.client.GetObject("winmgmts:")
+            for usb in wmi.InstancesOf("Win32_USBHub"):
+                return usb.DeviceID
+        else:
+            device_re = re.compile("Bus\s+(?P<bus>\d+)\s+Device\s+(?P<device>\d+).+ID\s(?P<id>\w+:\w+)\s(?P<tag>.+)$", re.I)
+            df = subprocess.check_output("lsusb")
+            devices = []
+            for i in df.split('\n'):
+                if i:
+                    info = device_re.match(i)
+                    if info:
+                        dinfo = info.groupdict()
+                        dinfo['device'] = '/dev/bus/usb/%s/%s' % (dinfo.pop('bus'), dinfo.pop('device'))
+                        devices.append(dinfo)
+            return devices
 
 def compare_directories(dir1, dir2):
     if not os.path.isdir(dir1) or not os.path.isdir(dir2):
@@ -296,7 +311,7 @@ def compare_directories(dir1, dir2):
 if __name__ == '__main__':
 
     from log import Log
-    from SO74TX import TextObject
+    from SO74TX import TextContent
     from UI74 import main_app_view
 
     parser = argparse.ArgumentParser(description="browse/list dirs")
