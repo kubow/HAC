@@ -52,11 +52,12 @@ class Device(object):
             self.table_default_val = col_vals
             # match device name, platform
             for device_check in dbc.return_many(SQL.get_device_name_list):
-                if not str(device_check[0]).lower() in self.device_name.lower():
-                    continue
-                else:
+                if str(device_check[0]).lower() in self.device_name.lower():
                     self.port = dbc.return_one(SQL.get_driver_loc.format(device_check[0]))[0]
                     self.br = dbc.return_one(SQL.get_driver_br.format(device_check[0]))[0]
+                    str_device_id = 'identified device %s' % self.device_name
+                    str_device_adress = 'reading from %s' % self.port
+                    logger.log_operation(str_device_id+' / '+str_device_adress)
                     break
             if not self.port:
                 self.port = dbc.return_one(SQL.get_driver_dummy_loc.format(self.device_platform))[0]
@@ -67,6 +68,8 @@ class Device(object):
             self.port = 'COM4'
             self.br = 9600
             self.table_name = 'measured'
+            print_text = 'not able to load setup database, using default {0} / {1}'
+            logger.log_operation(print_text.format(self.port, self.br))
         # timeout waiting time
         self.timeout = timeout
         # last run file
@@ -105,8 +108,8 @@ class Device(object):
                 print 'no text to receive ...'
                 return 'some values might come ...'
         except serial.SerialException as se:
-            print se.args
-            print 'serial communication not accesible!'
+            logger.log_operation(se.args[-1])
+            #print 'serial communication not accesible!'
             return None
         except Exception as ex:
             print ex.args[0].replace('\n', ' ')
@@ -197,7 +200,6 @@ if __name__ == '__main__':
     from log import Log
     
     parser = argparse.ArgumentParser(description="Write weather data")
-    parser.add_argument('-d', help='device name reading data', type=str, default='')
     parser.add_argument('-l', help='location to write final data', type=str, default='')
     parser.add_argument('-m', help='mode (read serial/aggregate values)', type=str, default='')
     args = parser.parse_args()
@@ -206,7 +208,7 @@ if __name__ == '__main__':
     logger = Log(args.l + 'logfile.log', 'device', 'DV72.py',  True)
     dev.setup_output_path(args.l)
     # device settings: port, baud rate and timeout
-    dev.setup_device(args.d, "all sensors", 0)
+    dev.setup_device('arduino', "all sensors", 0)
     # log sql (debug) print sql
     
     if 'read' in args.m or 'ser' in args.m:
@@ -215,6 +217,8 @@ if __name__ == '__main__':
         ready = 'prepare to run serial read ...'
         while ready:
             ready = dev.read_serial()
+        if not ready:
+            logger.log_operation(ready)
     elif 'agg' in args.m:
         text = 'aggregating values in {0}, last run: {1}'.format(args.l, dev.last_run)
         logger.log_operation(text)
