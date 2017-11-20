@@ -2,82 +2,67 @@ msg * %1%
 
 %SystemRoot%\system32\cmd.exe /t:0E
 
-............................Systémová nápovìda pro CMD.EXE........................
-/c 
-Provede pøíkaz zadaný parametrem øetìzec a ukonèí práci. 
+REM ............................Systémová nápovìda pro CMD.EXE........................
+REM /c  Provede prikaz zadaný parametrem øetìzec a ukonèí práci. 
 
-/k 
-Provede pøíkaz zadaný parametrem øetìzec a pokraèuje v provádìní. 
+REM /k  Provede prikaz zadaný parametrem øetìzec a pokraèuje v provádìní. 
 
-/s 
-Mìní zpùsob zpracování parametru øetìzec uvedeného za parametrem /c nebo /k. 
+REM /s  Mení zpùsob zpracování parametru øetìzec uvedeného za parametrem /c nebo /k. 
 
-/q 
-Vypne zobrazování zadávaných znakù. 
+REM /q  Vypne zobrazování zadávaných znakù. 
 
-/d 
-Zakáže provádìní automaticky spouštìných pøíkazù. 
+REM /d  Zakáže provádìní automaticky spouštìných prikazù. 
 
-/a 
-Vytvoøí výstup ve formátu ANSI (American National Standards Institute). 
+REM /a  Vytvoøí výstup ve formátu ANSI (American National Standards Institute). 
 
-/u 
-Vytvoøí výstup Unicode. 
+REM /u  Vytvoøí výstup Unicode. 
 
-/t:fg 
-Nastaví barvy popøedí (p) a pozadí (z). V následující tabulce jsou uvedeny platné šestnáctkové èíslice, které lze použít jako hodnoty p a z. Hodnota Barva 
-0 Èerná 
-1 Modrá 
-2 Zelená 
-3 Akvamarínová 
-4 Èervená 
-5 Fialová 
-6 Žlutá 
-7 Bílá 
-8 Šedá 
-9 Svìtle modrá 
-A Svìtle zelená 
-B Svìtle akvamarínová 
-C Svìtle èervená 
-D Svìtle nachová 
-E Svìtle žlutá 
-F Jasnì bílá 
+REM /t:fg   REM Nastaví barvy popøedí (f) a pozadí (g). V následující tabulce jsou uvedeny platné šestnáctkové èíslice, které lze použít jako hodnoty p a z. Hodnota Barva 
+REM 0 Èerná 
+REM 1 Modrá 
+REM 2 Zelená 
+REM 3 Akvamarínová 
+REM 4 Èervená 
+REM 5 Fialová 
+REM 6 Žlutá 
+REM 7 Bílá 
+REM 8 Šedá 
+REM 9 Svìtle modrá 
+REM A Svìtle zelená 
+REM B Svìtle akvamarínová 
+REM C Svìtle èervená 
+REM D Svìtle nachová 
+REM E Svìtle žlutá 
+REM F Jasnì bílá 
 
-/e:on 
-Povolí rozšíøení pøíkazù. 
+REM /e:on   Povolí rozšíøení prikazù. 
 
-/e:off 
-Zakáže rozšíøení pøíkazù. 
+REM /e:off  Zakáže rozšíøení prikazù. 
 
-/f:on 
-Povolí doplòování názvù souborù a adresáøù. 
+REM /f:on   Povolí doplòování názvù souborù a adresáøù. 
 
-/f:off 
-Zakáže doplòování názvù souborù a adresáøù. 
+REM /f:off  Zakáže doplòování názvù souborù a adresáøù. 
 
-/v:on 
-Povolí zpoždìné rozšíøení promìnné prostøedí. 
+REM /v:on   Povolí zpoždìné rozšíøení promìnné prostøedí. 
 
-/v:off 
-Zakáže zpoždìné rozšíøení promìnné prostøedí. 
-øetìzec 
-Urèuje pøíkaz, který má být proveden. 
+REM /v:off  Zakáže zpoždìné rozšíøení promìnné prostøedí. 
 
-/? 
-Zobrazí v pøíkazovém øádku nápovìdu. 
+REM øetìzec Urèuje prikaz, který má být proveden. 
 
-Poznámky
-Použití více pøíkazù 
-V pøípadì potøeby mùžete v parametru øetìzec použít více pøíkazù oddìlených oddìlovaèem pøíkazù &&, musíte je však uvést v uvozovkách (napøíklad "pøíkaz&&pøíkaz&&pøíkaz").
+REM /?  Zobrazí v prikazovém øádku nápovìdu. 
 
-Zpracování uvozovek 
-Pokud použijete parametr /c nebo /k, pøíkaz cmd zpracuje zbývající èást parametru øetìzec a uvozovky budou zachovány pouze pøi splnìní následujících podmínek:
+REM Poznámky
+REM Použití více prikazù 
+REM V pøípadì potøeby mùžete v parametru øetìzec použít více prikazù oddìlených oddìlovaèem prikazù &&, musíte je však uvést v uvozovkách (napøíklad "prikaz&&prikaz&&prikaz").
 
-Není použit parametr /s. 
-Je použit právì jeden pár uvozovek. 
-Mezi uvozovkami není použit žádný speciální znak (napøíklad &<>( ) @ ^ |). 
-Mezi uvozovkami bude uveden alespoò jeden prázdný znak. 
-Parametr øetìzec uvedený v uvozovkách vyjadøuje název spustitelného souboru. 
-Nebudou-li tyto podmínky splnìny, bude pøi zpracování parametru øetìzec nejprve zjištìno, zda je jeho prvním znakem znak uvozovek. Pokud ano, bude první znak z øetìzce odebrán spolu se znakem uvozovek na konci øetìzce. Text, který pøípadnì mùže následovat za znakem uvozovek na konci øetìzce, bude zachován.
+REM Zpracování uvozovek 
+REM Pokud použijete parametr /c nebo /k, prikaz cmd zpracuje zbývající èást parametru øetìzec a uvozovky budou zachovány pouze pøi splnìní následujících podmínek:
 
-							"SystemLine.BAT" /by:5or3_on3d4
+REM Není použit parametr /s. 
+REM Je použit právì jeden pár uvozovek. 
+REM Mezi uvozovkami není použit žádný speciální znak (napøíklad &<>( ) @ ^ |). 
+REM Mezi uvozovkami bude uveden alespoò jeden prázdný znak. 
+REM Parametr øetìzec uvedený v uvozovkách vyjadøuje název spustitelného souboru. 
+REM Nebudou-li tyto podmínky splnìny, bude pøi zpracování parametru øetìzec nejprve zjištìno, zda je jeho prvním znakem znak uvozovek. Pokud ano, bude první znak z øetìzce odebrán spolu se znakem uvozovek na konci øetìzce. Text, který pøípadnì mùže následovat za znakem uvozovek na konci øetìzce, bude zachován.
+
+							REM "SystemLine.BAT" /by:5or3_on3d4

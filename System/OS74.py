@@ -328,4 +328,4 @@ if __name__ == '__main__':
         fso = FileSystemObject(args.i, args.f)
         fso.directory_lister(list_files=True)
     else:
-        print 'please specify at least input file ...'
+        logger.log_operation('please specify at least input file ...') 
