@@ -11,6 +11,7 @@ mysqlLog="/var/log/mysqld.log"
 mailstop="sysadmin@mydomain.com"
 mailstop1="15555555555@mycellphone.com"
 machine=`hostname`
+
 # The following three are for mytop use - use a db user that has decent rights
 dbusr="username"
 dbpw="password"
@@ -21,11 +22,13 @@ levelToCheck=10
 # Set variables from system:
 loadLevel=`cat /proc/loadavg | awk '{print $1}'`
 loadLevel=$( printf "%0.f" $loadLevel )
+echo 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
 
 # if the load level is greater than you want, start the script process. Otherwise, exit 0
-
+echo $loadLevel
 if [ $loadLevel -gt $levelToCheck ]; then
 echo "" > $tmpfile
+echo 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
 echo "**************************************" >>$tmpfile
 echo "Date: $dt " >>$tmpfile
 echo "Check System Load & Processes " >>$tmpfile
