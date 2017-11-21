@@ -35,8 +35,11 @@ python %py_file% -i %mlt_dir% -l %log_file%
 GOTO quit
 
 :text
-ECHO pure DOS version
-DIR /s/b *.mp3 > dir.txt
+REM ECHO pure DOS version
+REM DIR /s/b *.mp3 > dir.txt
+SET py_file=%~dp0System\SO74TX.py
+python %py_file%  -i C:\_Temp\_ -o C:\_Temp\__ -l linux -m reg
+echo "done run"
 GOTO quit
 
 :quit
