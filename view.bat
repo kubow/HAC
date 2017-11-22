@@ -11,14 +11,14 @@ GOTO MENU
 
 :MENU
 echo 1st parameter:
-echo - DATABASE MODE -
-echo h - HANA 
-echo s - SQLite
-echo - FILE MODE -
-echo t - pure text file
-echo - FOLDER MODE - 
-echo b - browse folders
-echo l - list folder files
+echo - - - DATABASE MODE - - - 
+echo   h - HANA 
+echo   s - SQLite
+echo - - - FILE MODE - - - 
+echo   t - pure text file
+echo - - - FOLDER MODE - - -
+echo   b - browse folders
+echo   l - list folder files
 echo 2nd parameter: object location
 GOTO QUIT
 
