@@ -60,7 +60,7 @@ class HTML(object):
         <div class="cat_sub"><a href="520.html" target="_self">Pohyb a kondice</a></div>
         <div class="cat_sub"><a href="530.html" target="_self">Kultura</a></div>
         <div class="cat_sub"><a href="540.html" target="_self">Administrativa</a></div>
-        <div class="cat_sub"><a href="505.html" target="_self">Magie</a></div>
+        <div class="cat_sub"><a href="550.html" target="_self">Magie</a></div>
       </div>
       <div id="l1d2" class="Kula">
         <div class="cat_main"><a href="600.html" target="_self">Vedy</a></div>
@@ -186,49 +186,3 @@ class SQL(object):
     value_insert = 'INSERT INTO {0} VALUES ({1});'
     value_update = 'UPDATE {0} SET {1} WHERE timestamp = "{2}";'
 
-
-def construct(node, fathers, conn, level, mf, href, mainhref):
-    """ function to write child nodes of root nodes, arguments:
-    node - the main node id, which has node children
-    fathers - pass array of nodes which have children
-    conn - pass the original connection to sqlite database
-    level - hierarchy tree position (starting with 1)
-    mf - htmll file which is being written (main file)
-    href - refernece to rootnode in htmll markup
-    mainhref - main rootnode reference to keep bond"""
-    rows = conn.execute(c.selectSubRootNodes, {"father": str(node)})  # .fetchall()
-    level += 1
-    # for all fetched children rows (compare with sql c.selectSubRootNodes)
-    for node_id, node_namen, node_textn, node_sqn, code_he in rows:
-        node_name = node_namen.encode('utf8')
-        node_text = node_textn.encode('utf8')
-        code_last = int(str(code_he).split(".")[0][-1])
-        # print(
-        # '--' * level + node_name + ' node / id ' + str(node_id) + ' / sqn ' + str(node_sqn) + ' level ' + str(level))
-        mf.write(c.ref_c.format('l' + str(level), code_he, node_name))
-        # level = 2 and 3 equivalent - appending all of them
-        ref_prep = c.paragraph_c.format('l' + str(level), c.ref.format(str(code_he), node_name))
-        if level < 4:
-            href += ref_prep
-            mainhref += ref_prep
-            prev_code = code_last
-        # level = 3 equivalent - appending different to each href
-        else:
-            href += ref_prep
-        fo = open(directory + '/' + str(code_he) + '.html', 'w+')
-        fo.write(c.pageTemplateBegin.format(node_name, node_name) + mainhref)
-        # append next level refs and proceed new ones
-        if node_id in fathers:
-            sf = fo
-            construct(node_id, fathers, conn, level, sf, href, mainhref)
-        fo.write(c.pageTemplateMiddle)
-        # begin to parse text
-        e = xml_tree.fromstring(node_text)
-        for element in e._children:
-            if None <> element.text:
-                for par_text in element.text.encode('utf8').split('\n'):
-                    fo.write(c.paragraph.format(par_text))
-            else:
-                fo.write(c.paragraph.format('... no content yet ...'))
-        fo.write(c.pageTemplateEnd.format(time_stamp))
-        fo.close()

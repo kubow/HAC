@@ -14,7 +14,7 @@ from sys import platform as _platform
 try:
     import win32com.client
 except ImportError:
-    print 'not a windows platform'
+    windows = False
 from Template import SQL
 from SO74DB import DataBaseObject
 

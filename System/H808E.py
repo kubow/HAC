@@ -13,6 +13,8 @@ class h808e(object):
         self.db_path = ''
         self.db_tables = self.get_table()
         self.db_query = 'SELECT * FROM enc_nodes;'
+        self.toolkit = 'toolkit'
+        self.area_links = 'will be a list with referrals...'
         # self.db_data = None
         self.debug = debug
 
@@ -185,9 +187,9 @@ class h808e(object):
             self.db_path = ':memory:'
 
     def set_db_data(self, text):
-        html_content = HTML.pageTemplateBegin.format(self.node, 'toolkit')
-        html_content += '{0}' + HTML.pageTemplateMiddle
-        html_content += HTML.pageTemplateEnd.format('footer')
+        html_content = HTML.pageTemplateBegin.format(self.node, self.toolkit)
+        html_content += self.area_links + HTML.pageTemplateMiddle
+        html_content += '{0}' + HTML.pageTemplateEnd.format('footer')
         if text:
             html_content = html_content.format(SO74TX.xml_to_html(''.join(text).encode('utf8')))
         else:
@@ -233,6 +235,12 @@ def build_text_menu(he):
             print("\n    Closing sqlite browser\n")
         elif keep_alive == "3":
             print("\n    Synchronize directories\n")
+            root_dir = FileSystemObject(args.c).one_dir_up()
+            dropbox_dir = FileSystemObject(root_dir).append_directory('Dropbox')
+            print dropbox_dir
+            print args.c + ': ' + FileSystemObject(args.c).object_mod_date()
+            db = args.c.replace('.ctb', '_tab.db')
+            print db + ': ' + FileSystemObject(db).object_mod_date()
             # dropbox synchronizer
         elif keep_alive == "4":
             print 'generate structure'
