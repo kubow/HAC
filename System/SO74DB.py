@@ -4,7 +4,7 @@ from Template import SQL
 
 
 class DataBaseObject:
-    """db_path can be a log_file, it creates in sqlite in the same path"""
+    """db_path can be a log_file, it creates record in sqlite in the same path"""
     def __init__(self, db_path, active=False):
         self.db_file = db_path.replace('.log', '.sqlite')
         self.type = 'sqlite3'

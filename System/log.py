@@ -1,14 +1,13 @@
-import os
 import argparse
 import datetime
 import logging
+from OS74 import FileSystemObject
 
 
 class Log(object):
     def __init__(self, log_file, module, caller_file='log.py', advanced=True):
         self.date_format = '%d.%m.%Y %H:%M:%S'
-        if not os.path.isfile(log_file):
-            # print os.path.realpath()
+        if not FileSystemObject(log_file).exist:
             print log_file + ' does not exist! - create new one in actual path'
         self.log_file = log_file
         self.module = module

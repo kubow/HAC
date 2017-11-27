@@ -21,7 +21,6 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 
 from  kivy.properties import ListProperty, StringProperty
-import os
 
 from OS74 import FileSystemObject
 

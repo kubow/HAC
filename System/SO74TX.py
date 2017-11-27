@@ -5,7 +5,6 @@ compare text simrality
 XML > HTML
 """
 import re
-import os
 import argparse
 import difflib
 import datetime
@@ -467,7 +466,6 @@ def similar(seq1, seq2):
 
 
 if __name__ == '__main__':
-
     from log import Log
 
     parser = argparse.ArgumentParser(description='Text proccess')
@@ -489,7 +487,9 @@ if __name__ == '__main__':
             output_object = args.o
         export_text_to(output_object, TextContent(input_text).replace_line_endings())
     elif input_object.is_folder:
-        for file_name in os.listdir(args.i):
+        folder_list = input_object.object_read()
+        for f_name in folder_list.iteritems():
+            file_name = folder_list[f_name]
             input_text = load_text_from(args.i + '/' + file_name)
             output_object = args.o + '/' + file_name
             if 'lin' in args.m:

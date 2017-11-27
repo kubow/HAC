@@ -72,9 +72,9 @@ class MainWindow:
         self.dir_list.delete(0, 'end')
         self.bar_node['text'] = 'Location : {0}'.format(self.directory)
         for mlt_file in self.mlt_lib.keys():
-            if os.path.isdir(self.mlt_lib[mlt_file]):
+            if FileSystemObject(self.mlt_lib[mlt_file]).is_folder:
                 self.dir_list.insert('end', mlt_file)
-            elif os.path.isfile(self.mlt_lib[mlt_file]):
+            elif FileSystemObject(self.mlt_lib[mlt_file]).is_file:
                 self.file_list.insert('end', mlt_file)
             else:
                 print 'item {0} does not fit ({1})'.format(mlt_file, self.mlt_lib[mlt_file])
