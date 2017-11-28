@@ -15,7 +15,7 @@ try:
     import win32com.client
 except ImportError:
     windows = False
-from Template import SQL
+
 from SO74DB import DataBaseObject
 
 class DateTimeObject:
@@ -79,7 +79,7 @@ class FileSystemObject:
         return self.path.split(self.separator)[-1]
 
     def append_directory(self, directory):
-        return self.path + self.separator + directory + self.separator
+        return self.path + self.separator + directory
 
     def append_file(self, file_name):
         return self.path + self.separator + file_name
@@ -110,7 +110,7 @@ class FileSystemObject:
         if not final_file:
             final_file = FileSystemObject(template_fld).append_directory('Multimedia') + 'DirectoryList.html'
         print template_file + ' - will be writing to: ' + final_file
-        template = TextObject(file_name=template_file).replace('XXX', self.path)
+        template = TextContent(file_name=template_file).replace('XXX', self.path)
 
         head = '<table><tr class="Head"><td>List Generated on {0} / Total Folder Size - {1} / {2} Subfolders </td></tr>'
         table_head = '<table><tr class="Head">{0}<td>{1}</table>'
@@ -220,6 +220,7 @@ class CurrentPlatform:
         self.main = self.which_platform()
         self.environment = self.get_username_domain()
         self.hostname = platform.node()
+        self.homepath = self.get_home_dir_path()
 
     @staticmethod
     def which_platform():
@@ -243,9 +244,11 @@ class CurrentPlatform:
     def get_release():
         return platform.release()
 
-    @staticmethod
-    def get_username_domain():
+    def get_username_domain(self):
         return os.environ.get('USERNAME'), os.environ.get('USERDOMAIN')
+        
+    def get_home_dir_path(self):
+        return os.environ.get('HOMEDRIVE') + os.environ.get('HOMEPATH')
 
         
 class CurrentPlatformControl(CurrentPlatform):
@@ -262,8 +265,7 @@ class CurrentPlatformControl(CurrentPlatform):
             self.app_run_path = 'must find out'
         
     def run_with_argument(self, arg_1='', arg_2=''):
-        command = self.app_run_path + ' %s' % arg_1
-        print command
+        print self.app_run_path + ' %s' % arg_1
         subprocess.call([self.app_run_path, arg_1])
         # if self.main == 'lnx':
             # subprocess.call([self.app_run_path, arg_1])
@@ -287,6 +289,7 @@ class CurrentPlatformControl(CurrentPlatform):
                         dinfo['device'] = '/dev/bus/usb/%s/%s' % (dinfo.pop('bus'), dinfo.pop('device'))
                         devices.append(dinfo)
             return devices
+
 
 def compare_directories(dir1, dir2):
     if not os.path.isdir(dir1) or not os.path.isdir(dir2):
@@ -312,6 +315,7 @@ if __name__ == '__main__':
 
     from log import Log
     from SO74TX import TextContent
+    from Template import SQL
     from UI74 import main_app_view
 
     parser = argparse.ArgumentParser(description="browse/list dirs")

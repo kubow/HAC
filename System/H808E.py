@@ -84,8 +84,10 @@ class h808e(object):
         # load to in memory sqlite database
         self.load_active_directory_memory()
         # transfer to corresponding database
-        
-        return True
+        if self.contain_same_data:
+            return True
+        else:
+            return False
 
     def load_active_directory_memory(self):
         database = DataBaseObject(":memory:", True)
@@ -102,7 +104,13 @@ class h808e(object):
                 i += 1
         
         self.db_data = database.return_many('select * from h808e;')
-        
+    
+    def contain_same_data(self):
+        flag = False
+        db = DataBaseObject()
+        for record in self.db_data:
+            
+    
     def directory_watcher(self):
         flag = True
         if FileSystemObject(self.dir_active).is_folder:
@@ -223,6 +231,8 @@ def build_text_menu(he):
         -------------------------------------
         ==========PRESS 'Q' TO QUIT==========""")
         keep_alive = raw_input("Please run:")
+        file_name = FileSystemObject(args.c).last_part()
+        active_directory = args.c.replace(file_name, '')
         if keep_alive == "1":
             print("\n    Opening cherrytree ...\n")
             cherry = cpc('cherrytree')
@@ -234,14 +244,30 @@ def build_text_menu(he):
             sqlitedb.run_with_argument(arg_1=str(args.c).replace('.ctb', '_tab.db'))
             print("\n    Closing sqlite browser\n")
         elif keep_alive == "3":
-            print("\n    Synchronize directories\n")
-            root_dir = FileSystemObject(args.c).one_dir_up()
-            dropbox_dir = FileSystemObject(root_dir).append_directory('Dropbox')
-            print dropbox_dir
-            print args.c + ': ' + FileSystemObject(args.c).object_mod_date()
-            db = args.c.replace('.ctb', '_tab.db')
-            print db + ': ' + FileSystemObject(db).object_mod_date()
             # dropbox synchronizer
+            print("\n    Synchronize directories\n")
+            if cpc().main == 'win':
+                dropbox_dir = FileSystemObject(cpc().homepath).append_directory('Dropbox')
+            else:
+                root_dir = FileSystemObject(args.c).one_dir_up()
+                dropbox_dir = FileSystemObject(root_dir).append_directory('Dropbox')
+            
+            db = args.c.replace('.ctb', '_tab.db')
+            file_name_db = file_name.replace('.ctb', '_tab.db')
+            dropbox_he = FileSystemObject(dropbox_dir).append_file(file_name)
+            dropbox_db = dropbox_he.replace('.ctb', '_tab.db')
+            
+            local_he_mod = FileSystemObject(args.c).object_mod_date()
+            local_db_mod = FileSystemObject(db).object_mod_date()
+            dropbox_he_mod = FileSystemObject(dropbox_he).object_mod_date()
+            dropbox_db_mod = FileSystemObject(dropbox_he).object_mod_date()
+            
+            print 'file          | ' + active_directory + '              | ' + dropbox_dir
+            print '='*60
+            print file_name + '     | ' + local_he_mod + ' | ' + dropbox_he_mod
+            print file_name_db + '  | ' + local_db_mod + ' | ' + dropbox_db_mod
+            print '\n'
+
         elif keep_alive == "4":
             print 'generate structure'
             he.iterate_enc_structure()

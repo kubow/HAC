@@ -48,8 +48,8 @@ class Log(object):
 
 
 def advanced_logger_test():
-    logger.log_operation('0 ; this is a debug message', 10)
-    logger.log_operation('3 ; this is an error message', 20)
+    logger.log_operation('this is a debug message', 10)
+    logger.log_operation('this is an error message', 20)
 
 
 if __name__ == '__main__':
