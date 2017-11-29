@@ -16,6 +16,7 @@ try:
 except ImportError:
     windows = False
 
+from Template import SQL
 from SO74DB import DataBaseObject
 
 class DateTimeObject:
@@ -103,6 +104,16 @@ class FileSystemObject:
             print 'file ' + self.path + ' archived'
         else:
             print 'directory move not implemented'
+            
+    def copy_file_to(self, another_directory, filename=''):
+        if not filename:
+            shutil.copy(self.path, another_directory)
+        else:
+            if self.is_file:
+                shutil.copy(self.path, FileSystemObject(another_directory).append_file(filename))
+                print 'file ' + self.path + ' archived'
+            else:
+                print 'directory copy not implemented'
 
     def directory_lister(self, list_files=False, final_file=''):
         template_fld = FileSystemObject().one_dir_up()
@@ -315,7 +326,7 @@ if __name__ == '__main__':
 
     from log import Log
     from SO74TX import TextContent
-    from Template import SQL
+    
     from UI74 import main_app_view
 
     parser = argparse.ArgumentParser(description="browse/list dirs")

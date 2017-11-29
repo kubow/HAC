@@ -109,6 +109,7 @@ class h808e(object):
         flag = False
         db = DataBaseObject()
         for record in self.db_data:
+            print record[0]
             
     
     def directory_watcher(self):
@@ -260,12 +261,30 @@ def build_text_menu(he):
             local_he_mod = FileSystemObject(args.c).object_mod_date()
             local_db_mod = FileSystemObject(db).object_mod_date()
             dropbox_he_mod = FileSystemObject(dropbox_he).object_mod_date()
-            dropbox_db_mod = FileSystemObject(dropbox_he).object_mod_date()
+            dropbox_db_mod = FileSystemObject(dropbox_db).object_mod_date()
+            
+            row_he = file_name + '     | ' + local_he_mod + ' {0} ' + dropbox_he_mod
+            row_db = file_name_db + '  | ' + local_db_mod + ' {0} ' + dropbox_db_mod
             
             print 'file          | ' + active_directory + '              | ' + dropbox_dir
             print '='*60
-            print file_name + '     | ' + local_he_mod + ' | ' + dropbox_he_mod
-            print file_name_db + '  | ' + local_db_mod + ' | ' + dropbox_db_mod
+            if local_he_mod > dropbox_he_mod:
+                print row_he.format('>')
+                FileSystemObject(args.c).copy_file_to(dropbox_dir)
+            elif local_he_mod < dropbox_he_mod:
+                print row_he.format('<')
+                FileSystemObject(dropbox_he).copy_file_to(active_directory)
+            else:
+                print row_he.format('=')
+            
+            if local_db_mod > dropbox_db_mod:
+                print row_db.format('>')
+                FileSystemObject(db).copy_file_to(dropbox_dir)
+            elif local_db_mod < dropbox_db_mod:
+                print row_db.format('<')
+                FileSystemObject(dropbox_db).copy_file_to(active_directory)
+            else:
+                print row_db.format('=')
             print '\n'
 
         elif keep_alive == "4":
