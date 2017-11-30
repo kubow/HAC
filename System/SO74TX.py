@@ -2,23 +2,22 @@
 """ Proccessing Text (c) Kube Kubow
 replace line endings, load/write text to a file
 compare text simrality
-XML > HTML
 """
 import re
 import argparse
 import difflib
 import datetime
-import xml.etree.ElementTree as xml_tree
+import xml.etree.ElementTree
 import lxml.html
-
 import feedparser
 import requests
 # from xml.dom.minidom import parseString
 
 try:
+    html_easier = True
     from bs4 import BeautifulSoup
 except ImportError:
-    print 'using alternative html parser'
+    html_easier = False
 finally:
     import HTMLParser
 # sys.setdefaultencoding('utf-8')
@@ -35,19 +34,27 @@ from SO74DB import DataBaseObject
 
 
 class WebContent(HTMLParser.HTMLParser):
-    """http://stackoverflow.com/questions/3276040/how-can-i-use-the-python-htmlparser-library-to-extract-data-from-a-specific-div"""
+    """General class for reading HTML Pages"""
 
     def __init__(self, url, log_file=''):
+        uah = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.90 Safari/537.36'
         HTMLParser.HTMLParser.__init__(self)
-        self.headers = {
-            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.90 Safari/537.36'}
-        self.recording = 0
+        self.headers = {"User-Agent": uah}
+        self.easier = html_easier
+        self.recording = 0  # flag for exporting data
         self.data = []
         self.log_file = log_file
         self.url = url
-        self.easier = True  # found BS4
         self.div = None
         self.div_text = ''
+        self.html_text = ''
+        self.is_html = False
+
+    def is_html(self):
+        if lxml.html.fromstring(self.html_text).find('.//*') is not None:
+            self.is_html = True
+        else:
+            self.is_html = False
 
     def handle_starttag(self, tag, attributes):  # , tag_type, tag_name):
         if tag != 'div':
@@ -70,15 +77,15 @@ class WebContent(HTMLParser.HTMLParser):
         if self.recording:
             self.data.append(data)
 
-    def parse_html_text(self, html_text):
-        if is_html_text(html_text):
+    def parse_html_text(self):
+        if is_html_text(self.html_text):
             if self.easier:
-                soup = BeautifulSoup(html_text, 'lxml')
+                soup = BeautifulSoup(self.html_text, 'lxml')
                 return soup
             else:
                 # TODO: same logic as with beautiful soup
                 p = WebContent()
-                oups = p.feed(html_text)
+                oups = p.feed(self.html_text)
                 p.close()
                 return oups
 
@@ -90,16 +97,14 @@ class WebContent(HTMLParser.HTMLParser):
             tag_type = 'class'
         done = False
         try:
-            if 'file:' in self.url:
-                content = FileSystemObject(self.url.split('///')[-1]).object_read()
-                parsed_content = self.parse_html_text(content)
-                done = True
-            else:
-                html = requests.get(self.url, timeout=(10, 5), headers=self.headers)
-                parsed_content = self.parse_html_text(html.content)
-                done = True
             self.div = ''
             self.div_text = ''
+            if 'file:' in self.url:
+                self.html_text = FileSystemObject(self.url.split('///')[-1]).object_read()
+            else:
+                self.html_text = requests.get(self.url, timeout=(10, 5), headers=self.headers).content
+            parsed_content = self.parse_html_text()
+            done = True
             if self.easier:
                 if not tag_name:
                     self.div = parsed_content.find('body')
@@ -108,8 +113,8 @@ class WebContent(HTMLParser.HTMLParser):
                     self.div = parsed_content.find('div', {tag_type: tag_name})
                     self.div_text = parsed_content.find('div', {tag_type: tag_name}).text
             else:
-                # TODO: same logic as with beautiful soup
-                print 'HTML parser not working now...'
+                self.div = parsed_content
+                self.div_text = parsed_content
         except HTMLParser.HTMLParseError, e:
             print '---cannot fetch address {0}, ({1})'.format(self.url, e)
         except:
@@ -118,8 +123,8 @@ class WebContent(HTMLParser.HTMLParser):
                 if content:
                     self.div = str(content)
                     print '---cannot parse content of {0} ({1})'.format(self.url, content)
-                elif html:
-                    self.div = str(html.content)
+                elif self.html_text:
+                    self.div = str(self.html_text.content)
             else:
                 self.div = ''
                 self.div_text = ''
@@ -423,7 +428,7 @@ def create_file_if_neccesary(file_name):
 def xml_to_html(xml_text):
     html_text = ''
     h = HTML()
-    for element in xml_tree.fromstring(xml_text)._children:
+    for element in xml.etree.ElementTree.fromstring(xml_text)._children:
         if element.text is not None:
             if len(element.attrib) > 0:
                 if 'scale' in element:

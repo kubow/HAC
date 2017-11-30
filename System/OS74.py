@@ -12,17 +12,18 @@ import subprocess
 from sys import platform as _platform
 
 try:
-    import win32com.client
+    import win32com.client as w32
 except ImportError:
     windows = False
 
 from Template import SQL
 from SO74DB import DataBaseObject
 
+
 class DateTimeObject:
-    def __init__(self, date_set=datetime.datetime.now(), format='%d.%m.%Y %H:%M:%S'):
+    def __init__(self, date_set=datetime.datetime.now(), date_format='%d.%m.%Y %H:%M:%S'):
         self.date = date_set
-        self.date_string = self.date_string_format(self.date, format)
+        self.date_string = self.date_string_format(self.date, date_format)
 
     def date_string_format(self, float_num, format_str):
         if isinstance(float_num, float):
@@ -285,7 +286,7 @@ class CurrentPlatformControl(CurrentPlatform):
 
     def list_attached_peripherals(self):
         if self.main == 'win':
-            wmi = win32com.client.GetObject("winmgmts:")
+            wmi = w32.GetObject("winmgmts:")
             for usb in wmi.InstancesOf("Win32_USBHub"):
                 return usb.DeviceID
         else:
@@ -326,7 +327,6 @@ if __name__ == '__main__':
 
     from log import Log
     from SO74TX import TextContent
-    
     from UI74 import main_app_view
 
     parser = argparse.ArgumentParser(description="browse/list dirs")

@@ -43,10 +43,10 @@ class HTML(object):
     <div id="Cube">
       <div id="l1d1" class="Kula">
         <div class="cat_main"><a href="400.html" target="_self">Priroda</a></div>
-        <div class="cat_sub"><a href="410.html" target="_self">Život, Biologie</a></div>
-        <div class="cat_sub"><a href="420.html" target="_self">Voda, Hydrologie</a></div>
-        <div class="cat_sub"><a href="430.html" target="_self">Vzduch, Ekologie</a></div>
-        <div class="cat_sub"><a href="440.html" target="_self">Země, Geologie</a></div>
+        <div class="cat_sub"><a href="410.html" target="_self">Minerály</a></div>
+        <div class="cat_sub"><a href="420.html" target="_self">Život, Bilogie</a></div>
+        <div class="cat_sub"><a href="430.html" target="_self">Složení</a></div>
+        <div class="cat_sub"><a href="440.html" target="_self">neobsazeno</a></div>
       </div>
       <div id="l2d1" class="Kula">
         <div class="l1"><a href="123.html" target="_self">Hvězdná encyklopedie</a></div>
