@@ -14,6 +14,7 @@ finally:
 from PIL import Image, ImageTk
 
 from log import Log
+from OS74 import FileSystemObject
 
 
 class MainWindow:
