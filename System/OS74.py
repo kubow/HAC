@@ -257,10 +257,16 @@ class CurrentPlatform:
         return platform.release()
 
     def get_username_domain(self):
-        return os.environ.get('USERNAME'), os.environ.get('USERDOMAIN')
-        
+        if self.main == "win":
+            return os.environ.get('USERNAME'), os.environ.get('USERDOMAIN')
+        else:
+            return os.environ.get('USERNAME'), os.environ.get('HOSTNAME')
+            
     def get_home_dir_path(self):
-        return os.environ.get('HOMEDRIVE') + os.environ.get('HOMEPATH')
+        if self.main == "lnx":
+            return os.environ.get('HOME') 
+        else:
+            return os.environ.get('HOMEDRIVE') + os.environ.get('HOMEPATH')
 
         
 class CurrentPlatformControl(CurrentPlatform):

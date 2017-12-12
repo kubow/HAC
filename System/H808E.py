@@ -247,6 +247,7 @@ def build_text_menu(he):
         elif keep_alive == "3":
             # dropbox synchronizer
             print("\n    Synchronize directories\n")
+            print args.c
             if cpc().main == 'win':
                 dropbox_dir = FileSystemObject(cpc().homepath).append_directory('Dropbox')
             else:
