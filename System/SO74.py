@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 import argparse
-import os
 
 
 def process_web_content(mode, final_dir, url=None):
-    path_separator = FileSystemObject(final_dir).separator
-    settings_db = DataBaseObject(os.path.dirname(os.path.realpath(__file__)) + path_separator + 'Settings.sqlite')
+    settings_db = DataBaseObject(FileSystemObject(__file__).get_another_directory_file('Settings.sqlite'))
     log_file = str(args.l)
     wc = WebContent(url)
+    final_dir_obj = FileSystemObject(final_dir)
     if url:
         print wc
     else:
@@ -21,7 +20,7 @@ def process_web_content(mode, final_dir, url=None):
                     wc.url = restaurant[5]  # zomato style
                     wc.process_url('id', 'daily-menu-container')
 
-                html_file_path = final_dir + path_separator + restaurant[2].encode('utf-8') + '.html'
+                html_file_path = final_dir_obj.append_file(restaurant[2].encode('utf-8') + '.html')
                 wc.write_web_content_to_file(html_file_path, restaurant[3], log_file)
 
         elif 'rss' in mode:
@@ -31,7 +30,7 @@ def process_web_content(mode, final_dir, url=None):
                     wc = RssContent(rss[3])
                 else:
                     print 'no address to fetch ...' + str(rss)
-                html_file_path = final_dir + path_separator + rss[2].encode('utf-8') + '.html'
+                html_file_path = final_dir_obj.append_file(rss[2].encode('utf-8') + '.html')
                 wc.write_rss_content_to_file(html_file_path, rss[3])
 
 
@@ -67,7 +66,7 @@ if __name__ == '__main__':
     localization = (" place/location where user wants to read weather\n"
                     "     or a link to a web page, which will be read")
     destination = (" type of file to write (HTML, SQLite, All)\n"
-                    "or destination location")
+                   "or destination location")
     parser = argparse.ArgumentParser(description="weather@location")
     parser.add_argument('-g', help='mode', type=str, default='weather')
     parser.add_argument('-w', help=destination, type=str, default='none')

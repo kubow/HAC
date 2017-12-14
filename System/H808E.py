@@ -247,12 +247,7 @@ def build_text_menu(he):
         elif keep_alive == "3":
             # dropbox synchronizer
             print("\n    Synchronize directories\n")
-            print args.c
-            if cpc().main == 'win':
-                dropbox_dir = FileSystemObject(cpc().homepath).append_directory('Dropbox')
-            else:
-                root_dir = FileSystemObject(args.c).one_dir_up()
-                dropbox_dir = FileSystemObject(root_dir).append_directory('Dropbox')
+            dropbox_dir = FileSystemObject(cpc().homepath).append_directory('Dropbox')
             
             db = args.c.replace('.ctb', '_tab.db')
             file_name_db = file_name.replace('.ctb', '_tab.db')

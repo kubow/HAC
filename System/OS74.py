@@ -89,7 +89,7 @@ class FileSystemObject:
     def get_another_directory_file(self, another):
         if self.is_file:
             # strip filename from path
-            root_dir = self.one_dir_up(self.path)
+            root_dir = self.one_dir_up()
             return self.separator.join(root_dir.split(self.separator)[0:-1]) + self.separator + another
         elif self.is_folder:
             return self.separator.join(self.path.split(self.separator)[0:-1]) + self.separator + another

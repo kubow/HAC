@@ -38,7 +38,7 @@ def send_mail():
     conn = SMTP(SMTPserver)
     conn.set_debuglevel(False)
 
-    s = smtplib.SMTP(m.server)
+    s = SMTP(m.server)
 
     s.sendmail(m.sender, m.reciever, m.message)
     s.quit()

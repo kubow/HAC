@@ -7,7 +7,6 @@ function to read CSV/JSON file content to a dictionary
 function to write CSV/JSON file from downloaded data
 and a logger module - currently not implemented
 """
-import os
 import time
 import datetime
 import serial
@@ -19,8 +18,7 @@ class Device(object):
     def __init__(self, aggregate_time_step=2):
         self.date_format = '%Y.%m.%d %H:%M:%S'
         self.date_file_format = '%Y%m%d_%H%M'
-        local_path = os.path.dirname(os.path.realpath(__file__))
-        self.setup_db = local_path + '/Settings.sqlite'
+        self.setup_db = FileSystemObject(__file__).get_another_directory_file('Settings.sqlite')
         self.port = 0
         self.br = 0
         self.timeout = 0
@@ -117,9 +115,7 @@ class Device(object):
             print ex.args[0].replace('\n', ' ')
             print 'timeframe now : '+ str(now) + ' / ' + 'last_run' + str(self.last_run)
             # if error found, do timeout
-            # print data_vals
             # raw_input("Press enter to continue")
-            # os.system("pause")
             return 'however error ocured .. '
 
     def write_to_database(self, timestamp, value, velocity):
@@ -194,7 +190,6 @@ def min_between(d1, d2):
         
         
 if __name__ == '__main__':
-
     
     from SO74DB import DataBaseObject
     from SO74TX import CsvContent, JsonContent
