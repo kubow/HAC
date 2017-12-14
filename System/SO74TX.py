@@ -124,7 +124,7 @@ class WebContent(HTMLParser.HTMLParser):
                     self.div = str(content)
                     print '---cannot parse content of {0} ({1})'.format(self.url, content)
                 elif self.html_text:
-                    self.div = str(self.html_text.content)
+                    self.div = str(self.html_text)
             else:
                 self.div = ''
                 self.div_text = ''
@@ -145,7 +145,7 @@ class WebContent(HTMLParser.HTMLParser):
 
     def log_to_database(self, db_path, heading):
         user, domain = CurrentPlatform().get_username_domain()
-        time_stamp = datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S')
+        time_stamp = datetime.datetime.now().strftime('%d.%m.%Y')
         try:
             tag_content = self.div_text.encode('utf-8').replace('\n\n\n\n', '\n').replace('\n\n', '\n')
         except:
