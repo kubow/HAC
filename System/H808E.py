@@ -152,7 +152,8 @@ class h808e(object):
                 root_node[4]) + ' / sqn ' + str(root_node[5]) + ' level 1'
 
     def get_table(self):
-        tables = (None, '')
+        sql = 'select code, name, query, folder from enc_nodes where length(query) > 0;'
+        tables = DatabaseObject(self.db_path).return_many(sql)
         # all tables within enc table - must run sql
         return tables
 

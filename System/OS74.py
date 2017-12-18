@@ -1,6 +1,6 @@
-"""A directory browser GUI / Text mode
+"""A Platform controlller
 
-TkInter loading when GUI enabled
+Files & Folder classes
 """
 import os
 import argparse
