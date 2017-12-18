@@ -3,6 +3,10 @@ import os, sys
 import socket
 import netifaces as ni
 from email.mime.text import MIMEText
+import shlex  
+from subprocess import Popen, PIPE, STDOUT
+import numpy
+import pexpect
 try:
     from smtplib import SMTP_SSL as SMTP  # secure SMTP (port 465, uses SSL)
     # from smtplib import SMTP            # standard SMTP (port 25, no enc)
@@ -26,6 +30,42 @@ class Message():
 
         %s
         ''' % ('some special text goes here')
+
+class WifiLatencyBenchmark(object):
+    def __init__(self, ip):
+        object.__init__(self)
+
+        self.ip = ip
+        self.interval = 0.5
+
+        ping_command = 'ping -i ' + str(self.interval) + ' ' + self.ip
+        self.ping = pexpect.spawn(ping_command)
+
+        self.ping.timeout = 1200
+        self.ping.readline()  # init
+        self.wifi_latency = []
+        self.wifi_timeout = 0
+
+    def run_test(self, n_test):
+        for n in range(n_test):
+            p = self.ping.readline()
+
+            try:
+                ping_time = float(p[p.find('time=') + 5:p.find(' ms')])
+                self.wifi_latency.append(ping_time)
+                print 'test:', n + 1, '/', n_test, ', ping latency :', ping_time, 'ms'
+            except:
+                self.wifi_timeout = self.wifi_timeout + 1
+                print 'timeout'
+
+        self.wifi_timeout = self.wifi_timeout / float(n_test)
+        self.wifi_latency = numpy.array(self.wifi_delay)
+
+    def get_results(self):
+        print 'mean latency', numpy.mean(self.wifi_latency), 'ms'
+        print 'std latency', numpy.std(self.wifi_latency), 'ms'
+        print 'timeout', self.wifi_timeout * 100, '%'
+
 
 def send_mail():
     m = Message()
@@ -112,6 +152,26 @@ def socket_networking():
     s.close()
 
 
+def get_simple_cmd_output(cmd, stderr=STDOUT):
+    """
+    Execute a simple external command and get its output.
+    """
+    print 'run ' + cmd
+    args = shlex.split(cmd)
+    print args
+    return Popen(args, stdout=PIPE, stderr=stderr).communicate()[0]
+ 
+def get_ping_time(host):
+    host = host.split(':')[0]
+    cmd = "ping {host}".format(host=host)
+    #res = [float(x) for x in get_simple_cmd_output(cmd).strip().split(':')[-1].split() if x != '-']
+    res = get_simple_cmd_output(cmd)
+    if len(res) > 0:
+        return sum(res) / len(res)
+    else:
+        return 999999
+
+
 if __name__ == '__main__':
 
     from OS74 import CurrentPlatform
@@ -120,5 +180,11 @@ if __name__ == '__main__':
     #parser.add_argument('-d', help='directory', type=str, default='')
     #args = parser.parse_args()
 
-    monitor_command_output('net view > conn.tmp')
+    #monitor_command_output('net view > conn.tmp')
+    #while True:
+        #response = WifiLatencyBenchmark('8.8.8.8')
+
+        #response.run_test(n_test)
+        #response.get_results()
+    get_ping_time('8.8.8.8')
 
