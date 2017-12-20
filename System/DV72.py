@@ -16,9 +16,11 @@ from OS74 import FileSystemObject, CurrentPlatform, CurrentPlatformControl
 
 class Device(object):
     def __init__(self, aggregate_time_step=2):
+        this_file = FileSystemObject(__file__)
+        current_platform = CurrentPlatformControl()
         self.date_format = '%Y.%m.%d %H:%M:%S'
         self.date_file_format = '%Y%m%d_%H%M'
-        self.setup_db = FileSystemObject(__file__).get_another_directory_file('Settings.sqlite')
+        self.setup_db = this_file.get_another_directory_file('Settings.sqlite')
         self.port = 0
         self.br = 0
         self.timeout = 0
@@ -26,13 +28,13 @@ class Device(object):
         self.table_name = '_'
         self.table_fields = ''
         self.table_default_val = ''
-        self.output_path = local_path
+        self.output_path = this_file.one_dir_up()
         self.csv_file = ''
         self.last_run = ''
-        self.device_name = CurrentPlatform().hostname
-        self.device_user = CurrentPlatform().environment
-        self.device_platform = CurrentPlatform().main
-        self.usb_list = CurrentPlatformControl().list_attached_peripherals()
+        self.device_name = current_platform.hostname
+        self.device_user = current_platform.environment
+        self.device_platform = current_platform.main
+        self.usb_list = current_platform.list_attached_peripherals()
 
     def setup_device(self, device, sensor=None, timeout=0):
         # override values: table_fields, table_default_val, port, br, timeout, last_run
