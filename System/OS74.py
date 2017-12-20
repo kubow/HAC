@@ -37,7 +37,7 @@ class FileSystemObject:
     def __init__(self, from_path='', to_path=''):
         if not from_path:
             from_path = os.path.dirname(os.path.realpath(__file__))
-            print 'using path relative to running script location ...' + from_path
+            print('using path relative to running script location ...' + from_path)
         self.path = from_path
         self.separator = self.get_separator_from_path()
         if os.path.isfile(from_path):
@@ -94,7 +94,7 @@ class FileSystemObject:
         elif self.is_folder:
             return self.separator.join(self.path.split(self.separator)[0:-1]) + self.separator + another
         else:
-            print 'not file nor folder ...'
+            print('not file nor folder ...')
             return None
 
     def move_file_to(self, another_directory, filename=''):
@@ -102,9 +102,9 @@ class FileSystemObject:
             filename = self.last_part()
         if self.is_file:
             shutil.move(self.path, FileSystemObject(another_directory).append_file(filename))
-            print 'file ' + self.path + ' archived'
+            print('file ' + self.path + ' archived')
         else:
-            print 'directory move not implemented'
+            print('directory move not implemented')
             
     def copy_file_to(self, another_directory, filename=''):
         if not filename:
@@ -112,16 +112,16 @@ class FileSystemObject:
         else:
             if self.is_file:
                 shutil.copy(self.path, FileSystemObject(another_directory).append_file(filename))
-                print 'file ' + self.path + ' archived'
+                print('file ' + self.path + ' archived')
             else:
-                print 'directory copy not implemented'
+                print('directory copy not implemented')
 
     def directory_lister(self, list_files=False, final_file=''):
         template_fld = FileSystemObject().one_dir_up()
         template_file = FileSystemObject(template_fld).append_directory('Structure') + 'HTML_DirectoryList.txt'
         if not final_file:
             final_file = FileSystemObject(template_fld).append_directory('Multimedia') + 'DirectoryList.html'
-        print template_file + ' - will be writing to: ' + final_file
+        print(template_file + ' - will be writing to: ' + final_file)
         template = TextContent(file_name=template_file).replace('XXX', self.path)
 
         head = '<table><tr class="Head"><td>List Generated on {0} / Total Folder Size - {1} / {2} Subfolders </td></tr>'
@@ -133,7 +133,7 @@ class FileSystemObject:
         folder_count = 0
         # Walk the directory tree
         for root, directories, files in os.walk(self.path):
-            print root
+            print(root)
             folder_size = 0
             file_count = 0
             tmp_content = ''
@@ -150,8 +150,8 @@ class FileSystemObject:
             folder_count += 1
 
         content = head.format(DateTimeObject().date_string, str(total_size) + ' kb', folder_count) + '\n' + htm_content
-        # print content
-        # print template
+        # print(content)
+        # print(template)
         FileSystemObject(final_file).object_write(content)
 
     def object_read_split(self):
@@ -187,7 +187,7 @@ class FileSystemObject:
             with open(self.destination, mode) as target_file:
                 target_file.write(content)
         else:
-            print 'is not a file, cannot write: ' + self.destination
+            print('is not a file, cannot write: ' + self.destination)
 
     def object_size(self):
         # return file size in kilobytes
@@ -208,7 +208,7 @@ class FileSystemObject:
         if not self.exist:
             if self.is_folder:
                 os.makedirs(self.path)
-                print 'directory ' + self.path + ' folder created ...'
+                print('directory ' + self.path + ' folder created ...')
             else:
                 self.file_touch()
 
@@ -217,14 +217,14 @@ class FileSystemObject:
             os.utime(self.path, None)
 
     def file_refresh(self, content):
-        # print 'refreshing filename: ' + filename + ' with text: ' + text
+        # print('refreshing filename: ' + filename + ' with text: ' + text)
         if content:
             if not self.is_file(self.path):
-                print 'file {0} not exist, must create'.format(self.path)
+                print('file {0} not exist, must create'.format(self.path))
                 self.file_touch(self.path)
             self.object_write(content, 'w+')
         else:
-            print 'no text to write, skipping file {0}'.format(self.path)
+            print('no text to write, skipping file {0}'.format(self.path))
 
 
 class CurrentPlatform:
@@ -242,7 +242,7 @@ class CurrentPlatform:
             return 'mac'
         elif _platform == 'win32' or _platform == 'win64':
             return 'win'
-            print 'must create _winreg import and read ...'
+            print('must create _winreg import and read ...')
         else:
             return _platform
 
@@ -250,7 +250,7 @@ class CurrentPlatform:
         # this is not working
         # return platform.version()
         # for debug purposes
-        print 'system - {0} / release - {1}'.format(self.which_platform(), self.get_release())
+        print('system - {0} / release - {1}'.format(self.which_platform(), self.get_release()))
 
     @staticmethod
     def get_release():
@@ -276,14 +276,14 @@ class CurrentPlatformControl(CurrentPlatform):
             self.app_name = application
             d = os.path.dirname(os.path.realpath(__file__)) + '/Settings.sqlite'
             sql = SQL.get_app_command.format(application, self.main)
-            #print sql
+            #print(sql)
             self.app_run_path = DataBaseObject(d).return_one(sql)[0]
         else:
             self.app_name = 'not_defined'
             self.app_run_path = 'must find out'
         
     def run_with_argument(self, arg_1='', arg_2=''):
-        print self.app_run_path + ' %s' % arg_1
+        print(self.app_run_path + ' %s' % arg_1)
         subprocess.call([self.app_run_path, arg_1])
         # if self.main == 'lnx':
             # subprocess.call([self.app_run_path, arg_1])
@@ -311,21 +311,21 @@ class CurrentPlatformControl(CurrentPlatform):
 
 def compare_directories(dir1, dir2):
     if not os.path.isdir(dir1) or not os.path.isdir(dir2):
-        print 'one of submitted directories do not exist, quitting...'
+        print('one of submitted directories do not exist, quitting...')
     else:
         found = True
         for root, directories, files in os.walk(dir1):
             corr = root.replace(dir1, dir2)
-            # print root + ' :x: ' + corr
+            # print(root + ' :x: ' + corr)
             if not os.path.isdir(corr):
-                print 'not found ' + dir2 + '/' + root
+                print('not found ' + dir2 + '/' + root)
                 continue
             for filename in files:
-                # print filename
+                # print(filename)
                 corr_file = filename.replace(dir1, dir2)
                 if not os.path.exists(corr_file):
-                    # print root + ' :x: ' + corr
-                    # print 'not found ' + filename
+                    # print(root + ' :x: ' + corr)
+                    # print('not found ' + filename)
                     found = False
 
 

@@ -103,19 +103,19 @@ class Device(object):
                 # for row in received.split('\r\n'):
                 # checking interval shifts
                 CsvContent(csv, write=True, content=data_vals)
-                print data_vals
+                print(data_vals)
                 return data_vals
             else:
-                print 'no text to receive ...'
+                print('no text to receive ...')
                 return 'some values might come ...'
         except serial.SerialException as se:
             logger.log_operation(se.args[-1])
             logger.log_operation(','.join(d['tag'] for d in dev.usb_list))
-            # print 'serial communication not accesible!'
+            # print('serial communication not accesible!')
             return None
         except Exception as ex:
-            print ex.args[0].replace('\n', ' ')
-            print 'timeframe now : '+ str(now) + ' / ' + 'last_run' + str(self.last_run)
+            print(ex.args[0].replace('\n', ' '))
+            print('timeframe now : '+ str(now) + ' / ' + 'last_run' + str(self.last_run))
             # if error found, do timeout
             # raw_input("Press enter to continue")
             return 'however error ocured .. '
@@ -141,9 +141,9 @@ class Device(object):
             csv.archive(fs.append_directory('Archive'))
             csv_cnt += 1
         if csv_cnt < 1:
-            print 'no csv files proccessed ...'
+            print('no csv files proccessed ...')
         else:
-            print '{0} files processed ...'.format(str(csv_cnt))
+            print('{0} files processed ...'.format(str(csv_cnt)))
 
     def time_aggregated(self, time_value, debug=False):
         """function to return rounded time
@@ -154,10 +154,10 @@ class Device(object):
         minute = float(time_value.minute) + float(time_value.second) / 60
         modulo = float(minute % self.interval_shift)
         if debug:
-            print '***************** debug *****************'
-            print 'time_value : ' + time_value
-            print 'minutes : ' + str(minute) + ' / modulo: ' + str(modulo)
-            print '***************** debug *****************'
+            print('***************** debug *****************')
+            print('time_value : ' + time_value)
+            print('minutes : ' + str(minute) + ' / modulo: ' + str(modulo))
+            print('***************** debug *****************')
         # decide where to put value
         hour_new = time_value.hour
         if modulo >= float(self.interval_shift / 2):
@@ -176,12 +176,12 @@ class Device(object):
             min_new = minute - modulo
         value_aggregated = datetime.datetime(time_value.year,
                                              time_value.month, time_value.day, hour_new, int(min_new), 0, 0)
-        # print 'timestamp: ' + str(time_value) + ' > ' + str(value_aggregated)
+        # print('timestamp: ' + str(time_value) + ' > ' + str(value_aggregated))
         return value_aggregated
 
     def process_time_series(self, values):
         for vel, val in values.iteritems():
-            print vel + val  # save to database
+            print(vel + val)  # save to database
 
     
 def min_between(d1, d2):
@@ -208,7 +208,7 @@ if __name__ == '__main__':
     dev.setup_output_path(args.l)
     # device settings: port, baud rate and timeout
     dev.setup_device('arduino', "all sensors", 0)
-    # log sql (debug) print sql
+    # log sql (debug) print(sql)
     
     if 'read' in args.m or 'ser' in args.m:
         text = 'Reading serial input from: {0} - at {1}'.format(str(dev.port),str(dev.br))

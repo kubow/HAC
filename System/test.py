@@ -100,7 +100,7 @@ class TestWebContent(unittest.TestCase):
         try:
             o = RssContent('http://www.root.cz/rss/clanky/')
         except:
-            print 'some bad happened'
+            print('some bad happened')
         self.assertIn('root.cz', o.div)
 
 unittest.main()

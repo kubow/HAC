@@ -24,7 +24,7 @@ finally:
 try:
     import pandas
 except ImportError:
-    print 'using alternative csv parser'
+    print('using alternative csv parser')
 finally:
     import csv
 
@@ -116,13 +116,13 @@ class WebContent(HTMLParser.HTMLParser):
                 self.div = parsed_content
                 self.div_text = parsed_content
         except HTMLParser.HTMLParseError, e:
-            print '---cannot fetch address {0}, ({1})'.format(self.url, e)
+            print('---cannot fetch address {0}, ({1})'.format(self.url, e))
         except:
-            print '---some else error occurred: ' + self.url
+            print('---some else error occurred: ' + self.url)
             if done:
                 if content:
                     self.div = str(content)
-                    print '---cannot parse content of {0} ({1})'.format(self.url, content)
+                    print('---cannot parse content of {0} ({1})'.format(self.url, content))
                 elif self.html_text:
                     self.div = str(self.html_text)
             else:
@@ -131,7 +131,7 @@ class WebContent(HTMLParser.HTMLParser):
 
     def write_web_content_to_file(self, file_path, heading, log_file=''):
         if self.div:
-            print 'creating ' + file_path + ' from: ' + self.url
+            print('creating ' + file_path + ' from: ' + self.url)
             try:
                 FileSystemObject(file_path).object_write(HTML.skelet_titled.format(heading.encode('utf-8'),
                                                                                  self.div.encode('utf-8')), 'w+')
@@ -141,7 +141,7 @@ class WebContent(HTMLParser.HTMLParser):
             if log_file:
                 self.log_to_database(log_file.replace('.log', '.sqlite'), heading)
         else:
-            print 'no content parsed from: ' + self.url
+            print('no content parsed from: ' + self.url)
 
     def log_to_database(self, db_path, heading):
         user, domain = CurrentPlatform().get_username_domain()
@@ -191,14 +191,14 @@ class RssContent(object):
 
     def write_rss_content_to_file(self, file_path, heading):
         if self.div:
-            print 'creating ' + file_path + ' from: ' + self.url
+            print('creating ' + file_path + ' from: ' + self.url)
             FileSystemObject(file_path).file_refresh(HTML.skelet_titled.format(heading.encode('utf-8'),
                                                                                self.div.encode('utf-8')))
             log_path = FileSystemObject(file_path).get_another_directory_file('logfile.sqlite')
 
             # self.log_to_database(log_path, heading)
         else:
-            print 'no content parsed from: ' + self.url
+            print('no content parsed from: ' + self.url)
 
             
 class CsvContent(object):
@@ -229,7 +229,7 @@ class CsvContent(object):
             line = 1
         # write time series and header
         if not isinstance(content, dict):
-            print 'no proper content, skipping'
+            print('no proper content, skipping')
             return
         for ac_time, vals in content.iteritems():
             row = ''
@@ -262,7 +262,7 @@ class CsvContent(object):
             self.read_success = True
             return values
         except Exception as ex:
-            print 'problem in csv ' + self.path + ' : ' + ex.args[0]
+            print('problem in csv ' + self.path + ' : ' + ex.args[0])
             return None
 
     def get_time_from_file(self, date_format):
@@ -307,12 +307,12 @@ class JsonContent(object):
 
 
     def json_format(self):
-        print 'file: ' + self.path
+        print('file: ' + self.path)
         with open(self.path, 'r') as fh:
             # first = next(fh).decode()
             first = fh.readline()
-            print 'got first line' + first
-            print '*****************'
+            print('got first line' + first)
+            print('*****************')
             fh.seek(-512, 2)
             # last = fh.readlines()
             last = fh.readlines()[-1].decode()
@@ -326,7 +326,7 @@ class JsonContent(object):
         if json_file.exist:
             if JsonContent(file_name).json_format():
                 final_content = 'read_whole_file' + final_content
-                print 'implement appending .. not now yet'
+                print('implement appending .. not now yet')
         json_file.object_write(self.json_skeleton.format(final_content))
 
 
@@ -356,7 +356,7 @@ class TextContent(object):
         if '\r\n' in self.block_text:
             return self.block_text.replace('\r\n', '\n')
         else:
-            print 'this text does not have any windows line endings, passing ...'
+            print('this text does not have any windows line endings, passing ...')
             return self.block_text
 
     def replace_lf_crlf(self):
@@ -364,7 +364,7 @@ class TextContent(object):
         if re.search('\r?\n'):
             return re.sub('\r?\n', '\r\n', self.block_text)
         else:
-            print 'this text does not have any linux line endings, passing ...'
+            print('this text does not have any linux line endings, passing ...')
             return self.block_text
 
     def trim_line_last_n_chars(self, n=1):
@@ -400,7 +400,7 @@ def load_text_from(file_name):
     with open(file_name, 'rb') as input_file:
         text = input_file.read()
         # for m in re.findall(r'\n\n', whole_data):
-        # print m
+        # print(m)
     return text
 
 
@@ -415,10 +415,10 @@ def file_content_difference(file1, file2):
     added = [line[1:] for line in lines if line[0] == '+']
     removed = [line[1:] for line in lines if line[0] == '-']
 
-    print 'additions, ignoring position'
+    print('additions, ignoring position')
     for line in added:
         if line not in removed:
-            print line
+            print(line)
 
 
 def create_file_if_neccesary(file_name):
@@ -456,7 +456,7 @@ def htm_to_plain_txt(htm_txt):
 
 def test_utf_special_characters(logger=''):
     veta = u'Žluťoučký kůň pěl ďábelské ódy.'
-    print veta
+    print(veta)
     if logger:
         logger.file_write('aaa.log', 'temp', veta)
 
@@ -504,4 +504,4 @@ if __name__ == '__main__':
             else:
                 export_text_to(output_object, TextContent(input_text).replace_lf_crlf())
     else:
-        print args.i + ' -> input file/dir does not exist ...'
+        print(args.i + ' -> input file/dir does not exist ...')

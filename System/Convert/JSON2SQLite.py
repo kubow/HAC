@@ -16,18 +16,18 @@ try:
         file_names = []
         for file in os.listdir(os.path.dirname(os.path.realpath(__file__))):
             if file.lower().endswith('.json'):
-                print file
+                print(file)
                 file_names.append(file)
     for json_file in file_names:
         i = 0
         tab_name = json_file.lower().replace('.json', '').replace('.', '_')
         db = sqlite3.connect(tab_name+'.sqlite')
         # db.cursor().execute(check_select.format(tab_name))
-        print '***********************'
+        print('*'*20)
         if db.cursor().execute(check_select.format(tab_name)).fetchone()[0]:
             db.execute('DROP TABLE '+tab_name+';')
         with open(json_file) as json_stream:
-            print 'json opened...'
+            print('json opened...')
             source_item = []# for columns
             for line in json_stream:
                 source = json.loads(line)
@@ -38,7 +38,7 @@ try:
                         source_item.append(json_item)
                         insert_string.append(str(source[json_item]).encode('utf8'))
                     columns = ', '.join(source_item)
-                    print 'columns: '+columns
+                    print('columns: '+columns)
                     create_query = 'CREATE TABLE '+tab_name+' ('+' text , '.join(source_item)+' text);'
                     db.execute(create_query)
                 else:
@@ -50,8 +50,7 @@ try:
                 insert_items = '", "'.join(x for x in insert_string)
                 db.execute(insert_query.format(tab_name, insert_items.encode('utf8')))
                 db.commit()
-                #print insert_items
+                #print(insert_items)
                 i += 1
 except Exception as ex:
-    print 'some exception occured'
-    print ex.args
+    print('some exception occured: ' + ex.args)

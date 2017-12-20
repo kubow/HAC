@@ -17,7 +17,7 @@ table_names = subprocess.Popen(["mdb-tables", "-1", DATABASE],
                                stdout=subprocess.PIPE).communicate()[0]
 tables = table_names.splitlines()
 
-print "BEGIN;" # start a transaction, speeds things up when importing
+print("BEGIN;") # start a transaction, speeds things up when importing
 sys.stdout.flush()
 
 # Dump each table as a CSV file using "mdb-export",
@@ -26,5 +26,5 @@ for table in tables:
     if table != '':
         subprocess.call(["mdb-export", "-I", "mysql", DATABASE, table])
 
-print "COMMIT;" # end the transaction
+print("COMMIT;") # end the transaction
 sys.stdout.flush()

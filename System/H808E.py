@@ -69,13 +69,13 @@ class h808e(object):
         sub_folders = []
         for main_folder in self.dir_folders:
             if main_folder == main_node:
-                print 'get all directories for {0}'.format(main_node)
+                print('get all directories for {0}'.format(main_node))
 
     def is_registered_directory(self):
         if self.debug:
-            print 'just check if table exists'
+            print('just check if table exists')
         if FileSystemObject(self.dir_active).is_folder:
-            print 'table do not exist'
+            print('table do not exist')
             return False
         else:
             return True
@@ -100,7 +100,7 @@ class h808e(object):
             for filename in files:
                 database.execute(SQL.table_insert.format(str(i) + ', "' + filename + '", "' + root + '", "date date date", "' +
                                                 FileSystemObject(root + '/' + filename).object_size() + '"'))
-                print '---file {0} registered, checking size.'.format(filename)
+                print('---file {0} registered, checking size.'.format(filename))
                 i += 1
         
         self.db_data = database.return_many('select * from h808e;')
@@ -109,7 +109,7 @@ class h808e(object):
         flag = False
         db = DataBaseObject()
         for record in self.db_data:
-            print record[0]
+            print(record[0])
             
     
     def directory_watcher(self):
@@ -123,21 +123,21 @@ class h808e(object):
         directory = self.get_root_path(self.dir_active)
         for en in he.enc:
             # 1. level
-            print '--' * int(en['level']) + str(en['code'])
+            print('--' * int(en['level']) + str(en['code']))
             self.set_active_node(en['code'])
             self.set_db_data(self.get_node_content(str(en['code'])))
             FileSystemObject(directory + str(en['code']) + '.html').object_write(self.db_data)
 
             for esn in en['child']:
                 # 2. level
-                print '--' * int(esn['level']) + str(esn['code'])
+                print('--' * int(esn['level']) + str(esn['code']))
                 self.set_active_node(esn['code'])
                 self.set_db_data(self.get_node_content(str(esn['code'])))
                 FileSystemObject(directory + str(esn['code']) + '.html').object_write(self.db_data)
 
                 for essn in esn['child']:
                     # 3. level
-                    print '--' * int(essn['level']) + str(essn['code'])
+                    print('--' * int(essn['level']) + str(essn['code']))
                     self.set_active_node(essn['code'])
                     self.set_db_data(self.get_node_content(str(essn['code'])))
                     FileSystemObject(directory + str(essn['code']) + '.html').object_write(self.db_data)
@@ -148,8 +148,8 @@ class h808e(object):
         main_fathers = [father[0] for father in fathers]
         root_nodes = database.return_many(SQL.select_root_nodes)
         for root_node in root_nodes:
-            print root_node[2].encode('utf8') + ' root node / id ' + str(
-                root_node[4]) + ' / sqn ' + str(root_node[5]) + ' level 1'
+            print(root_node[2].encode('utf8') + ' root node / id ' + str(
+                root_node[4]) + ' / sqn ' + str(root_node[5]) + ' level 1')
 
     def get_table(self):
         sql = 'select code, name, query, folder from enc_nodes where length(query) > 0;'
@@ -158,14 +158,14 @@ class h808e(object):
         return tables
 
     def get_node_content(self, node):
-        # print 'load node content from id: ' + str(node)
+        # print('load node content from id: ' + str(node))
         query = SQL.select_node_text.format(node)
         if self.db_path:
             if self.debug:
-                print self.db_path + ' : ' + query
+                print(self.db_path + ' : ' + query)
             return DataBaseObject(self.db_path).return_one(query)
         else:
-            print 'cannot execute {0} in memory database.'.format(query)
+            print('cannot execute {0} in memory database.'.format(query))
 
     def get_nth_node(self, nth, parent_node):
         if parent_node.isdigit():
@@ -190,7 +190,7 @@ class h808e(object):
         return separator.join(path_list[:nth]) + separator
 
     def set_db_path(self, db_path):
-        # print '? - ' + db_path
+        # print('? - ' + db_path)
         if FileSystemObject(db_path).is_file:
             self.db_path = db_path
         else:
@@ -263,29 +263,29 @@ def build_text_menu(he):
             row_he = file_name + '     | ' + local_he_mod + ' {0} ' + dropbox_he_mod
             row_db = file_name_db + '  | ' + local_db_mod + ' {0} ' + dropbox_db_mod
             
-            print 'file          | ' + active_directory + '              | ' + dropbox_dir
-            print '='*60
+            print('file          | ' + active_directory + '              | ' + dropbox_dir)
+            print('='*60)
             if local_he_mod > dropbox_he_mod:
-                print row_he.format('>')
+                print(row_he.format('>'))
                 FileSystemObject(args.c).copy_file_to(dropbox_dir)
             elif local_he_mod < dropbox_he_mod:
-                print row_he.format('<')
+                print(row_he.format('<'))
                 FileSystemObject(dropbox_he).copy_file_to(active_directory)
             else:
-                print row_he.format('=')
+                print(row_he.format('='))
             
             if local_db_mod > dropbox_db_mod:
-                print row_db.format('>')
+                print(row_db.format('>'))
                 FileSystemObject(db).copy_file_to(dropbox_dir)
             elif local_db_mod < dropbox_db_mod:
-                print row_db.format('<')
+                print(row_db.format('<'))
                 FileSystemObject(dropbox_db).copy_file_to(active_directory)
             else:
-                print row_db.format('=')
-            print '\n'
+                print(row_db.format('='))
+            print('\n')
 
         elif keep_alive == "4":
-            print 'generate structure'
+            print('generate structure')
             he.iterate_enc_structure()
         elif keep_alive == "5":
             print("\n    Register directories\n")

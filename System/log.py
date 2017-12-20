@@ -8,7 +8,7 @@ class Log(object):
     def __init__(self, log_file, module, caller_file='log.py', advanced=True):
         self.date_format = '%d.%m.%Y %H:%M:%S'
         if not FileSystemObject(log_file).exist:
-            print log_file + ' does not exist! - create new one in actual path'
+            print(log_file + ' does not exist! - create new one in actual path')
         self.log_file = log_file
         self.module = module
         self.line_text = ''
@@ -22,7 +22,7 @@ class Log(object):
     def log_operation(self, text, level=20):
         now = datetime.datetime.now().strftime(self.date_format)
         if level > 20:
-            print text
+            print(text)
         if self.advanced:
             self.logger.log(level, text)
         else:

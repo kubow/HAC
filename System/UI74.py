@@ -7,7 +7,7 @@ import glob
 try:
     import Tkinter as tk
 except ImportError:
-    print 'using small tkinter'
+    print('using small tkinter')
     import tkinter as tk
 finally:
     import ttk
@@ -78,14 +78,14 @@ class MainWindow:
             elif FileSystemObject(self.mlt_lib[mlt_file]).is_file:
                 self.file_list.insert('end', mlt_file)
             else:
-                print 'item {0} does not fit ({1})'.format(mlt_file, self.mlt_lib[mlt_file])
+                print('item {0} does not fit ({1})'.format(mlt_file, self.mlt_lib[mlt_file]))
 
     def on_up_select(self):
         directory = get_directory_from_file(self.mlt_lib[next(iter(self.mlt_lib))])
         separator = get_separator_from(directory)
         # TODO: check if not jumping outsine main dir
         self.directory = separator.join(directory.split(separator)[0:-1])
-        print 'navigate one level up to: {0}'.format(self.directory)
+        print('navigate one level up to: {0}'.format(self.directory))
         self.mlt_lib = get_directory_content(self.directory)
         self.refresh_list_items()
 
@@ -93,7 +93,7 @@ class MainWindow:
         w = evt.widget
         index = int(w.curselection()[0])
         value = w.get(index)
-        print 'navigate to %d: "%s"' % (index, value)
+        print('navigate to %d: "%s"' % (index, value))
         self.directory = get_proper_dir_path(self.directory) + value
         self.mlt_lib = get_directory_content(self.directory)
         self.refresh_list_items()
@@ -102,7 +102,7 @@ class MainWindow:
         w = evt.widget
         index = int(w.curselection()[0])
         value = w.get(index)
-        print 'You selected item %d: "%s"' % (index, value)
+        print('You selected item %d: "%s"' % (index, value))
         self.canvas.delete('all')
         if 'gif' in value or '.jpg' in value or '.png' in value:
             if 'gif' in value:
@@ -319,7 +319,7 @@ def get_separator_from(path):
 
 def build_categories(he, parent_node):
     for root_node in he.enc:
-        print root_node['code']
+        print(root_node['code'])
         insert_menu_item(1, root_node['code'])
         for sub_node in root_node['child']:
             insert_menu_item(2, sub_node['code'])
@@ -370,7 +370,7 @@ def navigate_to(directory):
         checked_directory = directory
     else:
         checked_directory = os.path.basename(__file__)
-        print 'cannot find the directory {0}, using {1}'.format(directory, checked_directory)
+        print('cannot find the directory {0}, using {1}'.format(directory, checked_directory))
 
     return checked_directory
 

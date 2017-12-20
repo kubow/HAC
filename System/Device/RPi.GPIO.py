@@ -12,12 +12,12 @@ btn_down = 0
 while True:
     if GPIO.input(13) == True:
         btn_down += 1
-        print "Button down for ", 5-btn_down
+        print("Button down for ", 5-btn_down)
     else:
         btn_down = 0
 
     if btn_down > 4:
-        print "Shuting down, now!"
+        print("Shuting down, now!")
         subprocess.call("halt")
         GPIO.cleanup()
         break

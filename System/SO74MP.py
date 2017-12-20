@@ -10,7 +10,7 @@ class OpenWeatherMap(object):
         # syntax = pyowm.OWM(API_key='your-API-key', subscription_type='pro')
         owm_api = 'd254a5bf0a3d45dd84cf2e21de759b31'
         owm = pyowm.OWM(owm_api)
-        print 'OpenWeatherMap.org - validate API-key disabled - location: ' + location
+        print('OpenWeatherMap.org - validate API-key disabled - location: ' + location)
         if not location:
             location = 'Horni Pocernice,cz'  # 'Necin,cz'
         self.place_obj = owm.weather_at_place(location)._location
@@ -50,7 +50,7 @@ class OpenStreetMap(object):
     def __init__(self, url):
         self.url = url
         self.osm_api = 'AIzaSyDkEnsboDEPpmq98svR1ORv-zACEy2TSjQ'
-        print 'OpenStreetrMap.org - validate API-key disabled'
+        print('OpenStreetrMap.org - validate API-key disabled')
         osm = OsmApi()
 
 
@@ -60,11 +60,10 @@ class OpenStreetMap(object):
 
 class Mapping(object):
     #from qgis.core import *
-    print u'aaa'
+    print(u'aaa')
     '''
 
 
 if __name__ == '__main__':
-
 
     from log import Log

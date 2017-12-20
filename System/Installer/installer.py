@@ -10,9 +10,9 @@ def install(package):
     try:
         pip.main(['install', package])
         importlib.import_module(package)
-        print 'successfully installed "' + package + '"'
+        print('successfully installed "' + package + '"')
     except:
-        print 'error installing "' + package + '"'
+        print('error installing "' + package + '"')
         global all_good
         all_good = False
 
@@ -20,15 +20,15 @@ def install(package):
 all_good = True
 for pkg in sys.argv[1:]:
     try:
-        print pkg
+        print(pkg)
 #        map(__import__, pkg)
         importlib.import_module(pkg)
-        print 'package "' + pkg + '" is installed'
+        print('package "' + pkg + '" is installed')
     except ImportError:
-        print 'package "' + pkg + '" is not installed, installing now...'
+        print('package "' + pkg + '" is not installed, installing now...')
         install(pkg)
 if all_good:
-    print 'all of packages should be fine ...'
+    print('all of packages should be fine ...')
 else:
-    print 'there was some error...'
+    print('there was some error...')
 sys.exit(1)

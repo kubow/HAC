@@ -12,7 +12,7 @@ try:
     # from smtplib import SMTP            # standard SMTP (port 25, no enc)
     import win32com.client
 except:
-    print 'win specific modules not load'
+    print('win specific modules not load')
 
 
 class Message():
@@ -53,18 +53,18 @@ class WifiLatencyBenchmark(object):
             try:
                 ping_time = float(p[p.find('time=') + 5:p.find(' ms')])
                 self.wifi_latency.append(ping_time)
-                print 'test:', n + 1, '/', n_test, ', ping latency :', ping_time, 'ms'
+                print('test:', n + 1, '/', n_test, ', ping latency :', ping_time, 'ms')
             except:
                 self.wifi_timeout = self.wifi_timeout + 1
-                print 'timeout'
+                print('timeout')
 
         self.wifi_timeout = self.wifi_timeout / float(n_test)
         self.wifi_latency = numpy.array(self.wifi_delay)
 
     def get_results(self):
-        print 'mean latency', numpy.mean(self.wifi_latency), 'ms'
-        print 'std latency', numpy.std(self.wifi_latency), 'ms'
-        print 'timeout', self.wifi_timeout * 100, '%'
+        print('mean latency', numpy.mean(self.wifi_latency), 'ms')
+        print('std latency', numpy.std(self.wifi_latency), 'ms')
+        print('timeout', self.wifi_timeout * 100, '%')
 
 
 def send_mail():
@@ -99,7 +99,7 @@ def monitor_command_output(cmd):
         conn.append(host[2:host.find(' ')])
     host = f.readline()
     f.close()
-    print conn
+    print(conn)
 
 def monitor_net_connections():
     os.system('net view > conn.tmp')
@@ -112,7 +112,7 @@ def monitor_net_connections():
         conn.append(host[2:host.find(' ')])
         host = f.readline()
 
-    print conn
+    print(conn)
     f.close()   
 
 def adodb_conn():
@@ -128,26 +128,26 @@ def socket_networking():
     PORT = 8642  # H808E Port
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    print 'Socket created'
+    print('Socket created')
 
     # Bind socket to local host and port
     try:
         s.bind((HOST, PORT))
     except socket.error as msg:
-        print 'Bind failed. Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
+        print('Bind failed. Error Code : ' + str(msg[0]) + ' Message ' + msg[1])
         sys.exit()
 
-    print 'Socket bind complete'
+    print('Socket bind complete')
 
     # Start listening on socket
     s.listen(10)
-    print 'Socket now listening'
+    print('Socket now listening')
 
     # now keep talking with the client
     while 1:
         # wait to accept a connection - blocking call
         conn, addr = s.accept()
-        print 'Connected with ' + addr[0] + ':' + str(addr[1])
+        print('Connected with ' + addr[0] + ':' + str(addr[1]))
 
     s.close()
 
@@ -156,9 +156,9 @@ def get_simple_cmd_output(cmd, stderr=STDOUT):
     """
     Execute a simple external command and get its output.
     """
-    print 'run ' + cmd
+    print('run ' + cmd)
     args = shlex.split(cmd)
-    print args
+    print(args)
     return Popen(args, stdout=PIPE, stderr=stderr).communicate()[0]
  
 def get_ping_time(host):

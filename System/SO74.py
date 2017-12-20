@@ -8,7 +8,7 @@ def process_web_content(mode, final_dir, url=None):
     wc = WebContent(url)
     final_dir_obj = FileSystemObject(final_dir)
     if url:
-        print wc
+        print(wc)
     else:
         if 'rest' in mode:
             web_objects = settings_db.return_many('SELECT * FROM RestActive;')
@@ -29,7 +29,7 @@ def process_web_content(mode, final_dir, url=None):
                 if rss[3]:
                     wc = RssContent(rss[3])
                 else:
-                    print 'no address to fetch ...' + str(rss)
+                    print('no address to fetch ...' + str(rss))
                 html_file_path = final_dir_obj.append_file(rss[2].encode('utf-8') + '.html')
                 wc.write_rss_content_to_file(html_file_path, rss[3])
 

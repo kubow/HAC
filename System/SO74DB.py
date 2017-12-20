@@ -12,9 +12,9 @@ class DataBaseObject:
         self.sql = SQL.select_tables_in_db
         if self.active:
             self.obj_conn = sqlite3.connect(db_path)
-            print 'succesfully connected to database ' + db_path
+            print('succesfully connected to database ' + db_path)
         # else:
-        #     print 'database ' + db_path + ' without active connection'
+        #     print('database ' + db_path + ' without active connection')
         self.obj_list = self.return_many(self.sql)
 
 
@@ -36,7 +36,7 @@ class DataBaseObject:
                 return result
             except sqlite3.OperationalError:
                 pass
-                #print 'error on: ' + sql
+                #print('error on: ' + sql)
 
     def execute(self, sql):
         if self.active:
@@ -59,10 +59,10 @@ class DataBaseObject:
 
     def object_exist(self, object_name):
         if self.return_one(SQL.table_exist.format(object_name))[0]:
-            # print 'object {0} exist'.format(object_name)
+            # print('object {0} exist'.format(object_name))
             return True
         else:
-            # print 'object {0} does not exist'.format(object_name)
+            # print('object {0} does not exist'.format(object_name))
             return False
 
     def object_structure(self, object_name, object_type=''):
@@ -76,7 +76,7 @@ class DataBaseObject:
 
     def object_create(self, object_name):
         if not self.return_one(SQL.table_exist.format(object_name)):
-            print 'creating object: ' + object_name
+            print('creating object: ' + object_name)
 
     def object_all_rows(self, object_name):
         return self.return_many(SQL.select.format('*', object_name))
@@ -92,14 +92,14 @@ class DataBaseObject:
             elif ddl:
                 ddl_command = ddl
             else:
-                print 'please submit table ddl command, table not exist'
+                print('please submit table ddl command, table not exist')
 
             self.execute(SQL.table_ddl.format(table_name, ddl_command))
-            print 'table ' + table_name + ' created'
+            print('table ' + table_name + ' created')
         if not self.return_one(SQL.log_value_exist.format(table_name, time_stamp, object_name)):
             self.execute(sql)
         else:
-            print 'table {0} already contains ({1})'.format(table_name, time_stamp)
+            print('table {0} already contains ({1})'.format(table_name, time_stamp))
 
     def determine_id_col(self, table, field=''):
         i = 0
@@ -129,17 +129,17 @@ def databases_compare(db1, db2, concrete_table=''):
         table_list = one_table_list
 
     for table in table_list:
-        print '*' * 100
-        print '*' * 100
+        print('*' * 100)
+        print('*' * 100)
         if 'sqlite_sequence' in table:
             continue
         if not db_right.object_exist(table[0]):
-            print 'missing table "{0}" in {1}'.format(db1, db2)
+            print('missing table "{0}" in {1}'.format(db1, db2))
         else:
             id_col = db_left.determine_id_col(table[0])
             id_col_id = db_left.determine_id_col(table[0], id_col)
-            print """table - {0} - ID column identified - {1}
-            (index position {2})""".format(table[0], id_col, id_col_id)
+            print("""table - {0} - ID column identified - {1}
+            (index position {2})""".format(table[0], id_col, id_col_id))
             for row in db_left.object_all_rows(table[0]):
                 where = id_col + ' = ' + str(row[id_col_id])
                 col_num = 0
@@ -149,17 +149,17 @@ def databases_compare(db1, db2, concrete_table=''):
                         continue
                     mirror = db_right.return_field_content(table[0], column.split(' ')[0], where)
                     if not mirror:
-                        print '{0}!!cannot get mirrored column: {1} for row:'.format(' ' * 5, column, where)
+                        print('{0}!!cannot get mirrored column: {1} for row:'.format(' ' * 5, column, where))
                         continue
                     if SO74TX.similar(row[col_num], mirror[0]) < 1:
                         try:
-                            print '=' * 100
-                            print row[col_num]
-                            print '-' * 100
-                            print mirror[0]
-                            print '=' * 100
+                            print('=' * 100)
+                            print(row[col_num])
+                            print('-' * 100)
+                            print(mirror[0])
+                            print('=' * 100)
                         except Exception as ex:
-                            print ex.args[0].replace('\n', ' ')
+                            print(ex.args[0].replace('\n', ' '))
                             
                     col_num += 1
 
@@ -167,11 +167,11 @@ def databases_compare(db1, db2, concrete_table=''):
 def get_query_type(sql, qry_type):
     """get table name from SQL text"""
     if qry_type == 'DDL':
-        print 'CREATE/DROP/ALTER/RENAME TABLE'
+        print('CREATE/DROP/ALTER/RENAME TABLE')
     elif qry_type == 'DML':
-        print 'INSERT/UPDATE/DELETE/SELECT TABLE'
+        print('INSERT/UPDATE/DELETE/SELECT TABLE')
     elif qry_type == 'DCL':
-        print 'GRANT/REVOKE'
+        print('GRANT/REVOKE')
     return 'sql result'
 
 
@@ -180,7 +180,7 @@ def temp_connect_database(database, do_some_work=''):
     db = DataBaseObject(database, active=False)
     if not do_some_work:
         do_some_work = 'explore'
-        print db.obj_list
+        print(db.obj_list)
 
 if __name__ == '__main__':
 
@@ -202,6 +202,6 @@ if __name__ == '__main__':
             if 'compare' in args.m:
                 databases_compare(args.a, args.b, args.f)
             else:
-                print 'method not implemented :' + args.m + ':'
+                print('method not implemented :' + args.m + ':')
     else:
-        print 'please submit log file location'
+        print('please submit log file location')
