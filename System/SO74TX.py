@@ -115,8 +115,8 @@ class WebContent(HTMLParser.HTMLParser):
             else:
                 self.div = parsed_content
                 self.div_text = parsed_content
-        except HTMLParser.HTMLParseError, e:
-            print('---cannot fetch address {0}, ({1})'.format(self.url, e))
+        except HTMLParser.HTMLParseError:
+            print('---cannot fetch address {0}, ({1})'.format(self.url, HTMLParser.HTMLParseError))
         except:
             print('---some else error occurred: ' + self.url)
             if done:
