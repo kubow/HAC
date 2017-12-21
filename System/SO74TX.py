@@ -3,6 +3,7 @@
 replace line endings, load/write text to a file
 compare text simrality
 """
+import sys
 import re
 import argparse
 import difflib
@@ -19,7 +20,7 @@ try:
 except ImportError:
     html_easier = False
 finally:
-    import HTMLParser
+    from html.parser import HTMLParser
 # sys.setdefaultencoding('utf-8')
 try:
     import pandas
@@ -33,12 +34,12 @@ from OS74 import FileSystemObject, CurrentPlatform
 from SO74DB import DataBaseObject
 
 
-class WebContent(HTMLParser.HTMLParser):
+class WebContent(HTMLParser):
     """General class for reading HTML Pages"""
 
     def __init__(self, url, log_file=''):
         uah = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.90 Safari/537.36'
-        HTMLParser.HTMLParser.__init__(self)
+        HTMLParser.__init__(self)
         self.headers = {"User-Agent": uah}
         self.easier = html_easier
         self.recording = 0  # flag for exporting data
@@ -115,10 +116,10 @@ class WebContent(HTMLParser.HTMLParser):
             else:
                 self.div = parsed_content
                 self.div_text = parsed_content
-        except HTMLParser.HTMLParseError:
-            print('---cannot fetch address {0}, ({1})'.format(self.url, HTMLParser.HTMLParseError))
+        # except HTMLParser.HTMLParseError:
+            # print('---cannot fetch address {0}, ({1})'.format(self.url, HTMLParser.HTMLParseError))
         except:
-            print('---some else error occurred: ' + self.url)
+            print('---some else error occurred (' + self.url + '): ' + str(sys.exc_info()[0]))
             if done:
                 if content:
                     self.div = str(content)
@@ -133,11 +134,9 @@ class WebContent(HTMLParser.HTMLParser):
         if self.div:
             print('creating ' + file_path + ' from: ' + self.url)
             try:
-                FileSystemObject(file_path).object_write(HTML.skelet_titled.format(heading.encode('utf-8'),
-                                                                                 self.div.encode('utf-8')), 'w+')
+                FileSystemObject(file_path).object_write(HTML.skelet_titled.format(heading, self.div), 'w+')
             except:
-                FileSystemObject(file_path).object_write(HTML.skelet_titled.format(heading.encode('utf-8'),
-                                                                                 'cannot get text/bad char'), 'w+')
+                FileSystemObject(file_path).object_write(HTML.skelet_titled.format(heading, 'cannot get text/bad char'), 'w+')
             if log_file:
                 self.log_to_database(log_file.replace('.log', '.sqlite'), heading)
         else:
@@ -147,13 +146,13 @@ class WebContent(HTMLParser.HTMLParser):
         user, domain = CurrentPlatform().get_username_domain()
         time_stamp = datetime.datetime.now().strftime('%d.%m.%Y')
         try:
-            tag_content = self.div_text.encode('utf-8').replace('\n\n\n\n', '\n').replace('\n\n', '\n')
+            tag_content = self.div_text.replace('\n\n\n\n', '\n').replace('\n\n', '\n')
         except:
             tag_content = 'cannot catch div text...'
         # table structure
         table_def = 'Log (Connection, CPName, Report, LogDate, User, Domain)'
         values_template = '"{0}", "{1}", "{2}", "{3}", "{4}", "{5}"'
-        table_values = values_template.format(heading.encode('utf-8'), 0, tag_content, time_stamp, user, domain)
+        table_values = values_template.format(heading, 0, tag_content, time_stamp, user, domain)
         sql = SQL.insert.format(table_def, table_values)
         DataBaseObject(db_path).log_to_database('Log', sql)
 
@@ -192,8 +191,7 @@ class RssContent(object):
     def write_rss_content_to_file(self, file_path, heading):
         if self.div:
             print('creating ' + file_path + ' from: ' + self.url)
-            FileSystemObject(file_path).file_refresh(HTML.skelet_titled.format(heading.encode('utf-8'),
-                                                                               self.div.encode('utf-8')))
+            FileSystemObject(file_path).file_refresh(HTML.skelet_titled.format(heading, self.div))
             log_path = FileSystemObject(file_path).get_another_directory_file('logfile.sqlite')
 
             # self.log_to_database(log_path, heading)

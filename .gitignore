@@ -9,6 +9,7 @@
 /Multimedia/RestMenu/*.html
 /System/*.htm
 /System/*.pyc
+/System/__pycache__/*
 /System/Device/*.pyc
 /System/Covert/*.json
 /System/Covert/*.sqlite

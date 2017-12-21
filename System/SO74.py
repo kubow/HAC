@@ -20,7 +20,7 @@ def process_web_content(mode, final_dir, url=None):
                     wc.url = restaurant[5]  # zomato style
                     wc.process_url('id', 'daily-menu-container')
 
-                html_file_path = final_dir_obj.append_file(restaurant[2].encode('utf-8') + '.html')
+                html_file_path = final_dir_obj.append_file(restaurant[2] + '.html')
                 wc.write_web_content_to_file(html_file_path, restaurant[3], log_file)
 
         elif 'rss' in mode:
@@ -30,7 +30,7 @@ def process_web_content(mode, final_dir, url=None):
                     wc = RssContent(rss[3])
                 else:
                     print('no address to fetch ...' + str(rss))
-                html_file_path = final_dir_obj.append_file(rss[2].encode('utf-8') + '.html')
+                html_file_path = final_dir_obj.append_file(rss[2] + '.html')
                 wc.write_rss_content_to_file(html_file_path, rss[3])
 
 
@@ -51,7 +51,7 @@ def browse_internet(mode, match_dir, url=None):
 
 def write_weather_text(html_file, title, content):
     logger.log_operation('writing content {0} to file: {1}'.format(title, html_file))
-    FileSystemObject(html_file).object_write(HTML.skelet_titled.format(title, content.encode('utf-8')), 'w+')
+    FileSystemObject(html_file).object_write(HTML.skelet_titled.format(title, content), 'w+')
 
 
 if __name__ == '__main__':

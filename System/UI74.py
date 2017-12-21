@@ -6,11 +6,12 @@ import glob
 # Use Tkinter for python 2, tkinter for python 3
 try:
     import Tkinter as tk
+    import Tkinter.ttk as ttk
 except ImportError:
     print('using small tkinter')
     import tkinter as tk
-finally:
-    import ttk
+    import tkinter.ttk as ttk
+
 from PIL import Image, ImageTk
 
 from log import Log
