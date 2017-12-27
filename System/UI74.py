@@ -6,11 +6,15 @@ import glob
 # Use Tkinter for python 2, tkinter for python 3
 try:
     import Tkinter as tk
-    import Tkinter.ttk as ttk
 except ImportError:
-    print('using small tkinter')
     import tkinter as tk
+    print('using small tkinter')
+    
+try:
+    import ttk
+except ImportError:
     import tkinter.ttk as ttk
+    print('using ttk from tkinter')
 
 from PIL import Image, ImageTk
 
