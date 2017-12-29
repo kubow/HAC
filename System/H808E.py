@@ -153,7 +153,7 @@ class h808e(object):
 
     def get_table(self):
         sql = 'select code, name, query, folder from enc_nodes where length(query) > 0;'
-        tables = DatabaseObject(self.db_path).return_many(sql)
+        tables = DataBaseObject(self.db_path).return_many(sql)
         # all tables within enc table - must run sql
         return tables
 
@@ -232,7 +232,10 @@ def build_text_menu(he):
         9.  Browse pages in (FF/CH/IE)
         -------------------------------------
         ==========PRESS 'Q' TO QUIT==========""")
-        keep_alive = raw_input("Please run:")
+        try:
+            keep_alive = raw_input("Please run:")  # python 2
+        except:
+            keep_alive = input("Please run:")  # python 3
         file_name = FileSystemObject(args.c).last_part()
         active_directory = args.c.replace(file_name, '')
         if keep_alive == "1":

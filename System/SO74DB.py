@@ -3,7 +3,7 @@ import sqlite3
 from Template import SQL
 
 
-class DataBaseObject:
+class DataBaseObject(object):
     """db_path can be a log_file, it creates record in sqlite in the same path"""
     def __init__(self, db_path, active=False):
         self.db_file = db_path.replace('.log', '.sqlite')
