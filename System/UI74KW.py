@@ -37,20 +37,21 @@ class ShowEnc(GridLayout):
         print(self.actual_location)
         directory = FileSystemObject(self.actual_location).one_dir_up()
         self.fldr_lib, self.file_lib = FileSystemObject(directory).object_read_split()
-        # self.do_layout()
-        print(dir(self))
-        print('-'*20)
-        print(dir(self.file_list))
-        print('-'*20)
-        print(dir(self.folder_list))
+        print(directory)
+        # clear the lists content
+        self.file_list.adapter.data[:]
+        self.folder_list.adapter.data[:]
+        # append new data
         self.file_list.append(self.file_lib)
         self.folder_list.append(self.fldr_lib)
     
     def folder_on_select(self, change_value):
         self.selected_value = "Selected: {0}".format(change_value.text)
+        print(self.selected_value)
 
     def file_on_select(self, change_value):
         self.selected_value = "Selected: {0}".format(change_value.text)
+        print(self.selected_value)
     
     def clear(self):
         self.main_text.text = ""

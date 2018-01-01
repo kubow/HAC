@@ -3,11 +3,11 @@ py_file=${PWD}/System/UI74KW.py
 if [ "$1" = "a" ]
 then
     echo 'python '${py_file}
-    python ${py_file}
+    python3 ${py_file}
 elif [ "$1" = "b" ]
 then
     echo 'python '${py_file}' -m inspector'
-    python ${py_file} -m inspector
+    python3 ${py_file} -m inspector
 elif [ "$1" = "c" ]
 then
     echo "text mode"

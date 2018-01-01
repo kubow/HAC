@@ -13,6 +13,7 @@ import lxml.html
 import feedparser
 import requests
 # from xml.dom.minidom import parseString
+# sys.setdefaultencoding('utf-8')
 
 try:
     html_easier = True
@@ -21,7 +22,7 @@ except ImportError:
     html_easier = False
 finally:
     from html.parser import HTMLParser
-# sys.setdefaultencoding('utf-8')
+
 try:
     import pandas
 except ImportError:
