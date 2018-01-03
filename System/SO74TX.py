@@ -20,8 +20,11 @@ try:
     from bs4 import BeautifulSoup
 except ImportError:
     html_easier = False
-finally:
+
+try:
     from html.parser import HTMLParser
+except ImportError:
+    from HTMLParser import HTMLParser
 
 try:
     import pandas
