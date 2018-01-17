@@ -294,6 +294,7 @@ def build_text_menu(he):
             print("\n    Register directories\n")
             he.directory_watcher()
         elif keep_alive == "8":
+            import UI74
             # running Tkinter GUI
             logger.log_operation('universal python in ' + args.d)
             UI74.build_window(args.d)
@@ -314,7 +315,6 @@ if __name__ == '__main__':
     from log import Log
     from SO74DB import DataBaseObject
     from OS74 import FileSystemObject, CurrentPlatformControl as cpc
-    import UI74
     import SO74TX
     from Template import HTML, SQL
 
