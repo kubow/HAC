@@ -225,8 +225,8 @@ def build_text_menu(he):
         4.  Generate structure from db
         5.  Register directory
         6.  B
-        7.  C
         -------------------------------------
+        7.  Kivy interface
         8.  Universal python project
         -------------------------------------
         9.  Browse pages in (FF/CH/IE)
@@ -293,6 +293,10 @@ def build_text_menu(he):
         elif keep_alive == "5":
             print("\n    Register directories\n")
             he.directory_watcher()
+        elif keep_alive == "7":
+            print("\n    Kivy interface starting...\n")
+            import UI74KW
+            MainApp().run()
         elif keep_alive == "8":
             import UI74
             # running Tkinter GUI
