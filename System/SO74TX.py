@@ -12,6 +12,8 @@ import xml.etree.ElementTree
 import lxml.html
 import feedparser
 import requests
+from glob import glob  #pdf reading purposes
+from time import clock #benchmark purposes
 # from xml.dom.minidom import parseString
 # sys.setdefaultencoding('utf-8')
 
@@ -377,6 +379,35 @@ class TextContent(object):
         return block_text
 
 
+class PdfContent(object):
+    def __init__(self, path_containing_pdf):
+        self.path = path_containing_pdf
+
+    def count(self):
+        """
+        Takes one argument: the path where you want to search the files.
+        Returns a dictionary with the file name and number of pages for each file.
+        https://www.daniweb.com/programming/software-development/threads/152831/read-number-of-pages-in-pdf-files
+        """
+        #
+        # cdef double ti = clock() #Used for benchmark.
+        #
+        pdf_file_list = glob(self.path + "\\" + '*.pdf')
+        vPages = 0
+        vMsg = {}
+        #
+        for pdf_file in pdf_file_list:
+            pdf_file_content = open(pdf_file, 'rb', 1)
+            for line in pdf_file_content.readlines():
+                if "/Count " in line:
+                    vPages = int(re.search("/Count \d*", line).group()[7:])
+            vMsg[pdf_file] = vPages
+            pdf_file_content.close()
+        #
+        # cdef double tf = clock() #Used for benchmark.
+        #
+        # print tf-ti
+        return vMsg
 
 
 def filter_lines(text_file, with_filter):
@@ -430,6 +461,8 @@ def create_file_if_neccesary(file_name):
 def xml_to_html(xml_text):
     html_text = ''
     h = HTML()
+    if not xml.etree.ElementTree.fromstring(xml_text).text:
+        return None
     for element in xml.etree.ElementTree.fromstring(xml_text)._children:
         if element.text is not None:
             if len(element.attrib) > 0:
