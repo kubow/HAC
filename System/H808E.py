@@ -90,7 +90,7 @@ class h808e(object):
             return False
 
     def load_active_directory_memory(self):
-        database = DataBaseObject(":memory:", True)
+        database = DataBaseObject(":memory:", active=True)
         database.execute(SQL.table_create)
         i = 0
         
@@ -143,10 +143,10 @@ class h808e(object):
                     FileSystemObject(directory + str(essn['code']) + '.html').object_write(self.db_data)
 
     def iterate_enc_db_structure(self):
-        database = DataBaseObject(self.db_path)
-        fathers = database.return_many(SQL.select_father_nodes)
+        db = DataBaseObject(self.db_path)
+        fathers = db.return_many(SQL.select_father_nodes)
         main_fathers = [father[0] for father in fathers]
-        root_nodes = database.return_many(SQL.select_root_nodes)
+        root_nodes = db.return_many(SQL.select_root_nodes)
         for root_node in root_nodes:
             print(root_node[2].encode('utf8') + ' root node / id ' + str(
                 root_node[4]) + ' / sqn ' + str(root_node[5]) + ' level 1')

@@ -3,7 +3,7 @@ import argparse
 
 
 def process_web_content(mode, final_dir, url=None):
-    settings_db = DataBaseObject(FileSystemObject(__file__).get_another_directory_file('Settings.sqlite'))
+    db = DataBaseObject(FileSystemObject(__file__).get_another_directory_file('Settings.sqlite'))
     log_file = str(args.l)
     wc = WebContent(url)
     final_dir_obj = FileSystemObject(final_dir)
@@ -11,7 +11,7 @@ def process_web_content(mode, final_dir, url=None):
         print(wc)
     else:
         if 'rest' in mode:
-            web_objects = settings_db.return_many('SELECT * FROM RestActive;')
+            web_objects = db.return_many('SELECT * FROM RestActive;')
             for restaurant in web_objects:
                 if restaurant[4]:
                     wc.url = restaurant[4]
@@ -24,7 +24,7 @@ def process_web_content(mode, final_dir, url=None):
                 wc.write_web_content_to_file(html_file_path, restaurant[3], log_file)
 
         elif 'rss' in mode:
-            web_objects = settings_db.return_many('SELECT * FROM RssActive;')
+            web_objects = db.return_many('SELECT * FROM RssActive;')
             for rss in web_objects:
                 if rss[3]:
                     wc = RssContent(rss[3])

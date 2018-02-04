@@ -39,31 +39,31 @@ class Device(object):
     def setup_device(self, device, sensor=None, timeout=0):
         # override values: table_fields, table_default_val, port, br, timeout, last_run
         if FileSystemObject(self.setup_db).is_file:
-            dbc = DataBaseObject(self.setup_db)
+            db = DataBaseObject(self.setup_db)
             # table name, that will hold values
-            self.table_name = dbc.return_one(SQL.select.format('table_name', 'setting'))[0]
+            self.table_name = db.return_one(SQL.select.format('table_name', 'setting'))[0]
             # # build table structure
             col_list = ''  # columns - string to create table
             col_vals = {}  # columns - default values to insert query
-            for row in dbc.return_many(SQL.select.format('*', 'structure')):
+            for row in db.return_many(SQL.select.format('*', 'structure')):
                 col_list += row[1] + ' ' + row[2] + ','
                 col_vals[row[1]] = row[4]
                 # name of table being saved
             self.table_fields = col_list[:-1]
             self.table_default_val = col_vals
             # match device name, platform
-            for device_check in dbc.return_many(SQL.get_device_name_list):
+            for device_check in db.return_many(SQL.get_device_name_list):
                 if str(device_check[0]).lower() in self.device_name.lower():
-                    self.port = dbc.return_one(SQL.get_driver_loc.format(device_check[0]))[0]
-                    self.br = dbc.return_one(SQL.get_driver_br.format(device_check[0]))[0]
+                    self.port = db.return_one(SQL.get_driver_loc.format(device_check[0]))[0]
+                    self.br = db.return_one(SQL.get_driver_br.format(device_check[0]))[0]
                     str_device_id = 'identified device %s' % self.device_name
                     str_device_adress = 'reading from %s' % self.port
                     logger.log_operation(str_device_id+' / '+str_device_adress)
                     break
             if not self.port:
-                self.port = dbc.return_one(SQL.get_driver_dummy_loc.format(self.device_platform))[0]
+                self.port = db.return_one(SQL.get_driver_dummy_loc.format(self.device_platform))[0]
             if not self.br:
-                self.br = dbc.return_one(SQL.get_driver_dummy_loc.format(self.device_platform))[0]
+                self.br = db.return_one(SQL.get_driver_dummy_loc.format(self.device_platform))[0]
         else:
             # no available config - using default values
             self.port = 'COM4'

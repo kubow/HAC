@@ -5,11 +5,19 @@ from Template import SQL
 
 class DataBaseObject(object):
     """db_path can be a log_file, it creates record in sqlite in the same path"""
-    def __init__(self, db_path, active=False):
-        self.db_file = db_path.replace('.log', '.sqlite')
-        self.type = 'sqlite3'
+    def __init__(self, db_path, db_type="sqlite", active=False):
         self.active = active
         self.sql = SQL.select_tables_in_db
+        if '.log' in db_path:
+            self.db_file = db_path.replace('.log', '.sqlite')
+        else:
+            self.db_file = db_path
+        if db_type in ('ctb', 'sqlite3', 'db'):
+            self.type = 'sqlite3'
+        elif db_type in ('xml', 'xsl'):
+            self.type = 'xml'
+        else:
+            self.type = 'not_defined'
         if self.active:
             self.obj_conn = sqlite3.connect(db_path)
             print('succesfully connected to database ' + db_path)
