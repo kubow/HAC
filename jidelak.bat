@@ -18,8 +18,8 @@ echo ^<div id="west"^>0^</div^> >> %mainHTML%
 echo ^<div id="east"^>0^</div^> >> %mainHTML%
 
 echo ^<div id="frame"^> >> %mainHTML%
-echo    ^<iframe id="Left" src="Multimedia/RestMenu/bla.html"^>^</iframe^> >> %mainHTML%
-echo    ^<iframe id="Right" src="Multimedia/RestMenu/bla.html"^>^</iframe^> >> %mainHTML%
+echo    ^<iframe id="Left" src="Multimedia/RestMenu/elb.html"^>^</iframe^> >> %mainHTML%
+echo    ^<iframe id="Right" src="Multimedia/RestMenu/hus.html"^>^</iframe^> >> %mainHTML%
 echo ^</div^> >> %mainHTML%
 
 REM echo ^<button onclick="loadPages()"^>Click Me^</button^> >> %mainHTML%

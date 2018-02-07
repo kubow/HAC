@@ -397,8 +397,10 @@ class PdfContent(object):
         vMsg = {}
         #
         for pdf_file in pdf_file_list:
-            pdf_file_content = open(pdf_file, 'rb', 1)
+            print(pdf_file)
+            pdf_file_content = open(pdf_file, mode='r', buffering=1, encoding='utf-8')
             for line in pdf_file_content.readlines():
+                print(line)
                 if "/Count " in line:
                     vPages = int(re.search("/Count \d*", line).group()[7:])
             vMsg[pdf_file] = vPages
