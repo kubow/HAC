@@ -235,15 +235,15 @@ class CsvContent(object):
         if not isinstance(content, dict):
             print('no proper content, skipping')
             return
-        for ac_time, vals in content.iteritems():
+        for ac_time, vals in content.items():
             row = ''
             if line == 1:
-                for d, v in vals.iteritems():
+                for d, v in vals.items():
                     row += str(d) + ','
                 row = 'datetime, ' + row
                 f.write(row + '\n')
             row = str(ac_time) + ','
-            for d, v in vals.iteritems():
+            for d, v in vals.items():
                 row += str(v) + ','
             f.write(row + '\n')
             line += 1
@@ -256,12 +256,12 @@ class CsvContent(object):
         try:
             # load field names as variables
             csv_object = pandas.read_csv(self.path, error_bad_lines=False)  # , parse_dates=True, index_col=0, header=0)
-            for column in csv_object.describe().iteritems():
-                if 'unnamed' in column[0].lower():
+            for column in csv_object.describe().items():
+                if 'unnamed' in column[0][0].lower():
                     continue
-                for statistic in column[1].iteritems():
-                    if 'mean' in statistic[0]:
-                        values[column[0]] = statistic[1]
+                for statistic in column[0][1].items():
+                    if 'mean' in statistic[0][0]:
+                        values[column[0][0]] = statistic[0][1]
                         break
             self.read_success = True
             return values
@@ -296,8 +296,8 @@ class JsonContent(object):
 
     def process(self):
         fs = FileSystemObject(self.path)
-        for database in fs.object_read(filter='sqlite').iterkeys():
-            db = DataBaseObject(FileSystemObject(self.path).append_file(database))
+        for database in fs.object_read(filter='sqlite').items():
+            db = DataBaseObject(FileSystemObject(self.path).append_file(database[0]))
             for velocity in db.object_structure('measured'):
                 if 'timestamp' in velocity or 'device' in velocity or not velocity:
                     continue
@@ -530,8 +530,8 @@ if __name__ == '__main__':
         export_text_to(output_object, TextContent(input_text).replace_line_endings())
     elif input_object.is_folder:
         folder_list = input_object.object_read()
-        for f_name in folder_list.iteritems():
-            file_name = folder_list[f_name]
+        for f_name in folder_list.items():
+            file_name = folder_list[f_name[0]]
             input_text = load_text_from(args.i + '/' + file_name)
             output_object = args.o + '/' + file_name
             if 'lin' in args.m:

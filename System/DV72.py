@@ -126,12 +126,12 @@ class Device(object):
         ac_time = self.time_aggregated(datetime.datetime.now()).strftime(self.date_format)
         fs = FileSystemObject(self.output_path + 'Measured')
         fs.object_create_neccesary()
-        for csv_file in fs.object_read(filter='csv').iterkeys():
-            db = DataBaseObject(fs.append_file(csv_file[:6] + '.sqlite'))
-            csv = CsvContent(fs.append_file(csv_file), date_format=self.date_format)
+        for csv_file in fs.object_read(filter='csv').items():
+            db = DataBaseObject(fs.append_file(csv_file[0][:6] + '.sqlite'))
+            csv = CsvContent(fs.append_file(csv_file[0]), date_format=self.date_format)
             into = 'timestamp, '
             values = '"' + csv.time_stamp + '", '
-            for time_series, average in csv.content.iteritems():
+            for time_series, average in csv.content.items():
                 into += time_series + ', '
                 values += str(average) + ', '
             into = self.table_name + ' (' + into[:-2] + ')'
@@ -180,7 +180,7 @@ class Device(object):
         return value_aggregated
 
     def process_time_series(self, values):
-        for vel, val in values.iteritems():
+        for vel, val in values.items():
             print(vel + val)  # save to database
 
     
