@@ -8,6 +8,7 @@ import re
 import argparse
 import difflib
 import datetime
+import json
 import xml.etree.ElementTree
 import lxml.html
 import feedparser
@@ -106,10 +107,14 @@ class WebContent(HTMLParser):
         try:
             self.div = ''
             self.div_text = ''
-            if 'file:' in self.url:
+            if self.url.startswith('file:'):
                 self.html_text = FileSystemObject(self.url.split('///')[-1]).object_read()
-            else:
+            elif self.url.startswith('http:'):
                 self.html_text = requests.get(self.url, timeout=(10, 5), headers=self.headers).content
+            elif self.url.startswith('ftp:'):
+                self.html_text = 'FTP read not implemented yet'
+            else:
+                self.html_text = requests.get('http://' + self.url, timeout=(10, 5), headers=self.headers).content
             parsed_content = self.parse_html_text()
             done = True
             if self.easier:
@@ -285,14 +290,17 @@ class CsvContent(object):
 
 
 class JsonContent(object):
-    def __init__(self, location, write=False):
-        self.path = location
-        self.json_skeleton = '[\n{0}\n]'
-        self.json_row = '[{0}, {1}],\n'
-        if not write:
-            self.content = self.json_format()
+    def __init__(self, location, write=False, direct=False):
+        if direct:
+            self.content = json.loads(location)
         else:
-            self.process()
+            self.path = location
+            self.json_skeleton = '[\n{0}\n]'
+            self.json_row = '[{0}, {1}],\n'
+            if not write:
+                self.content = self.json_format()
+            else:
+                self.process()
 
     def process(self):
         fs = FileSystemObject(self.path)
@@ -309,18 +317,20 @@ class JsonContent(object):
                     velocity_values[value[0]] = value[1]
                 self.write(fs.append_file(velocity_name + '.json'), velocity_values)
 
-
     def json_format(self):
-        print('file: ' + self.path)
-        with open(self.path, 'r') as fh:
-            # first = next(fh).decode()
-            first = fh.readline()
-            print('got first line' + first)
-            print('*****************')
-            fh.seek(-512, 2)
-            # last = fh.readlines()
-            last = fh.readlines()[-1].decode()
-        return first, last
+        if FileSystemObject(self.path).is_file:
+            print('file: ' + self.path)
+            with open(self.path, 'r') as fh:
+                # first = next(fh).decode()
+                first = fh.readline()
+                print('got first line' + first)
+                print('*****************')
+                fh.seek(-512, 2)
+                # last = fh.readlines()
+                last = fh.readlines()[-1].decode()
+            return first, last
+        else:
+            print('cycle all json files in folder and recursively call this function')
 
     def write(self, file_name,  content=''):
         json_file = FileSystemObject(file_name)

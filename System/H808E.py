@@ -296,7 +296,7 @@ def build_text_menu(he):
         elif keep_alive == "7":
             print("\n    Kivy interface starting...\n")
             import UI74KW
-            MainApp().run()
+            UI74KW.MainApp().run()
         elif keep_alive == "8":
             import UI74
             # running Tkinter GUI
