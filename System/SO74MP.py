@@ -33,13 +33,13 @@ class OpenWeatherMap(object):
             owm = WebContent(q_address + location + '&APPID=' + owm_api)
             owm.process_url()
             json_data = JsonContent(owm.html_text, direct=True).content
-            self.place_obj = owm.html_text
-            self.place_name =
+            self.place_obj = ''
+            self.place_name = ''
             self.place_coor = json_data['coord']
             self.weather_local = json_data['weather']
             self.weather_forecast = json_data['main']
-            self.weather_forecast_days =
-            self.heading
+            self.weather_forecast_days = ''
+            self.heading = ''
 
     def build_text_place(self):
         text = self.place_name + ' (' + self.place_coor + ')'
