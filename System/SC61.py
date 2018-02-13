@@ -1,6 +1,56 @@
 ''' Commands to deal with mathematic operations,
 both algebra and geometry,
 use alone to run simple calculator '''
+import sys #for pygt graph
+import decimal
+from random import randint, random, uniform
+
+try:
+    import numpy
+    num_wrap = True
+except ImportError:
+    print('numpy not installed, trying to improvise ...')
+    num_wrap = False
+
+try:
+    import pyqtgraph as pg
+    plotting = True
+except ImportError:    
+    print('QT graphing not installed, must plot on command line')
+    plotting = False
+
+
+class Number(object):
+    def __init__(self, value=0):
+        self.val = value
+        
+    def generate_random(low=0, high=100, integer=False):
+        if integer:
+            return randint(int(low), int(high))
+        else:
+            return uniform(low, high)
+        
+    def generate_random_series(series_size=1000):
+        numpy.random.normal(size=series_size)
+
+
+class Matematize(object):
+    def __init__(self, value, definition=10):
+        self.val = value
+        self.dec_val = decimal.Decimal(value)
+        self.is_num = value.isdigit()
+        self.precise = len(str(n))-1 
+        self.scale = len(str(n).split('.')[1])
+        self.in_def = definition
+        if self.dec_val >= 0:
+            self.is_neg = False
+        else:
+            self.is_neg = True
+        if self.dec_val < 1:
+            self.percentage = str(self.dec_val * 100) + '%'
+        else:
+            self.percentage = str(self.dec_val / 100) + '%'
+
 
 # Math functions
 class Operations:
@@ -38,36 +88,24 @@ class Operations:
         elif x > 0:
             return x * (x-1)
         else:
-            return 1
-
-            
-class Matematize(object):
-    def __init__(self):
-        self.is_precise = True
-        self.in_def = 10
-        self.is_neg = False
-        # self.percentage
-            
-            
+            return 1            
+                
 def graphing():
-    import pyqtgraph as pg
-    import numpy
+    n = Number()
+    plot_data = n.generate_random_series(series_size=1000)
+    image_data = n.generate_random_series(series_size=size=(500,500))
 
-    data = numpy.random.normal(size=1000)
-    pg.plot(data, title="Simplest possible plotting example")
-
-    data = numpy.random.normal(size=(500,500))
+    pg.plot(plot_data, title="Simplest possible plotting example")
     pg.image(data, title="Simplest possible image example")
 
-if __name__ == '__main__':
-    import sys
     if sys.flags.interactive != 1 or not hasattr(QtCore, 'PYQT_VERSION'):
         pg.QtGui.QApplication.exec_()
 
     # Switch to using white background and black foreground
     pg.setConfigOption('background', 'w')
     pg.setConfigOption('foreground', 'k')
-            
+
+if __name__ == '__main__':
     """Interactive part for standalone running"""
     print("Select operation.")
     print("1.Add")
