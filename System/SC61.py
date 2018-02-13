@@ -59,39 +59,38 @@ def graphing():
     data = numpy.random.normal(size=(500,500))
     pg.image(data, title="Simplest possible image example")
 
-    if __name__ == '__main__':
-        import sys
-        if sys.flags.interactive != 1 or not hasattr(QtCore, 'PYQT_VERSION'):
-            pg.QtGui.QApplication.exec_()
-
+if __name__ == '__main__':
+    import sys
+    if sys.flags.interactive != 1 or not hasattr(QtCore, 'PYQT_VERSION'):
+        pg.QtGui.QApplication.exec_()
 
     # Switch to using white background and black foreground
     pg.setConfigOption('background', 'w')
     pg.setConfigOption('foreground', 'k')
             
-"""Interactive part for standalone running"""
-print("Select operation.")
-print("1.Add")
-print("2.Subtract")
-print("3.Multiply")
-print("4.Divide")
+    """Interactive part for standalone running"""
+    print("Select operation.")
+    print("1.Add")
+    print("2.Subtract")
+    print("3.Multiply")
+    print("4.Divide")
 
-choice = input("Enter choice(1/2/3/4):")
-num1 = int(input("Enter first number: "))
-num2 = int(input("Enter second number: "))
+    choice = input("Enter choice(1/2/3/4):")
+    num1 = int(input("Enter first number: "))
+    num2 = int(input("Enter second number: "))
 
-op = Operations()
+    op = Operations()
 
-if choice == '1':
-   print(num1,"+",num2,"=", op.add(num1,num2))
+    if choice == '1':
+       print(num1,"+",num2,"=", op.add(num1,num2))
 
-elif choice == '2':
-   print(num1,"-",num2,"=", op.sbt(num1,num2))
+    elif choice == '2':
+       print(num1,"-",num2,"=", op.sbt(num1,num2))
 
-elif choice == '3':
-   print(num1,"*",num2,"=", op.mlt(num1,num2))
+    elif choice == '3':
+       print(num1,"*",num2,"=", op.mlt(num1,num2))
 
-elif choice == '4':
-   print(num1,"/",num2,"=", op.div(num1,num2))
-else:
-   print("Invalid input")
+    elif choice == '4':
+       print(num1,"/",num2,"=", op.div(num1,num2))
+    else:
+       print("Invalid input")
