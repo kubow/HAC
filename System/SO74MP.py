@@ -1,10 +1,21 @@
 try:
     import pyowm
-    weather_wrapper = False
+    weather_wrapper = False  # disabled because of bug
 except ImportError:
     print('using weather simple web requesting')
     weather_wrapper = False
-from osmapi import OsmApi
+try:
+    from osmapi import OsmApi
+    map_wrapper = True
+except ImportError:
+    print('using map simple web requesting')
+    map_wrapper = False
+try:
+    import mapscript
+    map_script = True
+except ImportError:
+    print('using simple map managing (mapserver)')
+    map_script = False
 
 from OS74 import DateTimeObject
 from SO74TX import WebContent, JsonContent
@@ -67,24 +78,51 @@ class OpenWeatherMap(object):
         return owm_data
 
 
-class OpenStreetMap(object):
-    def __init__(self, url):
-        self.url = url
-        self.osm_api = 'AIzaSyDkEnsboDEPpmq98svR1ORv-zACEy2TSjQ'
-        print('OpenStreetrMap.org - validate API-key disabled')
-        osm = OsmApi()
-
-
 '''class WeatherUnderground(object):
     def __init__(self):
         self.actual_data = self.get_actual(location)
 
-class Mapping(object):
+
+class QgisMapping(object):
     #from qgis.core import *
     print(u'aaa')
     '''
 
 
-if __name__ == '__main__':
+class OpenStreetMap(object):
+    def __init__(self, url):
+        if map_wrapper:
+            self.url = url
+            self.osm_api = 'AIzaSyDkEnsboDEPpmq98svR1ORv-zACEy2TSjQ'
+            print('OpenStreetrMap.org - validate API-key disabled')
+            osm = OsmApi()
+        else:
+            print('OpenStreetMaps without wrapper not implemented')
 
+
+class MapServer(object):
+    def __init__(self, map_file):
+        self.path = map_file
+        map_obj = mapscript.mapObj(map_file)
+        # more details http://www.mapserver.org/mapscript/python.html
+
+
+class MapyCZ(object):
+    def __init__(self):
+        root = 'http://api.mapy.cz/geocode?query='
+        
+    def from_address(self, address_string):
+        response = WebContent(root + address_string)
+        return response
+
+
+def geocode_with_restriction(query_list, max_per_hour=60, max_per_day=500):
+    ready = True
+    start_time = 'now' # implement datetime object
+    hour_count = 0
+    day_count = 0
+    while ready:
+        print('aaaa') # implement logic checking 
+
+if __name__ == '__main__':
     from log import Log
