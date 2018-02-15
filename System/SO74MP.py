@@ -18,6 +18,7 @@ except ImportError:
     map_script = False
 
 from OS74 import DateTimeObject
+from SC62 import Temp
 from SO74TX import WebContent, JsonContent
 from Template import HTML, SQL
 
@@ -61,7 +62,7 @@ class OpenWeatherMap(object):
         humi = HTML.paragraph.format('Humidity: ' + str(self.weather_local['humidity']) + ' %')
         rain = HTML.paragraph.format('Raining: ' + str(0) + ' mm')
         snow = HTML.paragraph.format('Snowing: ' + str(0) + ' mm')
-        temp = HTML.paragraph.format('Temperature: ' + str(self.weather_local['temp'] - 273.15))
+        temp = HTML.paragraph.format('Temperature: ' + str(Temp(self.weather_local['temp'], unit='K').to_c()))
         wind = HTML.paragraph.format('Wind: ' + str(self.weather_local['speed']) + ' m/s')
         time = HTML.paragraph.format('last proccess: ' + DateTimeObject().date.strftime('%d.%m.%Y %H:%M:%S'))
 
