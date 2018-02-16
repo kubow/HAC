@@ -1,6 +1,6 @@
 try:
     import pyowm
-    weather_wrapper = False  # disabled because of bug
+    weather_wrapper = True 
 except ImportError:
     print('using weather simple web requesting')
     weather_wrapper = False
@@ -31,8 +31,8 @@ class OpenWeatherMap(object):
         if weather_wrapper:
             # syntax = pyowm.OWM(API_key='your-API-key', subscription_type='pro')
             owm = pyowm.OWM(owm_api)
-            self.place_name = self.owm.weather_at_place(location)._location._name + ', ' + self.owm.weather_at_place(location)._location._country  # check
-            self.place_coor = str(self.owm.weather_at_place(location)._location._lat) + ', ' + str(self.owm.weather_at_place(location)._location._lon)  # check
+            self.place_name = owm.weather_at_place(location)._location._name + ', ' + self.owm.weather_at_place(location)._location._country  # check
+            self.place_coor = str(owm.weather_at_place(location)._location._lat) + ', ' + str(self.owm.weather_at_place(location)._location._lon)  # check
             self.weather_local = owm.weather_at_place(location).get_weather()
             self.weather_forecast = owm.daily_forecast(location).get_forecast()
             self.weather_forecast_days = self.weather_forecast._weathers
