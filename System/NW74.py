@@ -1,12 +1,19 @@
 #import argparse
 import os, sys
 import socket
-import netifaces as ni
 from email.mime.text import MIMEText
 import shlex  
 from subprocess import Popen, PIPE, STDOUT
 import numpy
-import pexpect
+
+try:
+    import netifaces as ni
+except ImportError:
+    print('not using network interfaces...')
+try:
+    import pexpect
+except ImportError:
+    print('not using pexpect')
 try:
     from smtplib import SMTP_SSL as SMTP  # secure SMTP (port 465, uses SSL)
     # from smtplib import SMTP            # standard SMTP (port 25, no enc)
@@ -14,12 +21,32 @@ try:
 except:
     print('win specific modules not load')
 
+from OS74 import CurrentPlatform, CurrentPlatformControl
+
+
+class HostLocal(object):
+    def __init__(self):
+        CurrentPlatformControl.__init__(self)
+
+    def ip_address(self):
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+
+    def ip_address_eth0(self):
+        ni.ifaddresses('eth0')
+        ip = ni.ifaddresses('eth0')[2][0]['addr']
+        return ip
+
+
 
 class Message():
     def __init___(self):
         self.server = 'localhost'
         self.sender = 'jav@p297c.local'
-        self.reciever = ['jakub.vajda@mdsaptech.cz']
+        self.reciever = ['kubow@tiscali.cz']
         # typical values for text_subtype are plain, html, xml
         self.text_subtype = 'plain'
 
@@ -30,6 +57,7 @@ class Message():
 
         %s
         ''' % ('some special text goes here')
+
 
 class WifiLatencyBenchmark(object):
     def __init__(self, ip):
@@ -83,11 +111,6 @@ def send_mail():
     s.sendmail(m.sender, m.reciever, m.message)
     s.quit()
 
-
-def get_eth0_ip():
-    ni.ifaddresses('eth0')
-    ip = ni.ifaddresses('eth0')[2][0]['addr']
-    return ip
 
 def monitor_command_output(cmd):
     os.system(cmd)
@@ -160,7 +183,8 @@ def get_simple_cmd_output(cmd, stderr=STDOUT):
     args = shlex.split(cmd)
     print(args)
     return Popen(args, stdout=PIPE, stderr=stderr).communicate()[0]
- 
+
+
 def get_ping_time(host):
     host = host.split(':')[0]
     cmd = "ping {host}".format(host=host)
@@ -174,8 +198,6 @@ def get_ping_time(host):
 
 if __name__ == '__main__':
 
-    from OS74 import CurrentPlatform
-
     #parser = argparse.ArgumentParser(description="Monitor network")
     #parser.add_argument('-d', help='directory', type=str, default='')
     #args = parser.parse_args()
@@ -186,5 +208,7 @@ if __name__ == '__main__':
 
         #response.run_test(n_test)
         #response.get_results()
+    print(HostLocal().ip_address())
+
     get_ping_time('8.8.8.8')
 

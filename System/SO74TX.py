@@ -154,7 +154,7 @@ class WebContent(HTMLParser):
             print('no content parsed from: ' + self.url)
 
     def log_to_database(self, db_path, heading):
-        user, domain = CurrentPlatform().get_username_domain()
+        user, domain = CurrentPlatform().environment
         time_stamp = datetime.datetime.now().strftime('%d.%m.%Y')
         try:
             tag_content = self.div_text.replace('\n\n\n\n', '\n').replace('\n\n', '\n')

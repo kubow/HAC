@@ -229,39 +229,33 @@ class FileSystemObject:
 
 class CurrentPlatform:
     def __init__(self):
-        self.main = self.which_platform()
-        self.environment = self.get_username_domain()
-        self.hostname = platform.node()
-        self.homepath = self.get_home_dir_path()
-
-    @staticmethod
-    def which_platform():
         if _platform == 'linux' or _platform == 'linux2':
-            return 'lnx'
+            self.main = 'lnx'
         elif _platform == 'darwin':
-            return 'mac'
+            self.main = 'mac'
         elif _platform == 'win32' or _platform == 'win64':
-            return 'win'
             print('must create _winreg import and read ...')
+            self.main = 'win'
         else:
-            return _platform
+            self.main = _platform
+        if self.main == "win":
+            self.environment = os.environ.get('USERNAME'), os.environ.get('USERDOMAIN')
+        else:
+            self.environment = os.environ.get('USERNAME'), os.environ.get('HOSTNAME')
+        self.hostname = platform.node()
+        if self.main == "lnx":
+            self.homepath = os.environ.get('HOME')
+        else:
+            self.homepath = os.environ.get('HOMEDRIVE') + os.environ.get('HOMEPATH')
+        self.release = platform.release()
 
     def print_system_description(self):
         # this is not working
         # return platform.version()
         # for debug purposes
-        print('system - {0} / release - {1}'.format(self.which_platform(), self.get_release()))
+        print('system - {0} / release - {1}'.format(self.main, self.release))
 
-    @staticmethod
-    def get_release():
-        return platform.release()
 
-    def get_username_domain(self):
-        if self.main == "win":
-            return os.environ.get('USERNAME'), os.environ.get('USERDOMAIN')
-        else:
-            return os.environ.get('USERNAME'), os.environ.get('HOSTNAME')
-            
     def get_home_dir_path(self):
         if self.main == "lnx":
             return os.environ.get('HOME') 
@@ -299,13 +293,11 @@ class CurrentPlatformControl(CurrentPlatform):
             device_re = re.compile("Bus\s+(?P<bus>\d+)\s+Device\s+(?P<device>\d+).+ID\s(?P<id>\w+:\w+)\s(?P<tag>.+)$", re.I)
             df = subprocess.check_output("lsusb")
             devices = []
-            for i in df.split('\n'):
-                if i:
-                    info = device_re.match(i)
-                    if info:
-                        dinfo = info.groupdict()
-                        dinfo['device'] = '/dev/bus/usb/%s/%s' % (dinfo.pop('bus'), dinfo.pop('device'))
-                        devices.append(dinfo)
+            for i in df.split(b'\n'):
+                if i and device_re.match(str(i)):
+                    dinfo = device_re.match(str(i)).groupdict()
+                    dinfo['device'] = '/dev/bus/usb/%s/%s' % (dinfo.pop('bus'), dinfo.pop('device'))
+                    devices.append(dinfo)
             return devices
 
 
