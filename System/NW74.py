@@ -9,19 +9,19 @@ import numpy
 try:
     import netifaces as ni
 except ImportError:
-    print('not using network interfaces...')
+    print('... not using network interfaces...')
 try:
     import pexpect
 except ImportError:
-    print('not using pexpect')
+    print('... not using pexpect')
 try:
     from smtplib import SMTP_SSL as SMTP  # secure SMTP (port 465, uses SSL)
     # from smtplib import SMTP            # standard SMTP (port 25, no enc)
     import win32com.client
-except:
-    print('win specific modules not load')
+except ImportError:
+    print('... win specific modules not load')
 
-from OS74 import CurrentPlatform, CurrentPlatformControl
+from OS74 import CurrentPlatformControl
 
 
 class HostLocal(object):
@@ -187,9 +187,11 @@ def get_simple_cmd_output(cmd, stderr=STDOUT):
 
 def get_ping_time(host):
     host = host.split(':')[0]
-    cmd = "ping {host}".format(host=host)
+    ping = CurrentPlatformControl('ping')
+    #cmd = "ping {host}".format(host=host)
     #res = [float(x) for x in get_simple_cmd_output(cmd).strip().split(':')[-1].split() if x != '-']
-    res = get_simple_cmd_output(cmd)
+    #res = get_simple_cmd_output(cmd)
+    res = ping.check_output(host, timeout=5)
     if len(res) > 0:
         return sum(res) / len(res)
     else:
@@ -210,5 +212,5 @@ if __name__ == '__main__':
         #response.get_results()
     print(HostLocal().ip_address())
 
-    get_ping_time('8.8.8.8')
+    print(get_ping_time('8.8.8.8'))
 

@@ -11,7 +11,7 @@ import time
 import datetime
 import serial
 import argparse
-from OS74 import FileSystemObject, CurrentPlatform, CurrentPlatformControl
+from OS74 import FileSystemObject, CurrentPlatformControl
 
 
 class Device(object):
@@ -192,7 +192,6 @@ def min_between(d1, d2):
         
         
 if __name__ == '__main__':
-    
     from SO74DB import DataBaseObject
     from SO74TX import CsvContent, JsonContent
     from Template import SQL

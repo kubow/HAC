@@ -2,12 +2,12 @@ py_file=${PWD}/System/DV72.py
 
 if [ "$1" = "s" ]
 then
-    echo 'python '${py_file}' -m read_serial -l '${PWD}'/Multimedia/'
-    python ${py_file} -m read_serial -l ${PWD}/Multimedia/
+    echo 'python '${py_file}' -l '${PWD}'/Multimedia/ -m read'
+    python ${py_file} -l ${PWD}/Multimedia/ -m read
 elif [ "$1" = "l" ]
 then
-    echo 'python '${py_file}' -m inspector -l '${PWD}'/Multimedia/'
-    python ${py_file} -m inspector -l ${PWD}/Multimedia/
+    echo 'python '${py_file}' -l '${PWD}'/Multimedia/ -m inspector'
+    python ${py_file} -l ${PWD}/Multimedia/ -m inspector
 elif [ "$1" = "c" ]
 then
     echo "text mode"

@@ -8,7 +8,7 @@ import datetime
 import platform
 import shutil
 import re
-import subprocess
+from subprocess import call, check_call, check_output, STDOUT
 from sys import platform as _platform
 
 try:
@@ -274,15 +274,24 @@ class CurrentPlatformControl(CurrentPlatform):
             self.app_run_path = DataBaseObject(d).return_one(sql)[0]
         else:
             self.app_name = 'not_defined'
-            self.app_run_path = 'must find out'
+            self.app_run_path = ''
+        if not self.app_run_path:
+            self.app_run_path = application
         
     def run_with_argument(self, arg_1='', arg_2=''):
         print(self.app_run_path + ' %s' % arg_1)
-        subprocess.call([self.app_run_path, arg_1])
+        call([self.app_run_path, arg_1])
         # if self.main == 'lnx':
-            # subprocess.call([self.app_run_path, arg_1])
+            # call([self.app_run_path, arg_1])
         # elif self.main == 'win':
-            # subprocess.call([self.app_run_path, arg_1])
+            # call([self.app_run_path, arg_1])
+
+    def check_output(self, arg='', timeout=2):
+        try:
+            command_input = self.app_run_path + ' ' + arg
+            return check_output(command_input, stderr=STDOUT, timeout=timeout, shell=True)
+        except:
+            return None
 
     def list_attached_peripherals(self):
         if self.main == 'win':
@@ -291,7 +300,7 @@ class CurrentPlatformControl(CurrentPlatform):
                 return usb.DeviceID
         else:
             device_re = re.compile("Bus\s+(?P<bus>\d+)\s+Device\s+(?P<device>\d+).+ID\s(?P<id>\w+:\w+)\s(?P<tag>.+)$", re.I)
-            df = subprocess.check_output("lsusb")
+            df = check_output("lsusb")
             devices = []
             for i in df.split(b'\n'):
                 if i and device_re.match(str(i)):
