@@ -25,14 +25,16 @@ class DataBaseObject(object):
         #     print('database ' + db_path + ' without active connection')
         self.obj_list = self.return_many(self.sql)
 
-
     def result_set(self, sql, just_one=True):
         if self.active:
             execution = self.obj_conn.execute(sql)
-            if just_one:
-                return execution.fetchone()
-            else:
-                return execution.fetchall()
+            try:
+                if just_one:
+                    return execution.fetchone()
+                else:
+                    return execution.fetchall()
+            except:
+                return None
         else:
             try:
                 conn = sqlite3.connect(self.db_file)
@@ -60,7 +62,7 @@ class DataBaseObject(object):
         return self.result_set(sql, just_one=True)
 
     def return_many(self, sql):
-        return self.result_set(sql, just_one=False)
+            return self.result_set(sql, just_one=False)
 
     def return_field_content(self, table, field, condition):
         return self.return_one(SQL.select_where.format(field, table, condition))
