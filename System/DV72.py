@@ -191,15 +191,16 @@ def min_between(d1, d2):
         
         
 if __name__ == '__main__':
-    from OS74 import FileSystemObject, CurrentPlatform, CurrentPlatformControl
-    from SO74DB import DataBaseObject
-    from SO74TX import CsvContent, JsonContent
-    from Template import SQL
+    print('*'*50)
+    #from OS74 import FileSystemObject, CurrentPlatform, CurrentPlatformControl
+    #from SO74DB import DataBaseObject
+    #from SO74TX import CsvContent, JsonContent
+    #from Template import SQL
     from log import Log
     
     parser = argparse.ArgumentParser(description="Write weather data")
     parser.add_argument('-l', help='location to write final data', type=str, default='')
-    parser.add_argument('-m', help='mode (read serial/aggregate values)', type=str, default='')
+    parser.add_argument('-d', help='mode (read serial/aggregate values)', type=str, default='')
     args = parser.parse_args()
     # create class for controlling device # logging
     dev = Device()
@@ -209,13 +210,13 @@ if __name__ == '__main__':
     dev.setup_device('arduino', "all sensors", 0)
     # log sql (debug) print(sql)
     
-    if 'read' in args.m or 'ser' in args.m:
+    if 'read' in args.d or 'ser' in args.d:
         text = 'Reading serial input from: {0} - at {1}'.format(str(dev.port),str(dev.br))
         logger.log_operation(text)
         ready = 'prepare to run serial read ... '
         while ready:
             ready = dev.read_serial()
-    elif 'agg' in args.m:
+    elif 'agg' in args.d:
         text = 'aggregating values in {0}, last run: {1}'.format(args.l, dev.last_run)
         logger.log_operation(text)
         dev.write_to_database('now', 0, 'm/s')
