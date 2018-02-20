@@ -13,7 +13,7 @@ import serial
 import argparse
 
 
-class Device(object):
+class ControlDevice(object):
     def __init__(self, aggregate_time_step=2):
         this_file = FileSystemObject(__file__)
         current_platform = CurrentPlatformControl()
@@ -191,32 +191,31 @@ def min_between(d1, d2):
         
         
 if __name__ == '__main__':
-    print('*'*50)
-    #from OS74 import FileSystemObject, CurrentPlatform, CurrentPlatformControl
-    #from SO74DB import DataBaseObject
-    #from SO74TX import CsvContent, JsonContent
-    #from Template import SQL
+    from OS74 import FileSystemObject, CurrentPlatform, CurrentPlatformControl
+    from SO74DB import DataBaseObject
+    from SO74TX import CsvContent, JsonContent
+    from Template import SQL
     from log import Log
     
     parser = argparse.ArgumentParser(description="Write weather data")
     parser.add_argument('-l', help='location to write final data', type=str, default='')
-    parser.add_argument('-d', help='mode (read serial/aggregate values)', type=str, default='')
+    parser.add_argument('-m', help='mode (read serial/aggregate values)', type=str, default='')
     args = parser.parse_args()
     # create class for controlling device # logging
-    dev = Device()
+    dev = ControlDevice()
     logger = Log(args.l + 'logfile.log', 'device', 'DV72.py',  True)
     dev.setup_output_path(args.l)
     # device settings: port, baud rate and timeout
     dev.setup_device('arduino', "all sensors", 0)
     # log sql (debug) print(sql)
     
-    if 'read' in args.d or 'ser' in args.d:
+    if 'read' in args.m or 'ser' in args.m:
         text = 'Reading serial input from: {0} - at {1}'.format(str(dev.port),str(dev.br))
         logger.log_operation(text)
         ready = 'prepare to run serial read ... '
         while ready:
             ready = dev.read_serial()
-    elif 'agg' in args.d:
+    elif 'agg' in args.m:
         text = 'aggregating values in {0}, last run: {1}'.format(args.l, dev.last_run)
         logger.log_operation(text)
         dev.write_to_database('now', 0, 'm/s')
