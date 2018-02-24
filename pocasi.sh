@@ -7,7 +7,7 @@ system_dir=${PWD}/System/
 
 settings_db=${PWD}/System/Settings.sqlite
 py_data_file=${PWD}/System/DV72.py
-py_forecast_file=${PWD}/System/SO74.py
+py_forecast_file=${PWD}/System/UI74SO.py
 
 if [ "$1" = "b" ] # big tick
 then

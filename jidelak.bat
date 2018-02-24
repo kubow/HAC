@@ -1,7 +1,7 @@
 @echo off
 Set mainHTML=%~dp0index.html
 SET mlt_dir=%~dp0Multimedia\
-SET py_file=%~dp0System\SO74.py
+SET py_file=%~dp0System\UI74SO.py
 
 rem echo archiving 
 del "%mlt_dir%RestMenu\*.*?"
