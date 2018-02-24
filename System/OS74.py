@@ -271,7 +271,10 @@ class CurrentPlatformControl(CurrentPlatform):
             d = os.path.dirname(os.path.realpath(__file__)) + '/Settings.sqlite'
             sql = SQL.get_app_command.format(application, self.main)
             #print(sql)
-            self.app_run_path = DataBaseObject(d).return_one(sql)[0]
+            try:
+                self.app_run_path = DataBaseObject(d).return_one(sql)[0]
+            except:
+                self.app_run_path = ''
         else:
             self.app_name = 'not_defined'
             self.app_run_path = ''
@@ -308,6 +311,9 @@ class CurrentPlatformControl(CurrentPlatform):
                     dinfo['device'] = '/dev/bus/usb/%s/%s' % (dinfo.pop('bus'), dinfo.pop('device'))
                     devices.append(dinfo)
             return devices
+
+    def external_call(self, script_file):
+        call(script_file, shell=True)
 
 
 def compare_directories(dir1, dir2):

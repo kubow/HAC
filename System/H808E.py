@@ -190,7 +190,7 @@ class h808e(object):
         return separator.join(path_list[:nth]) + separator
 
     def set_db_path(self, db_path):
-        # print('? - ' + db_path)
+        print('? - ' + db_path)
         if FileSystemObject(db_path).is_file:
             self.db_path = db_path
         else:
@@ -224,9 +224,9 @@ def build_text_menu(he):
         3.  Directory synchronizer
         4.  Generate structure from db
         5.  Register directory
-        6.  B
         -------------------------------------
-        7.  Kivy interface
+        6.  Kivy interface
+        7.  AppJar python project
         8.  Universal python project
         -------------------------------------
         9.  Browse pages in (FF/CH/IE)
@@ -293,10 +293,14 @@ def build_text_menu(he):
         elif keep_alive == "5":
             print("\n    Register directories\n")
             he.directory_watcher()
-        elif keep_alive == "7":
+        elif keep_alive == "6":
             print("\n    Kivy interface starting...\n")
             import UI74KW
             UI74KW.MainApp().run()
+        elif keep_alive == "7":
+            db_file = he.db_path.replace('.ctb', '_tab.db')
+            logger.log_operation('universal python for ' + db_file)
+            cpc('python').external_call('UI74AJ.py ' + db_file)
         elif keep_alive == "8":
             import UI74
             # running Tkinter GUI

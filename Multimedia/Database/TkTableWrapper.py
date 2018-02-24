@@ -32,18 +32,23 @@ __author__ = "Guilherme Polo <ggpolo@gmail.com>"
 __all__ = ["ArrayVar", "Table"]
 
 import os
-import Tkinter
-
+try:
+    import tk as tk
+except ImportError:
+    import tkinter as tk
+    print('using small tkinter')
+    
+    
 def _setup_master(master):
     if master is None:
-        if Tkinter._support_default_root:
-            master = Tkinter._default_root or Tkinter.Tk()
+        if tk._support_default_root:
+            master = tk._default_root or tk.Tk()
         else:
-            raise RuntimeError("No master specified and Tkinter is "
+            raise RuntimeError("No master specified and tk is "
                 "configured to not support default master")
     return master
 
-class ArrayVar(Tkinter.Variable):
+class ArrayVar(tk.Variable):
     """Class for handling Tcl arrays.
 
     An array is actually an associative array in Tcl, so this class supports
@@ -51,7 +56,7 @@ class ArrayVar(Tkinter.Variable):
     """
 
     def __init__(self, master=None, name=None):
-        # Tkinter.Variable.__init__ is not called on purpose! I don't wanna
+        # tk.Variable.__init__ is not called on purpose! I don't wanna
         # see an ugly _default value in the pretty array.
         self._master = _setup_master(master)
         self._tk = self._master.tk
@@ -84,7 +89,7 @@ class ArrayVar(Tkinter.Variable):
         return self._tk.globalgetvar(str(self), str(key))
 
     def set(self, **kw):
-        self._tk.call('array', 'set', str(self), Tkinter._flatten(kw.items()))
+        self._tk.call('array', 'set', str(self), tk._flatten(kw.items()))
 
     def unset(self, pattern=None):
         """Unsets all of the elements in the array. If pattern is given, only
@@ -94,7 +99,7 @@ class ArrayVar(Tkinter.Variable):
 
 _TKTABLE_LOADED = False
 
-class Table(Tkinter.Widget):
+class Table(tk.Widget):
     """Create and manipulate tables."""
 
     _switches = ('holddimensions', 'holdselection', 'holdtags', 'holdwindows',
@@ -115,14 +120,14 @@ class Table(Tkinter.Widget):
             master.tk.call('package', 'require', 'Tktable')
             _TKTABLE_LOADED = True
 
-        Tkinter.Widget.__init__(self, master, 'table', kw)
+        tk.Widget.__init__(self, master, 'table', kw)
 
 
     def _options(self, cnf, kw=None):
         if kw:
-            cnf = Tkinter._cnfmerge((cnf, kw))
+            cnf = tk._cnfmerge((cnf, kw))
         else:
-            cnf = Tkinter._cnfmerge(cnf)
+            cnf = tk._cnfmerge(cnf)
 
         res = ()
         for k, v in cnf.iteritems():
@@ -143,7 +148,7 @@ class Table(Tkinter.Widget):
 
         tk = self.tk
         c, C, i, r, s, S, W = args
-        e = Tkinter.Event()
+        e = tk.Event()
 
         e.widget = self
         e.c = tk.getint(c)
@@ -259,7 +264,7 @@ class Table(Tkinter.Widget):
         elif row:
             return int(self.tk.call(self._w, 'height', str(row)))
 
-        args = Tkinter._flatten(kwargs.items())
+        args = tk._flatten(kwargs.items())
         self.tk.call(self._w, 'height', *args)
 
 
@@ -383,7 +388,7 @@ class Table(Tkinter.Widget):
             return self.tk.call(self._w, 'set', *args)
 
         if rc is None:
-            args = Tkinter._flatten(kwargs.items())
+            args = tk._flatten(kwargs.items())
             self.tk.call(self._w, 'set', *args)
         else:
             self.tk.call(self._w, 'set', rc, index, args)
@@ -399,7 +404,7 @@ class Table(Tkinter.Widget):
         and continues for the specified number of rows,cols specified by
         its value. A span of 0,0 unsets any span on that cell."""
         if kwargs:
-            args = Tkinter._flatten(kwargs.items())
+            args = tk._flatten(kwargs.items())
             self.tk.call(self._w, 'spans', *args)
         else:
             return self.tk.call(self._w, 'spans', index)
@@ -502,7 +507,7 @@ class Table(Tkinter.Widget):
         elif column is not None:
             return int(self.tk.call(self._w, 'width', str(column)))
 
-        args = Tkinter._flatten(kwargs.items())
+        args = tk._flatten(kwargs.items())
         self.tk.call(self._w, 'width', *args)
 
 
@@ -625,7 +630,7 @@ class Table(Tkinter.Widget):
 
 # Sample test taken from tktable cvs, original tktable python wrapper
 def sample_test():
-    from Tkinter import Tk, Label, Button
+    # from tk import Tk, Label, Button
 
     def test_cmd(event):
         if event.i == 0:
@@ -634,13 +639,13 @@ def sample_test():
             return 'set'
 
     def browsecmd(event):
-        print "event:", event.__dict__
-        print "curselection:", test.curselection()
-        print "active cell index:", test.index('active')
-        print "active:", test.index('active', 'row')
-        print "anchor:", test.index('anchor', 'row')
+        print("event:", event.__dict__)
+        print("curselection:", test.curselection())
+        print("active cell index:", test.index('active'))
+        print("active:", test.index('active', 'row'))
+        print("anchor:", test.index('anchor', 'row'))
 
-    root = Tk()
+    root = tk.Tk()
 
     var = ArrayVar(root)
     for y in range(-1, 4):
@@ -648,10 +653,10 @@ def sample_test():
             index = "%i,%i" % (y, x)
             var[index] = index
 
-    label = Label(root, text="Proof-of-existence test for Tktable")
+    label = tk.Label(root, text="Proof-of-existence test for Tktable")
     label.pack(side = 'top', fill = 'x')
 
-    quit = Button(root, text="QUIT", command=root.destroy)
+    quit = tk.Button(root, text="QUIT", command=root.destroy)
     quit.pack(side = 'bottom', fill = 'x')
 
     test = Table(root,

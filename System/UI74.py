@@ -20,6 +20,7 @@ from PIL import Image, ImageTk
 
 from log import Log
 from OS74 import FileSystemObject
+from SO74DB import DataBaseObject
 
 
 class MainWindow:
@@ -105,33 +106,37 @@ class MainWindow:
 
     def on_file_select(self, evt):
         w = evt.widget
-        index = int(w.curselection()[0])
-        value = w.get(index)
-        print('You selected item %d: "%s"' % (index, value))
-        self.canvas.delete('all')
-        if 'gif' in value or '.jpg' in value or '.png' in value:
-            if 'gif' in value:
-                image_obj = ImageTk.PhotoImage(file=self.mlt_lib[value])
-            elif '.jpg' in value or '.png' in value:
-                image_obj = ImageTk.PhotoImage(Image.open(self.mlt_lib[value]))
-            else:
-                image_obj = ImageTk.PhotoImage(file=self.mlt_lib[value])
-            if image_obj._PhotoImage__size[0] > 200:
-                if image_obj._PhotoImage__size[0] > 600:
-                    x = 0  # must resize picture
-                    y = 0
+        if w.curselection():
+            index = int(w.curselection()[0])
+            value = w.get(index)
+            print('You selected item %d: "%s"' % (index, value))
+            self.canvas.delete('all')
+            if 'gif' in value or '.jpg' in value or '.png' in value:
+                if 'gif' in value:
+                    image_obj = ImageTk.PhotoImage(file=self.mlt_lib[value])
+                elif '.jpg' in value or '.png' in value:
+                    image_obj = ImageTk.PhotoImage(Image.open(self.mlt_lib[value]))
                 else:
-                    x = 0
-                    y = 0
+                    image_obj = ImageTk.PhotoImage(file=self.mlt_lib[value])
+                if image_obj._PhotoImage__size[0] > 200:
+                    if image_obj._PhotoImage__size[0] > 600:
+                        x = 0  # must resize picture
+                        y = 0
+                    else:
+                        x = 0
+                        y = 0
+                else:
+                    x = (600 / 2) - (image_obj._PhotoImage__size[0] / 2)
+                    y = (600 / 2) - (image_obj._PhotoImage__size[1] / 2)
+                self.canvas.image = image_obj
+                self.canvas.create_image(x, y, image=image_obj, anchor="nw")
+            elif 'db' in value or 'sql' in value or 'ctb' in value:
+                db_obj = DataBaseObject(self.mlt_lib[value])
+                self.canvas.create_text(250, 150, text=db_obj.obj_list)
             else:
-                x = (600 / 2) - (image_obj._PhotoImage__size[0] / 2)
-                y = (600 / 2) - (image_obj._PhotoImage__size[1] / 2)
-            self.canvas.image = image_obj
-            self.canvas.create_image(x, y, image=image_obj, anchor="nw")
-        else:
-            self.canvas.create_text(50, 150, text=read_file(self.mlt_lib[value]))
-            self.canvas.create_line(55, 85, 155, 85, 105, 180, 55, 85)
-            # self.master.update_idletasks()
+                self.canvas.create_text(250, 150, text=read_file(self.mlt_lib[value]))
+                self.canvas.create_line(55, 85, 155, 85, 105, 180, 55, 85)
+                # self.master.update_idletasks()
 
 
 class SimpleTable(tk.Frame):
@@ -250,12 +255,6 @@ class app_browser(tk.Frame):
         master.grid_rowconfigure(0, weight=1)
 
 
-def main_app_view():
-    root = tk.Tk()
-    app = app_browser(root)
-    center(root)
-    app.mainloop()
-
 def center(toplevel):
     toplevel.update_idletasks()
     w = toplevel.winfo_screenwidth()
@@ -266,7 +265,6 @@ def center(toplevel):
     position = "%dx%d+%d+%d" % (size + (x, y))
     log_text = 'window position : ' + position + ' - full screen {0}/{1}'.format(str(w), str(h))
     toplevel.geometry(position)
-
 
 
 def get_directory_content(path_to):
@@ -365,11 +363,6 @@ def read_file(filename):
     return content
 
 
-def get_image():
-    """get values that user clicked on"""
-    mlt_img['image'] = mlt_lib[lb.get('active')]
-
-
 def navigate_to(directory):
     if os.path.isdir(directory):
         checked_directory = directory
@@ -380,7 +373,7 @@ def navigate_to(directory):
     return checked_directory
 
     
-def build_window(init_directory):
+def h808e_browser(init_directory):
     root = tk.Tk()
 
     root.title('Hvězdná encyklopedie')
@@ -394,6 +387,13 @@ def build_window(init_directory):
     root.mainloop()
 
     
+def directory_browser():
+    root = tk.Tk()
+    app = app_browser(root)
+    center(root)
+    app.mainloop()
+
+    
 if __name__ == '__main__':
     import SO74TX
 
@@ -401,4 +401,4 @@ if __name__ == '__main__':
     parser.add_argument('-d', help='directory', type=str, default='')
     args = parser.parse_args()
     logger = Log(args.l, 'directory')
-    build_window(args.d)
+    h808e_browser(args.d)
