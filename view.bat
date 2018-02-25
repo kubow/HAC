@@ -35,14 +35,16 @@ goto QUIT
 
 :FolderBrowse
 SET mode=True
-if [%2]==[] goto Folder
 SET mlt_dir='C:\_Run\Web'
+if [%2]==[] goto Folder
+SET mlt_dir=%2%
 goto Folder
 
 :FolderList
 SET mode=""
-if [%2]==[] goto Folder
 SET mlt_dir='C:\_Run\Web'
+if [%2]==[] goto Folder
+SET mlt_dir=%2%
 goto Folder
 
 :Folder

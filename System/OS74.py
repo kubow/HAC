@@ -40,6 +40,9 @@ class FileSystemObject:
             print('using path relative to running script location ...' + from_path)
         self.path = from_path
         self.separator = self.get_separator_from_path()
+        # avoid separators in the end of path string
+        if self.separator == self.path[-1:]:
+            self.path = self.path[:-1]
         if os.path.isfile(from_path):
             self.exist = True
             self.is_file = True
@@ -59,7 +62,7 @@ class FileSystemObject:
         if to_path:
             self.destination = to_path
         else:
-            self.destination = self.path
+            self.destination = ''
 
     def get_separator_from_path(self):
         if '\\' in self.path:
@@ -71,9 +74,6 @@ class FileSystemObject:
         return separator
 
     def one_dir_up(self):
-        # avoid separators in the end of path string
-        if self.separator == self.path[-1:]:
-            self.path = self.path[:-1]
         # strip filename / last dir from path
         return self.separator.join(self.path.split(self.separator)[:-1]) + self.separator
 
@@ -116,13 +116,14 @@ class FileSystemObject:
             else:
                 print('directory copy not implemented')
 
-    def directory_lister(self, list_files=False, final_file=''):
-        template_fld = FileSystemObject().one_dir_up()
-        template_file = FileSystemObject(template_fld).append_directory('Structure') + 'HTML_DirectoryList.txt'
-        if not final_file:
-            final_file = FileSystemObject(template_fld).append_directory('Multimedia') + 'DirectoryList.html'
-        print(template_file + ' - will be writing to: ' + final_file)
-        template = TextContent(file_name=template_file).replace('XXX', self.path)
+    def directory_lister(self, list_files=False):
+        structure_fld = FileSystemObject(FileSystemObject().one_dir_up()).append_directory('Structure')
+        mlt_fld = FileSystemObject(FileSystemObject().one_dir_up()).append_directory('Multimedia')
+        template_file = FileSystemObject(structure_fld).append_file('HTML_DirectoryList.txt')
+        if not self.destination:
+            self.destination = FileSystemObject(mlt_fld).append_file('DirectoryList.html')
+        print(template_file + ' - will be writing to: ' + self.destination)
+        template = str(TextContent(file_name=template_file).block_text).replace('XXX', self.path)
 
         head = '<table><tr class="Head"><td>List Generated on {0} / Total Folder Size - {1} / {2} Subfolders </td></tr>'
         table_head = '<table><tr class="Head">{0}<td>{1}</table>'
@@ -150,9 +151,10 @@ class FileSystemObject:
             folder_count += 1
 
         content = head.format(DateTimeObject().date_string, str(total_size) + ' kb', folder_count) + '\n' + htm_content
+        whole_content = template.replace('YYY', content)
         # print(content)
         # print(template)
-        FileSystemObject(final_file).object_write(content)
+        self.object_write(whole_content)
 
     def object_read_split(self):
         folder_list = []
@@ -178,7 +180,7 @@ class FileSystemObject:
             return obj_lib
 
     def object_write(self, content='', mode='w+'):
-        if self.is_file:
+        if FileSystemObject(self.destination).is_file:
             if mode != 'w+' or mode != 'a':
                 if 'app' in mode:
                     mode = 'a'
@@ -340,7 +342,7 @@ if __name__ == '__main__':
 
     from log import Log
     from SO74TX import TextContent
-    from UI74 import main_app_view
+    from UI74 import app_browser
 
     parser = argparse.ArgumentParser(description="browse/list dirs")
     parser.add_argument('-i', help='input dir', type=str, default='')
@@ -351,7 +353,7 @@ if __name__ == '__main__':
     logger = Log(args.l, 'directory', __file__, True)
     if args.m:
         logger.log_operation('opening new window - browse: ' + args.i)
-        main_app_view()
+        app_browser()
     elif args.i:
         fso = FileSystemObject(args.i, args.f)
         fso.directory_lister(list_files=True)
