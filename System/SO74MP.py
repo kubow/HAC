@@ -17,7 +17,7 @@ except ImportError:
     print('using simple map managing (mapserver)')
     map_script = False
 
-from OS74 import DateTimeObject
+from OS74 import FileSystemObject, DateTimeObject
 from SC62 import Temp
 from SO74TX import WebContent, JsonContent
 from Template import HTML, SQL
@@ -77,7 +77,9 @@ class OpenWeatherMap(object):
         #velocities = (self.weather_local._status, str(self.weather_local._pressure['press']),
         #              str(self.weather_local._humidity))
         return owm_data
-
+    
+    def write_weather_text(self, html_file):
+        FileSystemObject(html_file).object_write(HTML.skelet_titled.format(self.heading[0], self.heading[-1]), 'w+')
 
 '''class WeatherUnderground(object):
     def __init__(self):
@@ -113,7 +115,7 @@ class MapyCZ(object):
         root = 'http://api.mapy.cz/geocode?query='
         
     def from_address(self, address_string):
-        response = WebContent(root + address_string)
+        response = WebContent(self.root + address_string)
         return response
 
 

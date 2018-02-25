@@ -10,21 +10,26 @@ def press(btn):
     else:
         app.showSubWindow("Pets")
 
-if len(sys.argv) > 1:
-    db_file = sys.argv[1]
+def press(link):
+    app.infoBox("Info", "You clicked the link!")
 
-    app = gui("Database Editor", "500x500")
-    app.setFont(20)
+db_file = "C:\_Run\H808E_tab.db"
+db_obj = DataBaseObject(db_file)
+db_obj_list = [obj[0] for obj in db_obj.view_list]
 
-    db_obj = DataBaseObject(db_file)
-    app.addLabel("title", "Hvezdna encyklopedie")
-    # app.addOptionBox("optionbox", ["Assembler", "C", "C++", "Perl", "Python"])
-    app.addOptionBox("optionbox", db_file.obj_list)
-    app.addButtons(["Zapsat", "Storno"], press)
-    app.startSubWindow("Pets")
-    app.stopSubWindow()
+app = gui("Database Editor", "500x500")
+app.setFont(20)
+app.addHorizontalSeparator(0,0,4, colour="red")
+# app.addLabel("title", "Hvezdna encyklopedie")
+# app.addOptionBox("optionbox", ["Assembler", "C", "C++", "Perl", "Python"])
+app.addOptionBox("optionbox", db_obj_list)
 
-    # start the GUI
-    app.go()
-else:
-    print('please submit database file')
+app.addEntry("e1")
+app.addEntry("e2")
+app.addEntry("e3")
+app.addButtons(["Zapsat", "Storno"], press)
+app.startSubWindow("Pets")
+app.stopSubWindow()
+
+# start the GUI
+app.go()

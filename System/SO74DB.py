@@ -23,7 +23,8 @@ class DataBaseObject(object):
             print('succesfully connected to database ' + db_path)
         # else:
         #     print('database ' + db_path + ' without active connection')
-        self.obj_list = self.return_many(self.sql)
+        self.obj_list = self.return_many(SQL.select_tables_in_db)
+        self.view_list = self.return_many(SQL.select_views_in_db)
 
     def result_set(self, sql, just_one=True):
         if self.active:

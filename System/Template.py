@@ -122,6 +122,7 @@ class SQL(object):
 
     select_node_text = select_where.format('txt', '"enc_nodes"', 'code = {0}')
     select_tables_in_db = select_where.format('tbl_name, type', '"sqlite_master"', 'type = "table"')
+    select_views_in_db = select_where.format('tbl_name, type', '"sqlite_master"', 'type = "view"')
 
     exist = """SELECT EXISTS(
                 SELECT 1 FROM {0}

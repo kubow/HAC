@@ -49,10 +49,6 @@ def browse_internet(mode, match_dir, url=None):
     process_web_content(mode, final_dir, url)
 
 
-def write_weather_text(html_file, title, content):
-    logger.log_operation('writing content {0} to file: {1}'.format(title, html_file))
-    FileSystemObject(html_file).object_write(HTML.skelet_titled.format(title, content), 'w+')
-
 
 if __name__ == '__main__':
 
@@ -83,6 +79,7 @@ if __name__ == '__main__':
         else:
             def_loc = 'Praha, cz'
         o = OpenWeatherMap(def_loc)
-        write_weather_text(FileSystemObject(args.w).append_file('index.html'), o.heading[0], o.heading[1])
+        logger.log_operation('writing content {0} to file: {1}'.format(o.heading[0], 'index.html'))
+        o.write_weather_text(FileSystemObject(args.w).append_file('index.html'))
     else:
         browse_internet(args.g, args.w, args.p)
