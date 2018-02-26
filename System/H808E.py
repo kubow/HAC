@@ -300,7 +300,7 @@ def build_text_menu(he):
         elif keep_alive == "7":
             db_file = he.db_path.replace('.ctb', '_tab.db')
             logger.log_operation('universal python for ' + db_file)
-            cpc('python').external_call('UI74AJ.py ' + db_file)
+            cpc('python').external_call(FileSystemObject().append_file('UI74AJ.py'))
         elif keep_alive == "8":
             import UI74
             # running Tkinter GUI

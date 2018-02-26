@@ -315,7 +315,7 @@ class CurrentPlatformControl(CurrentPlatform):
             return devices
 
     def external_call(self, script_file):
-        call(script_file, shell=True)
+        call(self.app_run_path + " " + script_file, shell=True)
 
 
 def compare_directories(dir1, dir2):

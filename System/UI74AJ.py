@@ -1,4 +1,5 @@
 from appJar import gui
+from OS74 import FileSystemObject
 from SO74DB import DataBaseObject
 
 def opt_changed():
@@ -22,8 +23,9 @@ def press(btn):
 def list_select():
     app.infoBox("Info", "You selected " + app.getOptionBox("optionbox") + "\nBrowsing " + app.getListBox("list")[0][0])
 
-
-db_file = "C:\_Run\H808E_tab.db"
+root = FileSystemObject(FileSystemObject().one_dir_up()).one_dir_up()
+print(root)
+db_file = FileSystemObject(root).append_file("H808E_tab.db")
 db_obj = DataBaseObject(db_file)
 db_obj_list = [obj[0] for obj in db_obj.view_list]
 
