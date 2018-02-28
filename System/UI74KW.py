@@ -35,7 +35,7 @@ class ShowEnc(GridLayout):
     
     def multimedia_content(self):
         print(self.actual_location)
-        directory = FileSystemObject(self.actual_location).one_dir_up()
+        directory = FileSystemObject(self.actual_location).dir_up(1)
         self.fldr_lib, self.file_lib = FileSystemObject(directory).object_read_split()
         print(directory)
         # clear the lists content

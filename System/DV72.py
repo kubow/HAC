@@ -27,7 +27,7 @@ class ControlDevice(object):
         self.table_name = '_'
         self.table_fields = ''
         self.table_default_val = ''
-        self.output_path = this_file.one_dir_up()
+        self.output_path = this_file.dir_up(1)
         self.csv_file = ''
         self.last_run = ''
         self.device_name = current_platform.hostname

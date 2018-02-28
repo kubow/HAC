@@ -23,7 +23,7 @@ def press(btn):
 def list_select():
     app.infoBox("Info", "You selected " + app.getOptionBox("optionbox") + "\nBrowsing " + app.getListBox("list")[0][0])
 
-root = FileSystemObject(FileSystemObject().one_dir_up()).one_dir_up()
+root = FileSystemObject().dir_up(2)
 print(root)
 db_file = FileSystemObject(root).append_file("H808E_tab.db")
 db_obj = DataBaseObject(db_file)

@@ -2,27 +2,19 @@
 import unittest
 
 from log import Log
-from DV72 import Device
+from DV72 import ControlDevice
 from OS74 import CurrentPlatform, FileSystemObject
 from SO74MP import OpenWeatherMap
 from SO74TX import WebContent, RssContent
 
 
 def load_platform_based(from_path, web=None):
-    plf = CurrentPlatform()
-    if 'win' == plf.main:
-        if web:
-            return web + 'C:\\_Run\\' + from_path
-        else:
-            return 'C:\\_Run\\' + from_path
-    elif 'lnx' == plf.main or 'linux' == plf.main:
-        if web:
-            return web + '/home/kubow/Dokumenty/' + from_path
-        else:
-            return '/home/kubow/Dokumenty/' + from_path
+    base = FileSystemObject().dir_up(2)
+    print(base)
+    if web:
+        return web + base + from_path
     else:
-        return None
-
+        return base + from_path
 
 class DeviceSetting(unittest.TestCase):
     """Check if logging can process"""

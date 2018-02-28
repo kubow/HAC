@@ -73,9 +73,9 @@ class FileSystemObject:
             separator = None
         return separator
 
-    def one_dir_up(self):
+    def dir_up(self, level=1):
         # strip filename / last dir from path
-        return self.separator.join(self.path.split(self.separator)[:-1]) + self.separator
+        return self.separator.join(self.path.split(self.separator)[:(-1*level)]) + self.separator
 
     def last_part(self):
         return self.path.split(self.separator)[-1]
@@ -89,7 +89,7 @@ class FileSystemObject:
     def get_another_directory_file(self, another):
         if self.is_file:
             # strip filename from path
-            root_dir = self.one_dir_up()
+            root_dir = self.dir_up(1)
             return self.separator.join(root_dir.split(self.separator)[0:-1]) + self.separator + another
         elif self.is_folder:
             return self.separator.join(self.path.split(self.separator)[0:-1]) + self.separator + another
@@ -117,8 +117,8 @@ class FileSystemObject:
                 print('directory copy not implemented')
 
     def directory_lister(self, list_files=False):
-        structure_fld = FileSystemObject(FileSystemObject().one_dir_up()).append_directory('Structure')
-        mlt_fld = FileSystemObject(FileSystemObject().one_dir_up()).append_directory('Multimedia')
+        structure_fld = FileSystemObject(FileSystemObject().dir_up(1)).append_directory('Structure')
+        mlt_fld = FileSystemObject(FileSystemObject().dir_up(1)).append_directory('Multimedia')
         template_file = FileSystemObject(structure_fld).append_file('HTML_DirectoryList.txt')
         if not self.destination:
             self.destination = FileSystemObject(mlt_fld).append_file('DirectoryList.html')
