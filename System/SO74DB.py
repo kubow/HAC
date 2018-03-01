@@ -81,11 +81,13 @@ class DataBaseObject(object):
             result = self.return_one(SQL.table_structure.format(object_name, object_name))[0]
         else:
             result = self.return_many(SQL.table_structure.format(object_name, object_type))[0]
-        if result.lower().startswith('CREATE'):
-            print('...trimming')
-            result = result.split(' AS ')[-1]
-        print(result)
-        field_list = result.split('(')[1].split(')')[0].split(',')
+        if result.lower().startswith('create view'):
+            if 'FROM' in result:
+                field_list = result.split(' AS ')[1].split('FROM')[0].split(',')
+            else:
+                field_list = result.split(' AS ')[1].split('from')[0].split(',')
+        else:
+            field_list = result.split('(')[1].split(')')[0].split(',')
         # clear the list from spaces
         return [field.strip() for field in field_list]
 

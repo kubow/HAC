@@ -16,14 +16,18 @@ def opt_changed():
         i += 1
 
 def lst_changed():
-    record_value = app.getListBox("list")
-    result_vals = db_obj.return_many('SELECT * FROM {0} ')
-    i = 1
-    for field in result_vals:
-        if i > 6:
-            break
-        app.setEntry('e' + str(i), field)
-        i += 1
+    table = app.getOptionBox("optionbox")
+    field = app.getLabel('en1')
+    if app.getListBox("list"):
+        record_value = app.getListBox("list")[0]
+        result_vals = db_obj.return_many('SELECT * FROM {0} WHERE {1} = {2};'.format(table, field, record_value))
+        if result_vals:
+            i = 1
+            for field in result_vals:
+                if i > 6:
+                    break
+                app.setEntry('e' + str(i), field)
+                i += 1
 
 def press(btn):
     if btn == "Storno":
@@ -42,7 +46,7 @@ db_file = FileSystemObject(root).append_file("H808E_tab.db")
 db_obj = DataBaseObject(db_file)
 db_obj_list = [obj[0] for obj in db_obj.view_list]
 
-app = gui("Database Editor", "800x800")
+app = gui("Database Editor", "800x600")
 app.setPadding(10, 10)
 app.setFont(12)
 # app.addHorizontalSeparator(0,0,4, colour="red")
