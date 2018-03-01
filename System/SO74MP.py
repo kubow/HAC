@@ -27,7 +27,7 @@ class OpenWeatherMap(object):
     def __init__(self, location=None, owm_api='442f089290ae64104a202bfb8d52e0cb'):
         if not location:
             location = 'Horni Pocernice,cz'  # 'Necin,cz'
-        print('OpenWeatherMap.org - validate API-key disabled - location: ' + location)
+        # print('OpenWeatherMap.org - validate API-key disabled - location: ' + location)
         if weather_wrapper:
             # syntax = pyowm.OWM(API_key='your-API-key', subscription_type='pro')
             owm = pyowm.OWM(owm_api)

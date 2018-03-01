@@ -86,16 +86,15 @@ class WebContent(HTMLParser):
             self.data.append(data)
 
     def parse_html_text(self):
-        if is_html_text(self.html_text):
-            if self.easier:
-                soup = BeautifulSoup(self.html_text, 'lxml')
-                return soup
-            else:
-                # TODO: same logic as with beautiful soup
-                p = WebContent()
-                oups = p.feed(self.html_text)
-                p.close()
-                return oups
+        if self.easier:
+            soup = BeautifulSoup(self.html_text, 'lxml')
+            return soup
+        else:
+            # TODO: same logic as with beautiful soup
+            p = WebContent()
+            oups = p.feed(self.html_text)
+            p.close()
+            return oups
 
     def process_url(self, tag_type='', tag_name=''):
         content = None
@@ -115,18 +114,22 @@ class WebContent(HTMLParser):
                 self.html_text = 'FTP read not implemented yet'
             else:
                 self.html_text = requests.get('http://' + self.url, timeout=(10, 5), headers=self.headers).content
-            parsed_content = self.parse_html_text()
-            done = True
-            if self.easier:
-                if not tag_name:
-                    self.div = parsed_content.find('body')
-                    self.div_text = parsed_content.find('body').text
+            if is_html_text(self.html_text):
+                parsed_content = self.parse_html_text()
+                done = True
+                if self.easier:
+                    if not tag_name:
+                        self.div = parsed_content.find('body')
+                        self.div_text = parsed_content.find('body').text
+                    else:
+                        self.div = parsed_content.find('div', {tag_type: tag_name})
+                        self.div_text = parsed_content.find('div', {tag_type: tag_name}).text
                 else:
-                    self.div = parsed_content.find('div', {tag_type: tag_name})
-                    self.div_text = parsed_content.find('div', {tag_type: tag_name}).text
+                    self.div = parsed_content
+                    self.div_text = parsed_content
             else:
-                self.div = parsed_content
-                self.div_text = parsed_content
+                self.div = self.html_text
+                self.div_text = self.html_text
         # except HTMLParser.HTMLParseError:
             # print('---cannot fetch address {0}, ({1})'.format(self.url, HTMLParser.HTMLParseError))
         except:

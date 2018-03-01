@@ -19,7 +19,7 @@ def load_platform_based(from_path, web=None):
 class DeviceSetting(unittest.TestCase):
     """Check if logging can process"""
     def test_device_basic(self):
-        dev = Device()
+        dev = ControlDevice()
         logger = Log(load_platform_based('Script/Multimedia/logfile.log'), 'Device', 'test.py', False)
         text = 'Checking device ({0}) setting: {1}'.format(dev.device_name, dev.setup_db)
         logger.log_operation(text)
