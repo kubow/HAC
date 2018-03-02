@@ -38,7 +38,7 @@ finally:
 
 from Template import HTML, SQL
 from OS74 import FileSystemObject, CurrentPlatform
-from SO74DB import DataBaseObject
+from DB74 import DataBaseObject
 
 
 class WebContent(HTMLParser):

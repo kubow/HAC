@@ -72,11 +72,11 @@ Testing main functions of the whole system
 | OS74      | `FileSystemObject()`         | Register files & folders      |
 |           |                              | Synchronize files in folder   |
 | OS74      | `CurrentPlatform()`          | Determine platform            |
-| SO74DB    | `DataBaseObject()`           | Connect databse, run query    |
-| SO74ML    | `ImageObject()`              | Deal with images              |
-| SO74ML    | `MusicObject()`              | Deal with music               |
-| SO74MP    | `OpenWeatherMap()`           | Retrieve weather              |
-| SO74MP    | `OpenStreetMap()`            | Retrieve location             |
+| DB74    | `DataBaseObject()`           | Connect databse, run query    |
+| ML74    | `ImageObject()`              | Deal with images              |
+| ML74    | `MusicObject()`              | Deal with music               |
+| MP74    | `OpenWeatherMap()`           | Retrieve weather              |
+| MP74    | `OpenStreetMap()`            | Retrieve location             |
 | SO74TX    | `RssContent()`               | Retrieve content of a feed    |
 | SO74TX    | `WebContent()`               | Retrieve content of a website |
 

@@ -16,7 +16,7 @@ ECHO 3rd argument - destination file/folder
 GOTO quit
 
 :database
-SET py_file=%~dp0System\SO74DB.py
+SET py_file=%~dp0System\DB74.py
 ECHO python %py_file% -m compare -a %2 -b %3 -f table_name -l logfile
 python %py_file% -m compare -a %2 -b %3 -l %log_file%
 GOTO quit

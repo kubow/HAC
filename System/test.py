@@ -4,7 +4,7 @@ import unittest
 from log import Log
 from DV72 import ControlDevice
 from OS74 import CurrentPlatform, FileSystemObject
-from SO74MP import OpenWeatherMap
+from MP74 import OpenWeatherMap
 from SO74TX import WebContent, RssContent
 
 

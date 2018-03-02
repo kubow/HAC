@@ -53,9 +53,9 @@ def browse_internet(mode, match_dir, url=None):
 if __name__ == '__main__':
 
     from OS74 import FileSystemObject, DateTimeObject
-    from SO74DB import DataBaseObject
+    from DB74 import DataBaseObject
     from SO74TX import WebContent, RssContent
-    from SO74MP import OpenWeatherMap, OpenStreetMap
+    from MP74 import OpenWeatherMap, OpenStreetMap
     from Template import HTML, SQL
     from log import Log
 

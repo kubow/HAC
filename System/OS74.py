@@ -17,7 +17,7 @@ except ImportError:
     windows = False
 
 from Template import SQL
-from SO74DB import DataBaseObject
+from DB74 import DataBaseObject
 
 
 class DateTimeObject:

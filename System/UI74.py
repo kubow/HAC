@@ -20,7 +20,7 @@ from PIL import Image, ImageTk
 
 from log import Log
 from OS74 import FileSystemObject
-from SO74DB import DataBaseObject
+from DB74 import DataBaseObject
 
 
 class MainWindow:

@@ -1,6 +1,6 @@
 log_file=${PWD}/Multimedia/logfile.log
 if [ "$1" = "b" ]; then
-    py_file=${PWD}/System/SO74DB.py
+    py_file=${PWD}/System/DB74.py
     echo 'python '${py_file}' -m compare -a '$2' -b '$3' -f table_name -l logfile'
     python ${py_file} -m compare -a $2 -b $3 -f node -l ${log_file}
 elif [ "$1" = "d" ]; then

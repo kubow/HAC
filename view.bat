@@ -28,7 +28,7 @@ python %py_file%
 GOTO QUIT
 
 :SQLite
-SET py_file=%~dp0System\SO74DB.py
+SET py_file=%~dp0System\DB74.py
 echo python %py_file% -l %log_file% -a %2%
 python %py_file% -l %log_file% -a %2%
 goto QUIT

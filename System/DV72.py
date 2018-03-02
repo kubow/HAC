@@ -192,7 +192,7 @@ def min_between(d1, d2):
         
 if __name__ == '__main__':
     from OS74 import FileSystemObject, CurrentPlatform, CurrentPlatformControl
-    from SO74DB import DataBaseObject
+    from DB74 import DataBaseObject
     from SO74TX import CsvContent, JsonContent
     from Template import SQL
     from log import Log

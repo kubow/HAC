@@ -321,7 +321,7 @@ def build_text_menu(he):
 if __name__ == '__main__':
 
     from log import Log
-    from SO74DB import DataBaseObject
+    from DB74 import DataBaseObject
     from OS74 import FileSystemObject, CurrentPlatformControl as cpc
     import SO74TX
     from Template import HTML, SQL

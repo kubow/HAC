@@ -1,6 +1,6 @@
 from appJar import gui
 from OS74 import FileSystemObject
-from SO74DB import DataBaseObject
+from DB74 import DataBaseObject
 from Template import SQL
 
 

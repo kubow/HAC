@@ -4,7 +4,7 @@ if [ "$1" = "h" ]; then # HANA
         echo 'python '${py_file}
     python ${py_file}
 elif [ "$1" = "s" ]; then # SQLite
-    py_file=${PWD}/System/SO74DB.py
+    py_file=${PWD}/System/DB74.py
     echo 'python '${py_file}' -a '$2' -l '${log_file}
     python ${py_file} -a $2 -l ${log_file}
 elif [ "$1" = "t" ]; then # text file
