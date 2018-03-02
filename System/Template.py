@@ -130,6 +130,7 @@ class SQL(object):
             );"""
     table_exist = exist.format('sqlite_master', 'type="table" AND name = "{0}"')
     table_structure = select_where.format('sql', 'sqlite_master', 'tbl_name = "{0}" and name = "{1}"')
+    table_structure_type = select_where.format('sql', 'sqlite_master', 'tbl_name = "{0}" and name = "{1}" and type = {2}')
 
     select_father_nodes = """SELECT children.father_id, COUNT(node.node_id) FROM node
     INNER JOIN children ON node.node_id = children.node_id

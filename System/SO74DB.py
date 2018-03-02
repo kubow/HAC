@@ -63,7 +63,7 @@ class DataBaseObject(object):
         return self.result_set(sql, just_one=True)
 
     def return_many(self, sql):
-            return self.result_set(sql, just_one=False)
+        return self.result_set(sql, just_one=False)
 
     def return_field_content(self, table, field, condition):
         return self.return_one(SQL.select_where.format(field, table, condition))
@@ -80,13 +80,13 @@ class DataBaseObject(object):
         if not object_type:
             result = self.return_one(SQL.table_structure.format(object_name, object_name))[0]
         else:
-            result = self.return_many(SQL.table_structure.format(object_name, object_type))[0]
+            result = self.return_many(SQL.table_structure_type.format(object_name, object_name, object_type))[0]
         if result.lower().startswith('create view'):
-            if 'FROM' in result:
-                field_list = result.split(' AS ')[1].split('FROM')[0].split(',')
-            else:
-                field_list = result.split(' AS ')[1].split('from')[0].split(',')
-        else:
+            result = str(result).replace('\r\n', '').replace('\n', '')  # remove line breaks first
+            result = str(result).replace(' from ', ' FROM ').replace(' select ', ' SELECT ').replace(' as ', ' AS ')
+            full_field_list = result.split(' SELECT ')[1].split(' FROM ')[0].split(',')
+            field_list = [field.split('.')[-1] for field in full_field_list]
+        elif result.lower().startswith('create table'):
             field_list = result.split('(')[1].split(')')[0].split(',')
         # clear the list from spaces
         return [field.strip() for field in field_list]
