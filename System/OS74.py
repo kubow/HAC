@@ -228,6 +228,9 @@ class FileSystemObject:
         else:
             print('no text to write, skipping file {0}'.format(self.path))
 
+    def extra_path_from(self, basepath):
+        return ''.join(self.path.rsplit(basepath))
+
 
 class CurrentPlatform:
     def __init__(self):
