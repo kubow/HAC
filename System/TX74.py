@@ -308,7 +308,7 @@ class JsonContent(object):
     def process(self):
         fs = FileSystemObject(self.path)
         for database in fs.object_read(filter='sqlite').items():
-            db = DataBaseObject(FileSystemObject(self.path).append_file(database[0]))
+            db = DataBaseObject(FileSystemObject(self.path).append_objects(file=database[0]))
             for velocity in db.object_structure('measured'):
                 if 'timestamp' in velocity or 'device' in velocity or not velocity:
                     continue
@@ -318,7 +318,7 @@ class JsonContent(object):
                 velocity_values = {}
                 for value in db.return_many(SQL.column_select.format('timestamp, ' + velocity_name, 'measured')):
                     velocity_values[value[0]] = value[1]
-                self.write(fs.append_file(velocity_name + '.json'), velocity_values)
+                self.write(fs.append_objects(file=velocity_name + '.json'), velocity_values)
 
     def json_format(self):
         if FileSystemObject(self.path).is_file:

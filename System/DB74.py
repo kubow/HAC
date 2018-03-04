@@ -168,7 +168,7 @@ def databases_compare(db1, db2, concrete_table=''):
                     if not mirror:
                         print('{0}!!cannot get mirrored column: {1} for row:'.format(' ' * 5, column, where))
                         continue
-                    if SO74TX.similar(row[col_num], mirror[0]) < 1:
+                    if TX74.similar(row[col_num], mirror[0]) < 1:
                         try:
                             print('=' * 100)
                             print(row[col_num])
@@ -201,7 +201,7 @@ def temp_connect_database(database, do_some_work=''):
 
 if __name__ == '__main__':
 
-    import SO74TX
+    import TX74
     from log import Log
 
     parser = argparse.ArgumentParser(description="Compare two sqlite databases")

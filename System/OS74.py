@@ -1,6 +1,6 @@
 """A Platform controlller
 
-Files & Folder classes
+Files & Folder, DateTime classes
 """
 import os
 import argparse
@@ -80,11 +80,16 @@ class FileSystemObject:
     def last_part(self):
         return self.path.split(self.separator)[-1]
 
-    def append_directory(self, directory):
-        return self.path + self.separator + directory
-
-    def append_file(self, file_name):
-        return self.path + self.separator + file_name
+    def append_objects(self, **kwargs):
+        # if all dirs could do - or could it be used with files
+        # build_path = self.separator.join('{0}'.format(val) for key, val in kwargs.items())
+        build_path = ''
+        for fso_type, fso_name in kwargs.items():
+            if 'file' in fso_type:
+                build_path = fso_name
+                break
+            build_path += fso_name + self.separator  
+        return self.path + self.separator + build_path
 
     def get_another_directory_file(self, another):
         if self.is_file:
@@ -101,7 +106,7 @@ class FileSystemObject:
         if not filename:
             filename = self.last_part()
         if self.is_file:
-            shutil.move(self.path, FileSystemObject(another_directory).append_file(filename))
+            shutil.move(self.path, FileSystemObject(another_directory).append_objects(file=filename))
             print('file ' + self.path + ' archived')
         else:
             print('directory move not implemented')
@@ -111,17 +116,17 @@ class FileSystemObject:
             shutil.copy(self.path, another_directory)
         else:
             if self.is_file:
-                shutil.copy(self.path, FileSystemObject(another_directory).append_file(filename))
+                shutil.copy(self.path, FileSystemObject(another_directory).append_objects(file=filename))
                 print('file ' + self.path + ' archived')
             else:
                 print('directory copy not implemented')
 
     def directory_lister(self, list_files=False):
-        structure_fld = FileSystemObject(FileSystemObject().dir_up(1)).append_directory('Structure')
-        mlt_fld = FileSystemObject(FileSystemObject().dir_up(1)).append_directory('Multimedia')
-        template_file = FileSystemObject(structure_fld).append_file('HTML_DirectoryList.txt')
+        structure_fld = FileSystemObject(FileSystemObject().dir_up(1)).append_objects(dir='Structure')
+        mlt_fld = FileSystemObject(FileSystemObject().dir_up(1)).append_objects(dir='Multimedia')
+        template_file = FileSystemObject(structure_fld).append_objects(file='HTML_DirectoryList.txt')
         if not self.destination:
-            self.destination = FileSystemObject(mlt_fld).append_file('DirectoryList.html')
+            self.destination = FileSystemObject(mlt_fld).append_objects(file='DirectoryList.html')
         print(template_file + ' - will be writing to: ' + self.destination)
         template = str(TextContent(file_name=template_file).block_text).replace('XXX', self.path)
 
@@ -344,7 +349,7 @@ def compare_directories(dir1, dir2):
 if __name__ == '__main__':
 
     from log import Log
-    from SO74TX import TextContent
+    from TX74 import TextContent
     from UI74 import app_browser
 
     parser = argparse.ArgumentParser(description="browse/list dirs")

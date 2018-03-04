@@ -73,7 +73,7 @@ class ControlDevice(object):
         # timeout waiting time
         self.timeout = timeout
         # last run file
-        last_run_file = FileSystemObject(self.output_path).append_file('last.run')
+        last_run_file = FileSystemObject(self.output_path).append_objects(file='last.run')
         self.last_run = FileSystemObject(last_run_file).object_mod_date(self.date_format)
 
     def setup_output_path(self, path):
@@ -126,8 +126,8 @@ class ControlDevice(object):
         fs = FileSystemObject(self.output_path + 'Measured')
         fs.object_create_neccesary()
         for csv_file in fs.object_read(filter='csv').items():
-            db = DataBaseObject(fs.append_file(csv_file[0][:6] + '.sqlite'))
-            csv = CsvContent(fs.append_file(csv_file[0]), date_format=self.date_format)
+            db = DataBaseObject(fs.append_objects(file=csv_file[0][:6] + '.sqlite'))
+            csv = CsvContent(fs.append_objects(file=csv_file[0]), date_format=self.date_format)
             into = 'timestamp, '
             values = '"' + csv.time_stamp + '", '
             for time_series, average in csv.content.items():
@@ -137,7 +137,7 @@ class ControlDevice(object):
             if ac_time == csv.time_stamp:
                 continue  # avoid just being written files
             db.log_to_database(self.table_name, SQL.insert.format(into, values[:-2]), self.table_fields)
-            csv.archive(fs.append_directory('Archive'))
+            csv.archive(fs.append_objects(dir='Archive'))
             csv_cnt += 1
         if csv_cnt < 1:
             print('no csv files proccessed ...')
@@ -193,7 +193,7 @@ def min_between(d1, d2):
 if __name__ == '__main__':
     from OS74 import FileSystemObject, CurrentPlatform, CurrentPlatformControl
     from DB74 import DataBaseObject
-    from SO74TX import CsvContent, JsonContent
+    from TX74 import CsvContent, JsonContent
     from Template import SQL
     from log import Log
     

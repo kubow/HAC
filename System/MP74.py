@@ -19,7 +19,7 @@ except ImportError:
 
 from OS74 import FileSystemObject, DateTimeObject
 from SC62 import Temp
-from SO74TX import WebContent, JsonContent
+from TX74 import WebContent, JsonContent
 from Template import HTML, SQL
 
 

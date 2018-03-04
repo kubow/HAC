@@ -5,7 +5,7 @@ from log import Log
 from DV72 import ControlDevice
 from OS74 import CurrentPlatform, FileSystemObject
 from MP74 import OpenWeatherMap
-from SO74TX import WebContent, RssContent
+from TX74 import WebContent, RssContent
 
 
 def load_platform_based(from_path, web=None):

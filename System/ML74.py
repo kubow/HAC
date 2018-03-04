@@ -12,13 +12,13 @@ def mirror_images_dir(path, to_dir):
     final_directory = FileSystemObject(to_dir)
     for root, directories, files in os.walk(path):
         append = FileSystemObject(root).extra_path_from(path)
-        FileSystemObject(final_directory.append_file(append)).object_create_neccesary()
+        FileSystemObject(final_directory.append_objects(file=append)).object_create_neccesary()
         for filename in files:
             if '.jp' in filename.lower() or '.gi' in filename.lower():
                 try:
                     fr = root + final_directory.separator + filename
                     ex = FileSystemObject(fr).extra_path_from(path)
-                    to = final_directory.append_file(ex)
+                    to = final_directory.append_objects(file=ex)
                     img = Image.open(fr)
                     print(fr + ' >> ' + to)
                     img.save(open(to, 'w'))

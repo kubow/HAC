@@ -359,7 +359,7 @@ def read_file(filename):
     with open(filename, 'r') as content_file:
         content = content_file.read()
     if 'htm' in filename.split()[-1]:
-        content = SO74TX.htm_to_plain_txt(content)
+        content = TX74.htm_to_plain_txt(content)
     return content
 
 
@@ -395,7 +395,7 @@ def directory_browser():
 
     
 if __name__ == '__main__':
-    import SO74TX
+    import TX74
 
     parser = argparse.ArgumentParser(description="run over dir")
     parser.add_argument('-d', help='directory', type=str, default='')

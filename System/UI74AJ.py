@@ -51,7 +51,7 @@ def list_select():
 
 root = FileSystemObject().dir_up(2)
 print(root)
-db_file = FileSystemObject(root).append_file("H808E_tab.db")
+db_file = FileSystemObject(root).append_objects(file="H808E_tab.db")
 db_obj = DataBaseObject(db_file)
 db_obj_list = [obj[0] for obj in db_obj.view_list]
 

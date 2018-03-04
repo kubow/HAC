@@ -201,7 +201,7 @@ class h808e(object):
         html_content += self.area_links + HTML.pageTemplateMiddle
         html_content += '{0}' + HTML.pageTemplateEnd.format('footer')
         if text:
-            html_content = html_content.format(SO74TX.xml_to_html(''.join(text).encode('utf8')))
+            html_content = html_content.format(TX74.xml_to_html(''.join(text).encode('utf8')))
         else:
             html_content = html_content.format('')
 
@@ -251,11 +251,11 @@ def build_text_menu(he):
         elif keep_alive == "3":
             # dropbox synchronizer
             print("\n    Synchronize directories\n")
-            dropbox_dir = FileSystemObject(cpc().homepath).append_directory('Dropbox')
+            dropbox_dir = FileSystemObject(cpc().homepath).append_objects(dir='Dropbox')
             
             db = args.c.replace('.ctb', '_tab.db')
             file_name_db = file_name.replace('.ctb', '_tab.db')
-            dropbox_he = FileSystemObject(dropbox_dir).append_file(file_name)
+            dropbox_he = FileSystemObject(dropbox_dir).append_objects(file=file_name)
             dropbox_db = dropbox_he.replace('.ctb', '_tab.db')
             
             local_he_mod = FileSystemObject(args.c).object_mod_date()
@@ -300,7 +300,7 @@ def build_text_menu(he):
         elif keep_alive == "7":
             db_file = he.db_path.replace('.ctb', '_tab.db')
             logger.log_operation('universal python for ' + db_file)
-            cpc('python').external_call(FileSystemObject().append_file('UI74AJ.py'))
+            cpc('python').external_call(FileSystemObject().append_objects(file='UI74AJ.py'))
         elif keep_alive == "8":
             import UI74
             # running Tkinter GUI
@@ -323,7 +323,7 @@ if __name__ == '__main__':
     from log import Log
     from DB74 import DataBaseObject
     from OS74 import FileSystemObject, CurrentPlatformControl as cpc
-    import SO74TX
+    import TX74
     from Template import HTML, SQL
 
     parser = argparse.ArgumentParser(description="construct h808e")
