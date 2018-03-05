@@ -17,17 +17,12 @@ except ImportError:
     print('using simple map managing (mapserver)')
     map_script = False
 
-from OS74 import FileSystemObject, DateTimeObject
-from SC62 import Temp
-from TX74 import WebContent, JsonContent
-from Template import HTML, SQL
-
 
 class OpenWeatherMap(object):
     def __init__(self, location=None, owm_api='442f089290ae64104a202bfb8d52e0cb'):
         if not location:
             location = 'Horni Pocernice,cz'  # 'Necin,cz'
-        # print('OpenWeatherMap.org - validate API-key disabled - location: ' + location)
+        print('OpenWeatherMap.org - validate API-key disabled - location: ' + location)
         if weather_wrapper:
             # syntax = pyowm.OWM(API_key='your-API-key', subscription_type='pro')
             owm = pyowm.OWM(owm_api)
@@ -129,3 +124,8 @@ def geocode_with_restriction(query_list, max_per_hour=60, max_per_day=500):
 
 if __name__ == '__main__':
     from log import Log
+    from OS74 import FileSystemObject, DateTimeObject
+    from SC62 import Temp
+    from Template import HTML, SQL
+    from TX74 import WebContent, JsonContent
+    

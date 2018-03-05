@@ -5,7 +5,6 @@ try:
 except ImportError:
     print('cannot work with images! ...')
     image_able = False
-from OS74 import FileSystemObject
 
     
 def mirror_images_dir(path, to_dir):
@@ -27,3 +26,6 @@ def mirror_images_dir(path, to_dir):
             else:
                 print(filename + ' skipping ....')
                 pass
+
+if __name__ == '__main__':
+    from OS74 import FileSystemObject

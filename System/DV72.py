@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Developped by Kube Kubow 2017
 File contains class for controlling Device through sqlite settings
 Class Device with these functions:
@@ -12,6 +13,9 @@ import datetime
 import serial
 import argparse
 
+from OS74 import FileSystemObject, CurrentPlatform, CurrentPlatformControl
+from DB74 import DataBaseObject
+from TX74 import CsvContent, JsonContent
 
 class ControlDevice(object):
     def __init__(self, aggregate_time_step=2):
@@ -191,9 +195,6 @@ def min_between(d1, d2):
         
         
 if __name__ == '__main__':
-    from OS74 import FileSystemObject, CurrentPlatform, CurrentPlatformControl
-    from DB74 import DataBaseObject
-    from TX74 import CsvContent, JsonContent
     from Template import SQL
     from log import Log
     

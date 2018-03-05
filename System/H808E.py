@@ -3,6 +3,11 @@ import os
 import argparse
 # sys.setdefaultencoding('utf-8')
 
+from log import Log
+from DB74 import DataBaseObject
+from OS74 import FileSystemObject, CurrentPlatformControl as cpc
+import TX74
+from Template import HTML, SQL
 
 class h808e(object):
     def __init__(self, debug=False):
@@ -148,7 +153,7 @@ class h808e(object):
         main_fathers = [father[0] for father in fathers]
         root_nodes = db.return_many(SQL.select_root_nodes)
         for root_node in root_nodes:
-            print(root_node[2].encode('utf8') + ' root node / id ' + str(
+            print(root_node[2] + ' root node / id ' + str(
                 root_node[4]) + ' / sqn ' + str(root_node[5]) + ' level 1')
 
     def get_table(self):
@@ -201,7 +206,7 @@ class h808e(object):
         html_content += self.area_links + HTML.pageTemplateMiddle
         html_content += '{0}' + HTML.pageTemplateEnd.format('footer')
         if text:
-            html_content = html_content.format(TX74.xml_to_html(''.join(text).encode('utf8')))
+            html_content = html_content.format(TX74.xml_to_html(''.join(text)))
         else:
             html_content = html_content.format('')
 
@@ -319,12 +324,6 @@ def build_text_menu(he):
 
 
 if __name__ == '__main__':
-
-    from log import Log
-    from DB74 import DataBaseObject
-    from OS74 import FileSystemObject, CurrentPlatformControl as cpc
-    import TX74
-    from Template import HTML, SQL
 
     parser = argparse.ArgumentParser(description="construct h808e")
     parser.add_argument('-c', help='ctb file', type=str, default='')

@@ -5,7 +5,7 @@ from log import Log
 from DV72 import ControlDevice
 from OS74 import CurrentPlatform, FileSystemObject
 from MP74 import OpenWeatherMap
-from TX74 import WebContent, RssContent
+from TX74 import WebContent
 
 
 def load_platform_based(from_path, web=None):
@@ -65,7 +65,7 @@ class TestWeather(unittest.TestCase):
 
 
 class TestWebContent(unittest.TestCase):
-    """Check if web data accessible"""
+    """Check if web data (local/internet) accessible"""
     def test_localhost_content(self):
         try:
             o = WebContent(load_platform_based('Web/index.html', 'file:///'))
@@ -90,7 +90,7 @@ class TestWebContent(unittest.TestCase):
 
     def test_rss_content(self):
         try:
-            o = RssContent('http://www.root.cz/rss/clanky/')
+            o = WebContent('http://www.root.cz/rss/clanky/', mode='rss')
         except:
             print('some bad happened')
         self.assertIn('root.cz', o.div)

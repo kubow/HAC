@@ -1,6 +1,5 @@
 import argparse
 import sqlite3
-from Template import SQL
 
 
 class DataBaseObject(object):
@@ -200,9 +199,9 @@ def temp_connect_database(database, do_some_work=''):
         print(db.obj_list)
 
 if __name__ == '__main__':
-
-    from TX74 import TextContent
     from log import Log
+    from Template import SQL
+    from TX74 import TextContent
 
     parser = argparse.ArgumentParser(description="Compare two sqlite databases")
     parser.add_argument('-m', help='mode: compare/browse sqlite database', type=str, default='')

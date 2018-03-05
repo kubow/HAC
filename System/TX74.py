@@ -36,10 +36,6 @@ except ImportError:
 finally:
     import csv
 
-from Template import HTML, SQL
-from OS74 import FileSystemObject, CurrentPlatform
-from DB74 import DataBaseObject
-
 
 class WebContent(HTMLParser):
     """General class for reading HTML Pages or RSS Feeds"""
@@ -440,16 +436,16 @@ def xml_to_html(xml_text):
             if len(element.attrib) > 0:
                 if 'scale' in element:
                     if element.attrib['scale'] == 'h1':
-                        html_text += h.heading.format('1', element.text.encode('utf8'))
+                        html_text += h.heading.format('1', element.text)
                     elif element.attrib['scale'] == 'h2':
-                        html_text += h.heading.format('2', element.text.encode('utf8'))
+                        html_text += h.heading.format('2', element.text)
                     else:
-                        html_text += h.paragraph.format('2', element.text.encode('utf8'))
+                        html_text += h.paragraph.format('2', element.text)
                 else:
-                    html_text += h.paragraph.format(element.text.encode('utf8'))
+                    html_text += h.paragraph.format(element.text)
             else:
                 for par_text in element.text.split('\n'):
-                    html_text += h.paragraph.format(par_text.encode('utf8'))
+                    html_text += h.paragraph.format(par_text)
         else:
             html_text += h.paragraph.format('... no content for this part ...\n')
     return html_text
@@ -464,6 +460,9 @@ def test_utf_special_characters(logger=''):
 
 if __name__ == '__main__':
     from log import Log
+    from Template import HTML, SQL
+    from OS74 import FileSystemObject, CurrentPlatform
+    from DB74 import DataBaseObject
 
     parser = argparse.ArgumentParser(description='Text proccess')
     parser.add_argument('-i', help='Input file/dir', type=str, default='')

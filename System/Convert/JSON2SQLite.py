@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Usage JSON2SQLite.py #.json
 parses JSON data to SQLite
 kubw kubow 2017"""
@@ -36,7 +37,7 @@ try:
                 if i == 0:
                     for json_item in source:
                         source_item.append(json_item)
-                        insert_string.append(str(source[json_item]).encode('utf8'))
+                        insert_string.append(str(source[json_item]))
                     columns = ', '.join(source_item)
                     print('columns: '+columns)
                     create_query = 'CREATE TABLE '+tab_name+' ('+' text , '.join(source_item)+' text);'
@@ -46,9 +47,9 @@ try:
                         if str(source[json_item]).isdigit():
                             insert_string.append(str(source[json_item]))
                         else:
-                            insert_string.append(str(source[json_item]).encode('utf8'))
+                            insert_string.append(str(source[json_item]))
                 insert_items = '", "'.join(x for x in insert_string)
-                db.execute(insert_query.format(tab_name, insert_items.encode('utf8')))
+                db.execute(insert_query.format(tab_name, insert_items))
                 db.commit()
                 #print(insert_items)
                 i += 1

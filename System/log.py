@@ -1,6 +1,7 @@
 import argparse
 import datetime
 import logging
+
 from OS74 import FileSystemObject
 
 
@@ -52,7 +53,8 @@ def advanced_logger_test():
     logger.log_operation('this is an error message', 20)
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  
+    
     parser = argparse.ArgumentParser(description="log to file")
     parser.add_argument('-l', help='Log file', type=str, default='')
     parser.add_argument('-m', help='module', type=str, default='none')
