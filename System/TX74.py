@@ -42,27 +42,30 @@ from DB74 import DataBaseObject
 
 
 class WebContent(HTMLParser):
-    """General class for reading HTML Pages"""
+    """General class for reading HTML Pages or RSS Feeds"""
 
-    def __init__(self, url, log_file=''):
+    def __init__(self, url, log_file='', mode='html'):
         uah = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.90 Safari/537.36'
         HTMLParser.__init__(self)
         self.headers = {"User-Agent": uah}
         self.easier = html_easier
+        self.mode = mode
         self.recording = 0  # flag for exporting data
         self.data = []
-        self.log_file = log_file
         self.url = url
         self.div = None
         self.div_text = ''
         self.html_text = ''
-        self.is_html = False
+        self.log_file = log_file
 
     def is_html(self):
-        if lxml.html.fromstring(self.html_text).find('.//*') is not None:
-            self.is_html = True
-        else:
-            self.is_html = False
+        try:
+            if lxml.html.fromstring(self.html_text).find('.//*') is not None:
+                return True
+            else:
+                return False
+        except:
+            return False
 
     def handle_starttag(self, tag, attributes):  # , tag_type, tag_name):
         if tag != 'div':
@@ -96,8 +99,26 @@ class WebContent(HTMLParser):
             p.close()
             return oups
 
-    def process_url(self, tag_type='', tag_name=''):
-        content = None
+    def parse_rss_feed(self, the_feed):
+        inner_text = ''
+        for feed_entry in the_feed.entries:
+            inner_text += "\n__________"
+            inner_text += feed_entry.get("guid", "")
+            inner_text += feed_entry.get("title", "")
+            inner_text += feed_entry.get("link", "")
+            inner_text += feed_entry.get("description", "")
+            inner_text += "\n__________"
+            for feed_namespace in the_feed.namespaces:
+                if feed_namespace == 'media':
+                    inner_text += 'Media'
+                    allmediacontent = feed_entry.get("media_content", "")
+                    for themediacontent in allmediacontent:
+                        inner_text += themediacontent["url"]
+                        inner_text += themediacontent["height"]
+                        inner_text += themediacontent["width"]
+        return inner_text
+
+    def process_url(self, tag_type='', tag_name=''):    
         if 'id' in str(tag_type).lower():
             tag_type = 'id'
         elif 'class' in str(tag_type).lower():
@@ -106,15 +127,20 @@ class WebContent(HTMLParser):
         try:
             self.div = ''
             self.div_text = ''
-            if self.url.startswith('file:'):
-                self.html_text = FileSystemObject(self.url.split('///')[-1]).object_read()
-            elif self.url.startswith('http:'):
-                self.html_text = requests.get(self.url, timeout=(10, 5), headers=self.headers).content
-            elif self.url.startswith('ftp:'):
-                self.html_text = 'FTP read not implemented yet'
+            if 'rss' in self.mode:
+                self.html_text = feedparser.parse(self.url)
+                self.div_text = self.parse_rss_feed(self.html_text)
+                done = True
             else:
-                self.html_text = requests.get('http://' + self.url, timeout=(10, 5), headers=self.headers).content
-            if is_html_text(self.html_text):
+                if self.url.startswith('file:'):
+                    self.html_text = FileSystemObject(self.url.split('///')[-1]).object_read()
+                elif self.url.startswith('ftp:'):
+                    self.html_text = 'FTP read not implemented yet'
+                elif self.url.startswith('http:') or self.url.startswith('https:'):
+                    self.html_text = requests.get(self.url, timeout=(10, 5), headers=self.headers).content
+                else:
+                    self.html_text = requests.get('http://' + self.url, timeout=(10, 5), headers=self.headers).content
+            if self.is_html():
                 parsed_content = self.parse_html_text()
                 done = True
                 if self.easier:
@@ -123,21 +149,24 @@ class WebContent(HTMLParser):
                         self.div_text = parsed_content.find('body').text
                     else:
                         self.div = parsed_content.find('div', {tag_type: tag_name})
-                        self.div_text = parsed_content.find('div', {tag_type: tag_name}).text
+                        if not self.div:
+                            self.div = parsed_content.find('body')
+                            self.div_text = parsed_content.find('body').text
+                        else:
+                            self.div_text = parsed_content.find('div', {tag_type: tag_name}).text
                 else:
                     self.div = parsed_content
                     self.div_text = parsed_content
             else:
                 self.div = self.html_text
-                self.div_text = self.html_text
-        # except HTMLParser.HTMLParseError:
-            # print('---cannot fetch address {0}, ({1})'.format(self.url, HTMLParser.HTMLParseError))
+                if not self.div_text:
+                    self.div_text = self.html_text
         except:
             print('---some else error occurred (' + self.url + '): ' + str(sys.exc_info()[0]))
             if done:
-                if content:
-                    self.div = str(content)
-                    print('---cannot parse content of {0} ({1})'.format(self.url, content))
+                if parsed_content:
+                    self.div = str(parsed_content)
+                    print('---cannot parse content of {0} ({1})'.format(self.url, parsed_content[:10]))
                 elif self.html_text:
                     self.div = str(self.html_text)
             else:
@@ -171,48 +200,6 @@ class WebContent(HTMLParser):
         DataBaseObject(db_path).log_to_database('Log', sql)
 
 
-class RssContent(object):
-    def __init__(self, rss_url):
-        self.url = rss_url
-        thefeed = feedparser.parse(self.url)
-        self.title = thefeed.feed.get("title", "")
-        self.link = thefeed.feed.get("link", "")
-        self.desc = thefeed.feed.get("description", "")
-        self.pub = thefeed.feed.get("published", "")
-        # self.pub_pars = thefeed.feed.get("published_parsed",
-        #                   thefeed.feed.published_parsed)
-        inner_text = ''
-        for thefeedentry in thefeed.entries:
-            inner_text += "\n__________"
-            inner_text += thefeedentry.get("guid", "")
-            inner_text += thefeedentry.get("title", "")
-            inner_text += thefeedentry.get("link", "")
-            inner_text += thefeedentry.get("description", "")
-            inner_text += "\n__________"
-
-            # Parsing Namespaces
-            for thefeednamespace in thefeed.namespaces:
-                if (thefeednamespace == "media"):
-                    # parse for Yahoo Media
-                    inner_text += "Media"
-                    allmediacontent = thefeedentry.get("media_content", "")
-                    for themediacontent in allmediacontent:
-                        inner_text += themediacontent["url"]
-                        inner_text += themediacontent["height"]
-                        inner_text += themediacontent["width"]
-        self.div = inner_text
-
-    def write_rss_content_to_file(self, file_path, heading):
-        if self.div:
-            print('creating ' + file_path + ' from: ' + self.url)
-            FileSystemObject(file_path).file_refresh(HTML.skelet_titled.format(heading, self.div))
-            log_path = FileSystemObject(file_path).get_another_directory_file('logfile.sqlite')
-
-            # self.log_to_database(log_path, heading)
-        else:
-            print('no content parsed from: ' + self.url)
-
-            
 class CsvContent(object):
     def __init__(self, file_name, write=False, content='', date_format='%Y/%m/%d %H:%M:%S'):
         self.path = file_name
@@ -391,6 +378,12 @@ class TextContent(object):
             block_text.append(line[:n_chars])
         return block_text
 
+    def similar_to(self, compare_text):
+        if isinstance(compare_text, str):
+            return difflib.SequenceMatcher(a=self.block_text.lower(), b=compare_text.lower()).ratio()
+        else:
+            return difflib.SequenceMatcher(a=self.block_text.lower(), b=str(compare_text).lower()).ratio()
+
 
 class PdfContent(object):
     def __init__(self, path_containing_pdf):
@@ -425,38 +418,6 @@ class PdfContent(object):
         return vMsg
 
 
-def filter_lines(text_file, with_filter):
-    stream = ''
-    for line in text_file:
-        if re.search('Dumpfile name', line) or re.search('DUMP is complete', line) or re.search(
-                'Dump phase number 1 completed', line):
-            stream += line
-    return stream
-
-
-def is_html_text(text):
-    if text:
-        if lxml.html.fromstring(text).find('.//*') is not None:
-            return True
-        else:
-            return False
-    else:
-        return False
-
-
-def load_text_from(file_name):
-    with open(file_name, 'rb') as input_file:
-        text = input_file.read()
-        # for m in re.findall(r'\n\n', whole_data):
-        # print(m)
-    return text
-
-
-def export_text_to(file_name, text):
-    with open(file_name, 'w+') as output_file:
-        output_file.write(text)
-
-
 def file_content_difference(file1, file2):
     diff = difflib.unified_diff(fromfile=file1, tofile=file2, lineterm='', n=0)
     lines = list(diff)[2:]
@@ -467,10 +428,6 @@ def file_content_difference(file1, file2):
     for line in added:
         if line not in removed:
             print(line)
-
-
-def create_file_if_neccesary(file_name):
-    FileSystemObject(file_name).object_create_neccesary()
 
 
 def xml_to_html(xml_text):
@@ -498,26 +455,11 @@ def xml_to_html(xml_text):
     return html_text
 
 
-def htm_to_plain_txt(htm_txt):
-    soup = BeautifulSoup(htm_txt, 'html.parser')
-    # return soup.get_text()
-    return soup.body.get_text()
-
-
 def test_utf_special_characters(logger=''):
     veta = u'Žluťoučký kůň pěl ďábelské ódy.'
     print(veta)
     if logger:
         logger.file_write('aaa.log', 'temp', veta)
-
-
-def similar(seq1, seq2):
-    try:
-        return difflib.SequenceMatcher(a=seq1.lower(),
-                                       b=seq2.lower()).ratio()  # > 0.9
-    except:
-        return difflib.SequenceMatcher(a=str(seq1).lower(),
-                                       b=str(seq2).lower()).ratio()  # > 0.9
 
 
 if __name__ == '__main__':
@@ -534,24 +476,20 @@ if __name__ == '__main__':
     input_object = FileSystemObject(args.i)
 
     if input_object.is_file:
-        input_text = load_text_from(args.i)
-        if not args.o:
+        input_text = input_object.object_read()
+        output_object = args.o
+        if not output_object:
             output_object = args.i+'2'
-        else:
-            create_file_if_neccesary(args.o)
-            output_object = args.o
-        export_text_to(output_object, TextContent(input_text).replace_line_endings())
+        FileSystemObject(output_object).object_write(TextContent(input_text).replace_line_endings())
     elif input_object.is_folder:
         folder_list = input_object.object_read()
         for f_name in folder_list.items():
             file_name = folder_list[f_name[0]]
-            input_text = load_text_from(args.i + '/' + file_name)
+            input_text = FileSystemObject(args.i + '/' + file_name).object_read()
             output_object = args.o + '/' + file_name
             if 'lin' in args.m:
-                export_text_to(output_object, TextContent(input_text).replace_crlf_lf())
-            elif 'win' in args.m:
-                export_text_to(output_object, TextContent(input_text).replace_lf_crlf()) 
+                FileSystemObject(output_object).object_write(TextContent(input_text).replace_crlf_lf())
             else:
-                export_text_to(output_object, TextContent(input_text).replace_lf_crlf())
+                FileSystemObject(output_object).object_write(TextContent(input_text).replace_lf_crlf())
     else:
         print(args.i + ' -> input file/dir does not exist ...')

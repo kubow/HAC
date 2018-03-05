@@ -97,10 +97,10 @@ class FileSystemObject:
             root_dir = self.dir_up(1)
             return self.separator.join(root_dir.split(self.separator)[0:-1]) + self.separator + another
         elif self.is_folder:
-            return self.separator.join(self.path.split(self.separator)[0:-1]) + self.separator + another
+            return self.path + self.separator + another
         else:
-            print('not file nor folder ...')
-            return None
+            print('not file nor folder ... returning base path')
+            return self.path
 
     def move_file_to(self, another_directory, filename=''):
         if not filename:
@@ -185,6 +185,8 @@ class FileSystemObject:
             return obj_lib
 
     def object_write(self, content='', mode='w+'):
+        if not self.exist:
+            self.object_create_neccesary()
         if FileSystemObject(self.destination).is_file:
             if mode != 'w+' or mode != 'a':
                 if 'app' in mode:

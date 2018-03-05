@@ -4,7 +4,7 @@ SET log_dir=%~dp0Multimedia\
 SET log_file=%log_dir%logfile.log
 SET system_dir=%~dp0System\
 SET py_data_file=%system_dir%DV72.py
-SET py_forecast_file=%system_dir%UI74SO.py
+SET py_forecast_file=%system_dir%SO74.py
 SET sqlite=C:\_Run\App\Database\SQLite\sqlite3.exe
 
 IF /I '%1%'=='b' GOTO big

@@ -37,7 +37,7 @@ Directory browser/lister
 	 - -b (browse directory)
 	 - -l (list directory)
 	 -  -f (output file - usually index.html)
-## Software (UI74SO.py)
+## Software (SO74.py)
 Several paths to retrieve multimedia information
 
  - modes:

@@ -4,7 +4,7 @@
 mainHTML=${PWD}'/index.html'
 mlt_dir=${PWD}'/Multimedia/'
 menu_dir=${mlt_dir}'RestMenu/'
-py_file=${PWD}'/System/UI74SO.py'
+py_file=${PWD}'/System/SO74.py'
 
 if [ -d "${menu_dir}" ]; then
     echo 'directory exists'

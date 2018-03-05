@@ -12,9 +12,9 @@ class DataBaseObject(object):
             self.db_file = db_path.replace('.log', '.sqlite')
         else:
             self.db_file = db_path
-        if db_type in ('ctb', 'sqlite3', 'db'):
+        if any(db_type in s for s in ['ctb', 'sqlite3', 'db']):
             self.type = 'sqlite3'
-        elif db_type in ('xml', 'xsl'):
+        elif any(db_type in s for s in ['xml', 'xslt', 'rss']):
             self.type = 'xml'
         else:
             self.type = 'not_defined'
@@ -168,7 +168,7 @@ def databases_compare(db1, db2, concrete_table=''):
                     if not mirror:
                         print('{0}!!cannot get mirrored column: {1} for row:'.format(' ' * 5, column, where))
                         continue
-                    if TX74.similar(row[col_num], mirror[0]) < 1:
+                    if TextContent(row[col_num]).similar_to(mirror[0]) < 1:
                         try:
                             print('=' * 100)
                             print(row[col_num])
@@ -201,7 +201,7 @@ def temp_connect_database(database, do_some_work=''):
 
 if __name__ == '__main__':
 
-    import TX74
+    from TX74 import TextContent
     from log import Log
 
     parser = argparse.ArgumentParser(description="Compare two sqlite databases")

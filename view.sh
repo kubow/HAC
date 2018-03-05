@@ -19,7 +19,7 @@ elif [ "$1" = "l" ]; then # list directory files
     echo 'python '${py_file}' -m -m True/False -i '$2' -l '${log_file}
     python ${py_file} -m -i $2 -l ${log_file}
 elif [ "$1" = "r" ]; then # rss
-    py_file=${PWD}/System/UI74SO.py
+    py_file=${PWD}/System/SO74.py
     echo 'python '${py_file}' -g rss -w '${PWD}' -l '${log_file}
     python ${py_file} -g rss -w ${PWD} -l ${log_file}
 else
