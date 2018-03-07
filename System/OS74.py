@@ -1,4 +1,4 @@
-"""A Platform controlller
+"""A Platform controller
 
 Files & Folder, DateTime classes
 """
@@ -16,6 +16,9 @@ try:
 except ImportError:
     windows = False
 
+from Template import SQL
+
+    
 class DateTimeObject:
     def __init__(self, date_set=datetime.datetime.now(), date_format='%d.%m.%Y %H:%M:%S'):
         self.date = date_set
@@ -347,7 +350,7 @@ def compare_directories(dir1, dir2):
 if __name__ == '__main__':
     from DB74 import DataBaseObject
     from log import Log
-    from Template import SQL
+    
     from TX74 import TextContent
     from UI74 import app_browser
 

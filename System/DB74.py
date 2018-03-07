@@ -1,6 +1,6 @@
 import argparse
 import sqlite3
-
+from Template import SQL
 
 class DataBaseObject(object):
     """db_path can be a log_file, it creates record in sqlite in the same path"""
@@ -83,6 +83,7 @@ class DataBaseObject(object):
         if result.lower().startswith('create view'):
             result = str(result).replace('\r\n', '').replace('\n', '')  # remove line breaks first
             result = str(result).replace(' from ', ' FROM ').replace(' select ', ' SELECT ').replace(' as ', ' AS ')
+            print(result)
             full_field_list = result.split(' SELECT ')[1].split(' FROM ')[0].split(',')
             field_list = [field.split('.')[-1] for field in full_field_list]
         elif result.lower().startswith('create table'):
@@ -200,7 +201,7 @@ def temp_connect_database(database, do_some_work=''):
 
 if __name__ == '__main__':
     from log import Log
-    from Template import SQL
+    
     from TX74 import TextContent
 
     parser = argparse.ArgumentParser(description="Compare two sqlite databases")
