@@ -1,5 +1,6 @@
 import argparse
 import sqlite3
+import sys
 from Template import SQL
 
 class DataBaseObject(object):
@@ -49,14 +50,18 @@ class DataBaseObject(object):
                 #print('error on: ' + sql)
 
     def execute(self, sql):
-        if self.active:
-            self.obj_conn.execute(sql)
-            self.obj_conn.commit()
-        else:
-            conn = sqlite3.connect(self.db_file)
-            conn.cursor().execute(sql)
-            conn.commit()
-            conn.close()
+        try:
+            if self.active:
+                self.obj_conn.execute(sql)
+                self.obj_conn.commit()
+            else:
+                conn = sqlite3.connect(self.db_file)
+                conn.cursor().execute(sql)
+                conn.commit()
+                conn.close()
+        except Exception as ex:
+            print('some exception occured: ' + str(ex.args))
+
 
     def return_one(self, sql):
         return self.result_set(sql, just_one=True)

@@ -6,6 +6,7 @@ import os
 import argparse
 import datetime
 import platform
+from pprint import pprint
 import shutil
 import re
 from subprocess import call, check_call, check_output, STDOUT
@@ -61,7 +62,7 @@ class FileSystemObject:
         if to_path:
             self.destination = to_path
         else:
-            self.destination = ''
+            self.destination = from_path
 
     def get_separator_from_path(self):
         if '\\' in self.path:
@@ -195,6 +196,7 @@ class FileSystemObject:
             with open(self.destination, mode,  encoding="utf-8") as target_file:
                 target_file.write(content)
         else:
+            pprint(vars(self))
             print('is not a file, cannot write: ' + self.destination)
 
     def object_size(self):
@@ -245,7 +247,7 @@ class CurrentPlatform:
         elif _platform == 'darwin':
             self.main = 'mac'
         elif _platform == 'win32' or _platform == 'win64':
-            print('must create _winreg import and read ...')
+            # TODO: print('must create _winreg import and read ...')
             self.main = 'win'
         else:
             self.main = _platform
