@@ -60,7 +60,7 @@ class DataBaseObject(object):
                 conn.commit()
                 conn.close()
         except Exception as ex:
-            print('some exception occured: ' + str(ex.args))
+            print('some exception occured: ' + str(ex.args) + ': ' + sql)
 
 
     def return_one(self, sql):
