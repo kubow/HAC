@@ -27,7 +27,8 @@ def lst_changed():
     field_name = app.getLabel('en1')
     if app.getListBox("list"):
         record_value = app.getListBox("list")[0]
-        result_vals = db_obj.return_many(SQL.select_where.format('*', table, field_name + '= "' + record_value + '"'))
+        print('retrieving ' + field_name + ': ' + record_value[0])
+        result_vals = db_obj.return_many(SQL.select_where.format('*', table, field_name + '= "' + record_value[0] + '"'))
         if result_vals:
             i = 1
             for field in result_vals[0]:

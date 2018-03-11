@@ -38,7 +38,6 @@ finally:
 
 from Template import HTML, SQL
 from OS74 import FileSystemObject, CurrentPlatform
-from DB74 import DataBaseObject
 
 
 class WebContent(HTMLParser):
@@ -464,6 +463,7 @@ def test_utf_special_characters(logger=''):
 
 if __name__ == '__main__':
     from log import Log
+    from DB74 import DataBaseObject
 
     parser = argparse.ArgumentParser(description='Text proccess')
     parser.add_argument('-i', help='Input file/dir', type=str, default='')

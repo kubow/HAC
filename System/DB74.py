@@ -1,7 +1,8 @@
 import argparse
 import sqlite3
-import sys
+
 from Template import SQL
+from TX74 import TextContent
 
 class DataBaseObject(object):
     """db_path can be a log_file, it creates record in sqlite in the same path"""
@@ -206,8 +207,6 @@ def temp_connect_database(database, do_some_work=''):
 
 if __name__ == '__main__':
     from log import Log
-    
-    from TX74 import TextContent
 
     parser = argparse.ArgumentParser(description="Compare two sqlite databases")
     parser.add_argument('-m', help='mode: compare/browse sqlite database', type=str, default='')
