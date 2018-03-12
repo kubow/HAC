@@ -310,7 +310,7 @@ def build_text_menu(he):
             import UI74
             # running Tkinter GUI
             logger.log_operation('universal python in ' + args.d)
-            UI74.build_window(args.d)
+            UI74.h808e_browser(args.d)
         elif keep_alive == "9":
             print("\n    Opening web browser\n")
             browser = cpc('web')
