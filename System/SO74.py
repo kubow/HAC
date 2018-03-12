@@ -3,8 +3,7 @@
 
 def process_web_content(mode='', final_dir='', url=''):
     db = DataBaseObject(FileSystemObject().get_another_directory_file('Settings.sqlite'))
-    log_file = str(args.l)
-    wc = WebContent(url, mode=mode)
+    wc = WebContent(url, log_file=str(args.l), mode=mode)
     final_dir_obj = FileSystemObject(final_dir)
     if url:
         print(wc.process_url())
@@ -25,7 +24,7 @@ def process_web_content(mode='', final_dir='', url=''):
             else:
                 print('cannot proceed with address:' + str(w))
             html_file_path = final_dir_obj.append_objects(file=w[4] + '.html')
-            wc.write_web_content_to_file(html_file_path, w[3], log_file)
+            wc.write_web_content_to_file(html_file_path, w[3])
 
 
 def browse_internet(mode='', match_dir='', url=''):

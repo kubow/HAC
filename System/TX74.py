@@ -47,7 +47,7 @@ class WebContent(HTMLParser):
         uah = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.90 Safari/537.36'
         HTMLParser.__init__(self)
         self.headers = {"User-Agent": uah}
-        self.easier = html_easier
+        self.easier = html_easier # can use beatiful soup 4
         self.mode = mode
         self.recording = 0  # flag for exporting data
         self.data = []
@@ -172,15 +172,15 @@ class WebContent(HTMLParser):
                 self.div = ''
                 self.div_text = ''
 
-    def write_web_content_to_file(self, file_path, heading, log_file=''):
+    def write_web_content_to_file(self, file_path, heading):
         if self.div:
             print('creating ' + file_path + ' from: ' + self.url)
             try:
                 FileSystemObject(file_path).object_write(HTML.skelet_titled.format(heading, self.div), 'w+')
             except:
                 FileSystemObject(file_path).object_write(HTML.skelet_titled.format(heading, 'cannot get text/bad char'), 'w+')
-            if log_file:
-                self.log_to_database(log_file.replace('.log', '.sqlite'), heading)
+            if self.log_file:
+                self.log_to_database(self.log_file.replace('.log', '.sqlite'), heading)
         else:
             print('no content parsed from: ' + self.url)
 

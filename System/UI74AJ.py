@@ -16,8 +16,9 @@ def opt_changed():
             break
         app.setLabel('en' + str(i), field)
         i += 1
-    i += 1
-    if i <= 9:
+    for j in range(9):
+        if i > 9:
+            break
         app.setLabel('en' + str(i), '')
         i += 1
 
@@ -27,12 +28,12 @@ def lst_changed():
     field_name = app.getLabel('en1')
     if app.getListBox("list"):
         record_value = app.getListBox("list")[0]
-        print('retrieving ' + field_name + ': ' + record_value[0])
-        result_vals = db_obj.return_many(SQL.select_where.format('*', table, field_name + '= "' + record_value[0] + '"'))
+        print('retrieving ' + field_name + ': ' + record_value)
+        result_vals = db_obj.return_many(SQL.select_where.format('*', table, field_name + '= "' + record_value + '"'))
         if result_vals:
             i = 1
             for field in result_vals[0]:
-                if i > 6:
+                if i > 9:
                     break
                 app.setEntry('e' + str(i), field)
                 i += 1
@@ -49,6 +50,7 @@ def press(btn):
 
 def list_select():
     app.infoBox("Info", "You selected " + app.getOptionBox("optionbox") + "\nBrowsing " + app.getListBox("list")[0][0])
+
 
 root = FileSystemObject().dir_up(2)
 print(root)
