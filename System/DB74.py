@@ -1,8 +1,9 @@
 import argparse
+import difflib
 import sqlite3
 
 from Template import SQL
-from TX74 import TextContent
+# from TX74 import TextContent  # difflib import here
 
 class DataBaseObject(object):
     """db_path can be a log_file, it creates record in sqlite in the same path"""
@@ -172,9 +173,9 @@ def databases_compare(db1, db2, concrete_table=''):
                         continue
                     mirror = db_right.return_field_content(table[0], column.split(' ')[0], where)
                     if not mirror:
-                        print('{0}!!cannot get mirrored column: {1} for row:'.format(' ' * 5, column, where))
+                        print('{0} !cannot get mirrored column: {1} for row: {2}'.format(' ' * 5, column, where))
                         continue
-                    if TextContent(row[col_num]).similar_to(mirror[0]) < 1:
+                    if difflib.SequenceMatcher(a=row[col_num].lower(), b=mirror[0].lower()).ratio() < 1:
                         try:
                             print('=' * 100)
                             print(row[col_num])

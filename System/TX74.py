@@ -25,9 +25,9 @@ except ImportError:
     html_easier = False
 
 try:
-    from html.parser import HTMLParser
+    from html.parser import HTMLParser  # python 3x
 except ImportError:
-    from HTMLParser import HTMLParser
+    from HTMLParser import HTMLParser  # python 2x
 
 try:
     import pandas
@@ -36,6 +36,8 @@ except ImportError:
 finally:
     import csv
 
+
+from DB74 import DataBaseObject
 from Template import HTML, SQL
 from OS74 import FileSystemObject, CurrentPlatform
 
@@ -93,9 +95,7 @@ class WebContent(HTMLParser):
             return soup
         else:
             # TODO: same logic as with beautiful soup
-            p = WebContent()
-            oups = p.feed(self.html_text)
-            p.close()
+            oups = HTMLParser().feed(self.html_text)
             return oups
 
     def parse_rss_feed(self, the_feed):
@@ -364,7 +364,7 @@ class TextContent(object):
 
     def replace_lf_crlf(self):
         # replace linux line endings with windows line endings
-        if re.search('\r?\n'):
+        if re.search('\r?\n', self.block_text):
             return re.sub('\r?\n', '\r\n', self.block_text)
         else:
             print('this text does not have any linux line endings, passing ...')
@@ -418,7 +418,7 @@ class PdfContent(object):
 
 
 def file_content_difference(file1, file2):
-    diff = difflib.unified_diff(fromfile=file1, tofile=file2, lineterm='', n=0)
+    diff = difflib.unified_diff(a=file1, b=file2, lineterm='', n=0)
     lines = list(diff)[2:]
     added = [line[1:] for line in lines if line[0] == '+']
     removed = [line[1:] for line in lines if line[0] == '-']
