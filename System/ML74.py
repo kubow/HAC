@@ -5,7 +5,26 @@ try:
 except ImportError:
     print('cannot work with images! ...')
     image_able = False
+try:
+    import pygame
+    multi_able = True
+except ImportError:
+    print('cannot work with music and other! ...')
+    multi_able = False 
 
+def play_sound(sound_file_location):
+    # sound_file_location must be a wav file
+    pygame.mixer.init()
+    pygame.mixer.music.load(sound_file_location)
+    pygame.mixer.music.play()
+    while pygame.mixer.music.get_busy() == True:
+        continue
+
+def play_sound_external_app(sound_file_location, app_name='mplayer'):
+    if not sound_file_location:
+        print('please submit a file to play...')
+    player = cpc(app_name).run_stream(sound_file_location, "-ss", "30")
+    # player.stdin.write("q")  # terminate player
     
 def mirror_images_dir(path, to_dir):
     final_directory = FileSystemObject(to_dir)
@@ -28,4 +47,4 @@ def mirror_images_dir(path, to_dir):
                 pass
 
 if __name__ == '__main__':
-    from OS74 import FileSystemObject
+    from OS74 import FileSystemObject, CurrentPlatformControl as cpc

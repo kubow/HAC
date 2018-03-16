@@ -9,7 +9,7 @@ import platform
 from pprint import pprint
 import shutil
 import re
-from subprocess import call, check_call, check_output, STDOUT
+from subprocess import call, check_call, check_output, Popen, PIPE, STDOUT
 from sys import platform as _platform
 
 try:
@@ -308,6 +308,13 @@ class CurrentPlatformControl(CurrentPlatform):
             return check_output(command_input, stderr=STDOUT, timeout=timeout, shell=True)
         except:
             return None
+
+    def run_stream(self, file_name, arg_1, arg_2):
+        try:
+            return Popen([self.app_run_path, file_name, arg_1, arg_2], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        except:
+            return None
+
 
     def list_attached_peripherals(self):
         if self.main == 'win':
