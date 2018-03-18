@@ -77,8 +77,8 @@ Testing main functions of the whole system
 | ML74    | `MusicObject()`              | Deal with music               |
 | MP74    | `OpenWeatherMap()`           | Retrieve weather              |
 | MP74    | `OpenStreetMap()`            | Retrieve location             |
-| SO74TX    | `RssContent()`               | Retrieve content of a feed    |
-| SO74TX    | `WebContent()`               | Retrieve content of a website |
+| TX74    | `RssContent()`               | Retrieve content of a feed    |
+| TX74    | `WebContent()`               | Retrieve content of a website |
 
 
 And flow charts like this:

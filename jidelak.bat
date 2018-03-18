@@ -6,7 +6,7 @@ SET py_file=%~dp0System\SO74.py
 ECHO archiving ...
 DEL "%mlt_dir%RestMenu\*.*?"
 REM wscript %~dp0System\Reader\ReaderMenu.vbs --not properly set...
-python %py_file% -g restaurants -w %~dp0 -l %mlt_dir%logfile.log
+python %py_file% -m restaurant -i %~dp0 -l %mlt_dir%logfile.log
 
 TYPE %~dp0Structure\HTML_Base_Head.txt > %mainHTML%
 

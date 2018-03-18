@@ -142,10 +142,9 @@ class DataBaseObject(object):
                     i += 1
 
 
-def databases_compare(db1, db2, concrete_table=''):
+def compare_databases(db1, db2, concrete_table=''):
     db_left = DataBaseObject(db1)
     db_right = DataBaseObject(db2)
-    logger.log_operation('comparing databases: {0} / {1}'.format(db1, db2))
 
     table_list = db_left.obj_list
     if concrete_table:
@@ -206,24 +205,3 @@ def temp_connect_database(database, do_some_work=''):
         do_some_work = 'explore'
         print(db.obj_list)
 
-if __name__ == '__main__':
-    from log import Log
-
-    parser = argparse.ArgumentParser(description="Compare two sqlite databases")
-    parser.add_argument('-m', help='mode: compare/browse sqlite database', type=str, default='')
-    parser.add_argument('-a', help='first file', type=str, default='') #l
-    parser.add_argument('-b', help='second file', type=str, default='') #r
-    parser.add_argument('-f', help='focus one table', type=str, default='')
-    parser.add_argument('-l', help='log file', type=str, default='')
-    args = parser.parse_args()
-    if args.l:
-        logger = Log(args.l, 'Database', __file__, True)
-        if not args.m:
-            temp_connect_database(args.a)
-        else:
-            if 'compare' in args.m:
-                databases_compare(args.a, args.b, args.f)
-            else:
-                print('method not implemented :' + args.m + ':')
-    else:
-        print('please submit log file location')

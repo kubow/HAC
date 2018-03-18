@@ -39,7 +39,7 @@ finally:
 
 from DB74 import DataBaseObject
 from Template import HTML, SQL
-from OS74 import FileSystemObject, CurrentPlatform
+#from OS74 import FileSystemObject, CurrentPlatform
 
 
 class WebContent(HTMLParser):
@@ -460,36 +460,3 @@ def test_utf_special_characters(logger=''):
     if logger:
         logger.file_write('aaa.log', 'temp', veta)
 
-
-if __name__ == '__main__':
-    from log import Log
-    from DB74 import DataBaseObject
-
-    parser = argparse.ArgumentParser(description='Text proccess')
-    parser.add_argument('-i', help='Input file/dir', type=str, default='')
-    parser.add_argument('-o', help='Output file/dir', type=str, default='')
-    parser.add_argument('-m', help='Mode/Logic', type=str, default='')
-    parser.add_argument('-l', help='Logfile', type=str, default='')
-    args = parser.parse_args()
-
-    logger = Log(args.l, args.i + ' + ' + args.o, __file__, True)
-    input_object = FileSystemObject(args.i)
-
-    if input_object.is_file:
-        input_text = input_object.object_read()
-        output_object = args.o
-        if not output_object:
-            output_object = args.i+'2'
-        FileSystemObject(output_object).object_write(TextContent(input_text).replace_line_endings())
-    elif input_object.is_folder:
-        folder_list = input_object.object_read()
-        for f_name in folder_list.items():
-            file_name = folder_list[f_name[0]]
-            input_text = FileSystemObject(args.i + '/' + file_name).object_read()
-            output_object = args.o + '/' + file_name
-            if 'lin' in args.m:
-                FileSystemObject(output_object).object_write(TextContent(input_text).replace_crlf_lf())
-            else:
-                FileSystemObject(output_object).object_write(TextContent(input_text).replace_lf_crlf())
-    else:
-        print(args.i + ' -> input file/dir does not exist ...')

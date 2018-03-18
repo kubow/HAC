@@ -14,7 +14,7 @@ else
     mkdir -p "${menu_dir}"
 fi
 
-python ${py_file} -g restaurants -w ${PWD} -l ${mlt_dir}logfile.log
+python ${py_file} -m restaurant -i ${PWD} -l ${mlt_dir}logfile.log
 
 cat ${PWD}'/Structure/HTML_Base_head.txt' > "${mainHTML}"
 

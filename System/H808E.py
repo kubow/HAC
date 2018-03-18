@@ -77,13 +77,10 @@ class h808e(object):
                 print('get all directories for {0}'.format(main_node))
 
     def is_registered_directory(self):
+        is_registered = FileSystemObject(self.dir_active).is_folder
         if self.debug:
-            print('just check if table exists')
-        if FileSystemObject(self.dir_active).is_folder:
-            print('table do not exist')
-            return False
-        else:
-            return True
+            logger.log_operation('directory ' + self.dir_active + ' exists: ' + str(is_registered))
+        return is_registered
 
     def directory_register(self):
         # load to in memory sqlite database
@@ -116,7 +113,6 @@ class h808e(object):
         for record in self.db_data:
             print(record[0])
             
-    
     def directory_watcher(self):
         flag = True
         if FileSystemObject(self.dir_active).is_folder:
@@ -237,10 +233,7 @@ def build_text_menu(he):
         9.  Browse pages in (FF/CH/IE)
         -------------------------------------
         ==========PRESS 'Q' TO QUIT==========""")
-        try:
-            keep_alive = raw_input("Please run:")  # python 2
-        except:
-            keep_alive = input("Please run:")  # python 3
+        keep_alive = input("Please run:")  # python 3
         file_name = FileSystemObject(args.c).last_part()
         active_directory = args.c.replace(file_name, '')
         if keep_alive == "1":
@@ -323,6 +316,11 @@ def build_text_menu(he):
             print("\n Not Valid Choice Try again")
 
 
+def build_structure_numbers():
+    """constructor of h808e - list of dictionaries
+    will be a module after.."""
+    return [x for x in range(400, 800) if str(x)[1:2] <= str(x)[:1] and str(x)[2:] <= str(x)[:1]]
+    
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description="construct h808e")

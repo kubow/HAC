@@ -1,4 +1,5 @@
 @echo off
+SET py_file=%~dp0System\SO74.py
 SET log_file=%~dp0Multimedia\logfile.log
 
 IF /I '%1%'=='h' GOTO HANA
@@ -28,39 +29,37 @@ python %py_file%
 GOTO QUIT
 
 :SQLite
-SET py_file=%~dp0System\DB74.py
-echo python %py_file% -l %log_file% -a %2%
-python %py_file% -l %log_file% -a %2%
-goto QUIT
+SET mode_name=browser
+SET extra_name=database
+SET in_object=%2
+goto execute_py
 
 :FolderBrowse
-SET mode=True
-SET mlt_dir='C:\_Run\Web'
-if [%2]==[] goto Folder
-SET mlt_dir=%2%
-goto Folder
+SET mode_name=browser
+SET extra_name=folder
+SET in_object=%2
+if [%2]==[] SET in_object='C:\_Run\Web'
+goto execute_py
 
 :FolderList
-SET mode=""
-SET mlt_dir='C:\_Run\Web'
-if [%2]==[] goto Folder
-SET mlt_dir=%2%
-goto Folder
-
-:Folder
-SET py_file=%~dp0System\OS74.py
-echo python %py_file% -i %mlt_dir% -m True/False (%mode%) -l %log_file%
-python %py_file% -i %mlt_dir% -m %mode% -l %log_file%
-goto QUIT
-
-REM echo pure DOS version
-REM dir /s/b *.mp3 > dir.txt
+SET mode_name=list
+SET extra_name=folder
+SET in_object=%2
+if [%2]==[] SET in_object='C:\_Run\Web'
+goto execute_py
+REM ECHO report files DOS way:
+REM DIR /s/b *.mp3 > %out_object%
 
 :Text
-SET py_file=%~dp0System\SO74TX.py
-echo python %py_file% -l %log_file% 
-python %py_file% -i %2% -l %log_file% 
-goto QUIT
+SET mode_name=browser
+SET extra_name=text
+SET in_object=%2
+goto execute_py
+
+:execute_py
+ECHO python %py_file% -m %mode_name% -i %in_object% -e %extra_name% -l %log_file%
+python %py_file% -m %mode_name% -i %in_object% -e %extra_name% -l %log_file%
+GOTO quit
 
 :QUIT
 REM EXIT

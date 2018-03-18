@@ -21,8 +21,8 @@ then
     echo ====================
     echo python read forecast 
     echo ====================
-    echo syntax: ${py_forecast_file} -g weather -p location -w destination_to_write_results
-    python ${py_forecast_file} -g weather -p ${location} -w ${PWD} -l ${log_file}
+    echo syntax: ${py_forecast_file} -m weather -i location -o destination_to_write_results
+    python ${py_forecast_file} -m weather -i ${location} -o ${PWD} -l ${log_file}
     echo ==========================
     echo python write proccessed data
     echo ==========================

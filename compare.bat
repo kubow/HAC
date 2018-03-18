@@ -1,7 +1,9 @@
 @ECHO off
 SET log_file=%~dp0Multimedia\logfile.log
+SET py_file=%~dp0System\SO74.py
+SET mode_name=compare
 IF /I '%1%'=='b' GOTO database
-IF /I '%1%'=='d' GOTO directory
+IF /I '%1%'=='d' GOTO dir_file
 IF /I '%1%'=='t' GOTO text
 GOTO menu
 
@@ -16,30 +18,26 @@ ECHO 3rd argument - destination file/folder
 GOTO quit
 
 :database
-SET py_file=%~dp0System\DB74.py
-ECHO python %py_file% -m compare -a %2 -b %3 -f table_name -l logfile
-python %py_file% -m compare -a %2 -b %3 -l %log_file%
-GOTO quit
+SET extra_name=database
+in_object=%2
+out_object=%3
+GOTO execute_py
 
-:directory
-SET mlt_dir=%2%
-echo %mlt_dir%
-REM SET mlt_dir='C:\_Run\Web'
-SET py_file=%~dp0System\OS74.py
-
-REM echo '-b', help='browse dir', type=str, default='')
-REM echo '-l', help='list dir', type=str, default='')
-REM echo '-f', help='file output', type=str, default='')
-ECHO python %py_file% -i %mlt_dir% -l %log_file% -m True
-python %py_file% -i %mlt_dir% -l %log_file%
-GOTO quit
+:dir_file
+SET extra_name=directory
+in_object=%2
+out_object=%3
+GOTO execute_py
 
 :text
-REM ECHO pure DOS version
-REM DIR /s/b *.mp3 > dir.txt
-SET py_file=%~dp0System\SO74TX.py
-python %py_file%  -i C:\_Temp\_ -o C:\_Temp\__ -l linux -m reg
-echo "done run"
+SET extra_name=text
+in_object=%2
+out_object=%3
+GOTO execute_py
+
+:execute_py
+ECHO python %py_file% -m %mode_name% -i %in_object% -o %out_object% -e %extra_name% -l logfile
+python %py_file% -m %mode_name% -i %in_object% -o %out_object% -e %extra_name% -l %log_file%
 GOTO quit
 
 :quit

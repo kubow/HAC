@@ -17,9 +17,11 @@ try:
 except ImportError:
     windows = False
 
+from DB74 import DataBaseObject
 from Template import SQL
-
+from TX74 import TextContent
     
+
 class DateTimeObject:
     def __init__(self, date_set=datetime.datetime.now(), date_format='%d.%m.%Y %H:%M:%S'):
         self.date = date_set
@@ -37,7 +39,7 @@ class FileSystemObject:
     def __init__(self, from_path='', to_path=''):
         if not from_path:
             from_path = os.path.dirname(os.path.realpath(__file__))
-            print('using path relative to running script location ...' + from_path)
+            #print('using path relative to running script location ...' + from_path)
         self.path = from_path
         self.separator = self.get_separator_from_path()
         # avoid separators in the end of path string
@@ -47,18 +49,29 @@ class FileSystemObject:
             self.exist = True
             self.is_file = True
             self.is_folder = False
+            file_xt = self.path.split(self.separator)[-1].split('.')[-1].lower()
+            if any(file_xt in x for x in ['ctb', 'sqlite3', 'db']):
+                self.obj_type = 'db'
+            elif any(file_xt in x for x in ['xml', 'txt', 'csv']):
+                self.obj_type = 'txt'
+            else:
+                self.obj_type = 'not_defined yet'
+             #print('file {0} ({1}) is type: {2}'.format(self.path, file_xt, self.obj_type))
         elif os.path.isdir(from_path):
             self.exist = True
             self.is_file = False
             self.is_folder = True
+            self.obj_type = 'dir'
         else:
             self.exist = False
+            self.obj_type = ''
             if '.' in from_path:
                 self.is_file = True
                 self.is_folder = False
             else:
                 self.is_file = False
                 self.is_folder = True
+        # destination definition
         if to_path:
             self.destination = to_path
         else:
@@ -229,9 +242,9 @@ class FileSystemObject:
     def file_refresh(self, content):
         # print('refreshing filename: ' + filename + ' with text: ' + text)
         if content:
-            if not self.is_file(self.path):
+            if not self.is_file:
                 print('file {0} not exist, must create'.format(self.path))
-                self.file_touch(self.path)
+                self.file_touch()
             self.object_write(content, 'w+')
         else:
             print('no text to write, skipping file {0}'.format(self.path))
@@ -356,25 +369,3 @@ def compare_directories(dir1, dir2):
                     found = False
 
 
-if __name__ == '__main__':
-    from DB74 import DataBaseObject
-    from log import Log
-    
-    from TX74 import TextContent
-    from UI74 import app_browser
-
-    parser = argparse.ArgumentParser(description="browse/list dirs")
-    parser.add_argument('-i', help='input dir', type=str, default='')
-    parser.add_argument('-m', help='extra graphic mode', type=str, default='')
-    parser.add_argument('-f', help='file output', type=str, default='')
-    parser.add_argument('-l', help='log file', type=str, default='')
-    args = parser.parse_args()
-    logger = Log(args.l, 'directory', __file__, True)
-    if args.m:
-        logger.log_operation('opening new window - browse: ' + args.i)
-        app_browser()
-    elif args.i:
-        fso = FileSystemObject(args.i, args.f)
-        fso.directory_lister(list_files=True)
-    else:
-        logger.log_operation('please specify at least input file ...') 

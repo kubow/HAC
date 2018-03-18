@@ -10,6 +10,7 @@ and a logger module - currently not implemented
 """
 import time
 import datetime
+from pprint import pprint
 import serial
 import argparse
 
@@ -34,6 +35,7 @@ class ControlDevice(object):
         self.output_path = this_file.dir_up(1)
         self.csv_file = ''
         self.last_run = ''
+        pprint(vars(current_platform))
         self.device_name = current_platform.hostname
         self.device_user = current_platform.environment
         self.device_platform = current_platform.main
@@ -64,9 +66,11 @@ class ControlDevice(object):
                     logger.log_operation(str_device_id+' / '+str_device_adress)
                     break
             if not self.port:
+                print(SQL.get_driver_dummy_loc.format(self.device_platform))
                 self.port = db.return_one(SQL.get_driver_dummy_loc.format(self.device_platform))[0]
             if not self.br:
-                self.br = db.return_one(SQL.get_driver_dummy_loc.format(self.device_platform))[0]
+                print(SQL.get_driver_dummy_br.format(self.device_platform))
+                self.br = db.return_one(SQL.get_driver_dummy_br.format(self.device_platform))[0]
         else:
             # no available config - using default values
             self.port = 'COM4'

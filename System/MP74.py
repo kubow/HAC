@@ -14,7 +14,7 @@ try:
     import mapscript
     map_script = True
 except ImportError:
-    print('using simple map managing (mapserver)')
+    print('using simple map managing (map_server)')
     map_script = False
 
 
@@ -26,8 +26,8 @@ class OpenWeatherMap(object):
         if weather_wrapper:
             # syntax = pyowm.OWM(API_key='your-API-key', subscription_type='pro')
             owm = pyowm.OWM(owm_api)
-            self.place_name = owm.weather_at_place(location)._location._name + ', ' + self.owm.weather_at_place(location)._location._country  # check
-            self.place_coor = str(owm.weather_at_place(location)._location._lat) + ', ' + str(self.owm.weather_at_place(location)._location._lon)  # check
+            self.place_name = owm.weather_at_place(location)._location._name + ', ' + owm.weather_at_place(location)._location._country  # check
+            self.place_coor = str(owm.weather_at_place(location)._location._lat) + ', ' + str(owm.weather_at_place(location)._location._lon)  # check
             self.weather_local = owm.weather_at_place(location).get_weather()
             self.weather_forecast = owm.daily_forecast(location).get_forecast()
             self.weather_forecast_days = self.weather_forecast._weathers
@@ -107,7 +107,7 @@ class MapServer(object):
 
 class MapyCZ(object):
     def __init__(self):
-        root = 'http://api.mapy.cz/geocode?query='
+        self.root = 'http://api.mapy.cz/geocode?query='
         
     def from_address(self, address_string):
         response = WebContent(self.root + address_string)

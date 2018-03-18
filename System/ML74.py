@@ -12,6 +12,8 @@ except ImportError:
     print('cannot work with music and other! ...')
     multi_able = False 
 
+from OS74 import FileSystemObject, CurrentPlatformControl as cpc
+
 def play_sound(sound_file_location):
     # sound_file_location must be a wav file
     pygame.mixer.init()
@@ -45,6 +47,3 @@ def mirror_images_dir(path, to_dir):
             else:
                 print(filename + ' skipping ....')
                 pass
-
-if __name__ == '__main__':
-    from OS74 import FileSystemObject, CurrentPlatformControl as cpc

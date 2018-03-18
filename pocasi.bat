@@ -32,10 +32,10 @@ ECHO got: "%result%" : %command%
 ECHO ====================
 ECHO python read forecast 
 ECHO ====================
-ECHO syntax: %py_forecast_file% -g weather -p location -w destination_to_write_results
+ECHO syntax: %py_forecast_file% -m weather -i location -o destination_to_write_results
 rem SET location="Horni Pocernice, cz"
 SET location="Zlin, cz"
-python %py_forecast_file% -g weather -p %location% -w %~dp0 -l %log_file%
+python %py_forecast_file% -m weather -i %location% -o %~dp0 -l %log_file%
 
 ECHO ====================
 ECHO python aggregate data 
