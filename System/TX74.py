@@ -9,6 +9,7 @@ import argparse
 import difflib
 import datetime
 import json
+from pprint import pprint
 import xml.etree.ElementTree
 import lxml.html
 import feedparser
@@ -39,7 +40,7 @@ finally:
 
 from DB74 import DataBaseObject
 from Template import HTML, SQL
-#from OS74 import FileSystemObject, CurrentPlatform
+from OS74 import FileSystemObject, CurrentPlatform
 
 
 class WebContent(HTMLParser):
@@ -171,6 +172,7 @@ class WebContent(HTMLParser):
             else:
                 self.div = ''
                 self.div_text = ''
+            pprint(vars(self))
 
     def write_web_content_to_file(self, file_path, heading):
         if self.div:

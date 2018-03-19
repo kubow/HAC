@@ -19,7 +19,6 @@ except ImportError:
 
 from DB74 import DataBaseObject
 from Template import SQL
-from TX74 import TextContent
     
 
 class DateTimeObject:
@@ -141,7 +140,9 @@ class FileSystemObject:
         if not self.destination:
             self.destination = FileSystemObject(mlt_fld).append_objects(file='DirectoryList.html')
         print(template_file + ' - will be writing to: ' + self.destination)
-        template = str(TextContent(file_name=template_file).block_text).replace('XXX', self.path)
+        with open(template_file, 'r') as content_file:
+            content = content_file.read()
+        template = content.replace('XXX', self.path)
 
         head = '<table><tr class="Head"><td>List Generated on {0} / Total Folder Size - {1} / {2} Subfolders </td></tr>'
         table_head = '<table><tr class="Head">{0}<td>{1}</table>'

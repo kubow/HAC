@@ -54,7 +54,7 @@ def mode_launcher(mode=None, source=None, additional_par=None, destination=None)
                 o = OpenWeatherMap('Praha, cz')
             o.write_weather_text(FileSystemObject(args.w).append_objects(file='index.html'))
         elif any(str(mode) in s for s in ['2', '3', 'rest', 'rss', 'restaurants']):
-            browse_internet(mode, destination, source)
+            browse_internet(mode, source)
         elif any(str(mode) in s for s in ['4', 'lister', 'list']):
             if not destination:
                 logger.log_operation('cannot export list, missing destination')
