@@ -32,16 +32,20 @@ ECHO    /// var right = "Multimedia/RestMenu/sad.html"; >> %mainHTML%
 
 ECHO     var srcs = [ >> %mainHTML%
 for %%F in (%~dp0Multimedia\RestMenu\*.htm) do (
-    ECHO    , "Multimedia/RestMenu/%%~nxF"  >> %mainHTML%
+    ECHO    "Multimedia/RestMenu/%%~nxF" , >> %mainHTML%
 )
-ECHO    ] >> %mainHTML%
+ECHO    ]; >> %mainHTML%
 
-ECHO    document.getElementById('Left').setAttribute('src', srcs[Math.floor(Math.random() * srcs.length)); >> %mainHTML%
-ECHO    document.getElementById('Right').setAttribute('src', srcs[Math.floor(Math.random() * srcs.length)); >> %mainHTML%
+ECHO    document.getElementById('Left').setAttribute('src', srcs[Math.floor(Math.random() * srcs.length)]); >> %mainHTML%
+ECHO    document.getElementById('Right').setAttribute('src', srcs[Math.floor(Math.random() * srcs.length)]); >> %mainHTML%
 ECHO    // document.getElementById('Left').src += document.getElementById('Left').src; >> %mainHTML%
 ECHO    // document.getElementById('Right').src += document.getElementById('Right').src; >> %mainHTML%
-ECHO    document.getElementById('west').innerHTML = document.getElementById("Left").contentDocument.title; >> %mainHTML%
-ECHO    document.getElementById('east').innerHTML = document.getElementById("Right").contentDocument.title; >> %mainHTML%
+ECHO    var left_frame = document.getElementById("Left").contentWindow.document; >> %mainHTML%
+ECHO    var right_frame = document.getElementById("Right").contentWindow.document; >> %mainHTML%
+ECHO    document.getElementById('west').innerHTML = left_frame.title; >> %mainHTML%
+ECHO    // document.getElementById('west').innerHTML = document.getElementById("Left").src; >> %mainHTML%
+ECHO    document.getElementById('east').innerHTML = right_frame.title; >> %mainHTML%
+ECHO    // document.getElementById('east').innerHTML = document.getElementById("Right").src; >> %mainHTML%
 ECHO    }, 10000); >> %mainHTML%
 ECHO ^</script^> >> %mainHTML%
 

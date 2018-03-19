@@ -41,8 +41,8 @@ do
 done
 echo '   ]' >> "${mainHTML}"
 
-echo '   document.getElementById("Left").setAttribute("src", srcs[Math.floor(Math.random() * srcs.length));' >> "${mainHTML}"
-echo '   document.getElementById("Right").setAttribute("src", srcs[Math.floor(Math.random() * srcs.length));' >> "${mainHTML}"
+echo '   document.getElementById("Left").setAttribute("src", srcs[Math.floor(Math.random() * srcs.length)]);' >> "${mainHTML}"
+echo '   document.getElementById("Right").setAttribute("src", srcs[Math.floor(Math.random() * srcs.length)]);' >> "${mainHTML}"
 echo '   // document.getElementById("Left").src += document.getElementById('Left').src;' >> "${mainHTML}"
 echo '   // document.getElementById("Right").src += document.getElementById('Right').src;' >> "${mainHTML}"
 echo '   document.getElementById("west").innerHTML = document.getElementById("Left").contentDocument.title;' >> "${mainHTML}"
