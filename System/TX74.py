@@ -4,6 +4,7 @@ replace line endings, load/write text to a file
 compare text simrality
 """
 import sys
+# sys.setdefaultencoding('utf-8')
 import re
 import argparse
 import difflib
@@ -11,14 +12,22 @@ import datetime
 import json
 from pprint import pprint
 import xml.etree.ElementTree
-import lxml.html
-import feedparser
 import requests
 from glob import glob  #pdf reading purposes
 from time import clock #benchmark purposes
 # from xml.dom.minidom import parseString
-# sys.setdefaultencoding('utf-8')
 
+try:
+    import feedparser
+except ImportError:
+    print("feedparser not imported, cannot process rss")
+
+
+try:
+    import lxml.html
+except ImportError:
+    print("lxml not imported, cannot determine html text")
+    
 try:
     html_easier = True
     from bs4 import BeautifulSoup
