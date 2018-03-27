@@ -207,7 +207,7 @@ class FileSystemObject:
                     mode = 'a'
                 else:
                     mode = 'w+'
-            with open(self.destination, mode,  encoding="utf-8") as target_file:
+            with open(self.destination, mode, encoding="utf-8") as target_file:
                 target_file.write(content)
         else:
             pprint(vars(self))

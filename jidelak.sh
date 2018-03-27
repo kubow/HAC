@@ -1,10 +1,12 @@
 #!/bin/bash
-#!/usr/bin python
+#!/usr/bin/python3
 
 mainHTML=${PWD}'/index.html'
 mlt_dir=${PWD}'/Multimedia/'
 menu_dir=${mlt_dir}'RestMenu/'
 py_file=${PWD}'/System/SO74.py'
+
+which python
 
 if [ -d "${menu_dir}" ]; then
     echo 'directory exists'
@@ -45,8 +47,12 @@ echo '   document.getElementById("Left").setAttribute("src", srcs[Math.floor(Mat
 echo '   document.getElementById("Right").setAttribute("src", srcs[Math.floor(Math.random() * srcs.length)]);' >> "${mainHTML}"
 echo '   // document.getElementById("Left").src += document.getElementById('Left').src;' >> "${mainHTML}"
 echo '   // document.getElementById("Right").src += document.getElementById('Right').src;' >> "${mainHTML}"
-echo '   document.getElementById("west").innerHTML = document.getElementById("Left").contentDocument.title;' >> "${mainHTML}"
-echo '   document.getElementById("east").innerHTML = document.getElementById("Right").contentDocument.title;' >> "${mainHTML}"
+echo '   var left_frame = document.getElementById("Left").contentWindow.document;' >> "${mainHTML}"
+echo '   var right_frame = document.getElementById("Right").contentWindow.document;' >> "${mainHTML}"
+echo '   document.getElementById("west").innerHTML = left_frame.title;' >> "${mainHTML}"
+echo '   // document.getElementById("west").innerHTML = document.getElementById("Left").contentDocument.title;' >> "${mainHTML}"
+echo '   document.getElementById("east").innerHTML = right_frame.title;' >> "${mainHTML}"
+echo '   // document.getElementById("east").innerHTML = document.getElementById("Right").contentDocument.title;' >> "${mainHTML}"
 echo '   }, 10000);' >> "${mainHTML}"
 echo '</script>' >> "${mainHTML}"
 

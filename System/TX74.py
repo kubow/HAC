@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 """ Proccessing Text (c) Kube Kubow
 replace line endings, load/write text to a file
 compare text simrality
@@ -50,6 +51,57 @@ finally:
 from DB74 import DataBaseObject
 from Template import HTML, SQL
 from OS74 import FileSystemObject, CurrentPlatform
+
+
+class TextContent(object):
+    def __init__(self, block_text='', file_name=''):
+        if file_name:
+            self.file_name = file_name
+            with open(file_name, 'rb') as input_file:
+                self.block_text = input_file.read()
+        else:
+            self.block_text = block_text
+            self.file_name = ''
+
+    def replace_line_endings(self):
+        # replace double carriage return with tildos
+        block_text = re.sub(r'\n\n', r'~~~', self.block_text)
+        # then remove dash followed with carriage return
+        block_text = re.sub(r'-\n', r'', block_text)
+        # then replace all remaining carriage returns with space
+        block_text = re.sub(r'\n', r' ', block_text)
+        # and finally put back new line characters
+        block_text = re.sub(r'~~~', r'\n\n', block_text)
+        return block_text
+
+    def replace_crlf_lf(self):
+        # replace windows line endings with linux line endings
+        if '\r\n' in self.block_text:
+            return self.block_text.replace('\r\n', '\n')
+        else:
+            print('this text does not have any windows line endings, passing ...')
+            return self.block_text
+
+    def replace_lf_crlf(self):
+        # replace linux line endings with windows line endings
+        if re.search('\r?\n', self.block_text):
+            return re.sub('\r?\n', '\r\n', self.block_text)
+        else:
+            print('this text does not have any linux line endings, passing ...')
+            return self.block_text
+
+    def trim_line_last_n_chars(self, n=1):
+        n_chars = (-1*n)-1
+        block_text = []
+        for line in self.block_text:
+            block_text.append(line[:n_chars])
+        return block_text
+
+    def similar_to(self, compare_text):
+        if isinstance(compare_text, str):
+            return difflib.SequenceMatcher(a=self.block_text.lower(), b=compare_text.lower()).ratio()
+        else:
+            return difflib.SequenceMatcher(a=self.block_text.lower(), b=str(compare_text).lower()).ratio()
 
 
 class WebContent(HTMLParser):
@@ -186,12 +238,16 @@ class WebContent(HTMLParser):
     def write_web_content_to_file(self, file_path, heading):
         if self.div:
             print('creating ' + file_path + ' from: ' + self.url)
+            top = heading.encode('utf-8')
             try:
-                FileSystemObject(file_path).object_write(HTML.skelet_titled.format(heading, self.div), 'w+')
-            except:
-                FileSystemObject(file_path).object_write(HTML.skelet_titled.format(heading, 'cannot get text/bad char'), 'w+')
-            if self.log_file:
-                self.log_to_database(self.log_file.replace('.log', '.sqlite'), heading)
+                FileSystemObject(file_path).object_write(HTML.skelet_titled.format(top, self.div), 'w+')
+                if self.log_file:
+                    self.log_to_database(self.log_file.replace('.log', '.sqlite'), heading)
+            except Exception as ex:
+                print('failure: ' + str(ex.args))
+                print(type(top))
+                print(dir(top))
+                #pprint(vars(self))
         else:
             print('no content parsed from: ' + self.url)
 
@@ -342,57 +398,6 @@ class JsonContent(object):
                 final_content = 'read_whole_file' + final_content
                 print('implement appending .. not now yet')
         json_file.object_write(self.json_skeleton.format(final_content))
-
-
-class TextContent(object):
-    def __init__(self, block_text='', file_name=''):
-        if file_name:
-            self.file_name = file_name
-            with open(file_name, 'rb') as input_file:
-                self.block_text = input_file.read()
-        else:
-            self.block_text = block_text
-            self.file_name = ''
-
-    def replace_line_endings(self):
-        # replace double carriage return with tildos
-        block_text = re.sub(r'\n\n', r'~~~', self.block_text)
-        # then remove dash followed with carriage return
-        block_text = re.sub(r'-\n', r'', block_text)
-        # then replace all remaining carriage returns with space
-        block_text = re.sub(r'\n', r' ', block_text)
-        # and finally put back new line characters
-        block_text = re.sub(r'~~~', r'\n\n', block_text)
-        return block_text
-
-    def replace_crlf_lf(self):
-        # replace windows line endings with linux line endings
-        if '\r\n' in self.block_text:
-            return self.block_text.replace('\r\n', '\n')
-        else:
-            print('this text does not have any windows line endings, passing ...')
-            return self.block_text
-
-    def replace_lf_crlf(self):
-        # replace linux line endings with windows line endings
-        if re.search('\r?\n', self.block_text):
-            return re.sub('\r?\n', '\r\n', self.block_text)
-        else:
-            print('this text does not have any linux line endings, passing ...')
-            return self.block_text
-
-    def trim_line_last_n_chars(self, n=1):
-        n_chars = (-1*n)-1
-        block_text = []
-        for line in self.block_text:
-            block_text.append(line[:n_chars])
-        return block_text
-
-    def similar_to(self, compare_text):
-        if isinstance(compare_text, str):
-            return difflib.SequenceMatcher(a=self.block_text.lower(), b=compare_text.lower()).ratio()
-        else:
-            return difflib.SequenceMatcher(a=self.block_text.lower(), b=str(compare_text).lower()).ratio()
 
 
 class PdfContent(object):

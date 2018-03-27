@@ -6,7 +6,7 @@ import argparse
 from log import Log
 from DB74 import DataBaseObject
 from OS74 import FileSystemObject, CurrentPlatformControl as cpc
-import TX74
+from TX74 import xml_to_html
 from Template import HTML, SQL
 
 class h808e(object):
@@ -202,7 +202,7 @@ class h808e(object):
         html_content += self.area_links + HTML.pageTemplateMiddle
         html_content += '{0}' + HTML.pageTemplateEnd.format('footer')
         if text:
-            html_content = html_content.format(TX74.xml_to_html(''.join(text)))
+            html_content = html_content.format(xml_to_html(''.join(text)))
         else:
             html_content = html_content.format('')
 
@@ -234,19 +234,19 @@ def build_text_menu(he):
         -------------------------------------
         ==========PRESS 'Q' TO QUIT==========""")
         keep_alive = input("Please run:")  # python 3
-        file_name = FileSystemObject(args.c).last_part()
+        file_name = FileSystemObject(he.db_path).last_part()
         active_directory = args.c.replace(file_name, '')
-        if keep_alive == "1":
+        if keep_alive == '1':
             print("\n    Opening cherrytree ...\n")
             cherry = cpc('cherrytree')
             cherry.run_with_argument(arg_1=args.c)
             print("\n    Cherrytree closed ...\n")
-        elif keep_alive == "2":
+        elif keep_alive == '2':
             print("\n    Opening sqlite browser\n")
             sqlitedb = cpc('sqlitedb')
             sqlitedb.run_with_argument(arg_1=str(args.c).replace('.ctb', '_tab.db'))
             print("\n    Closing sqlite browser\n")
-        elif keep_alive == "3":
+        elif keep_alive == '3':
             # dropbox synchronizer
             print("\n    Synchronize directories\n")
             dropbox_dir = FileSystemObject(cpc().homepath).append_objects(dir='Dropbox')
@@ -284,27 +284,26 @@ def build_text_menu(he):
             else:
                 print(row_db.format('='))
             print('\n')
-
-        elif keep_alive == "4":
+        elif keep_alive == '4':
             print('generate structure')
             he.iterate_enc_structure()
-        elif keep_alive == "5":
+        elif keep_alive == '5':
             print("\n    Register directories\n")
             he.directory_watcher()
-        elif keep_alive == "6":
+        elif keep_alive == '6':
             print("\n    Kivy interface starting...\n")
             import UI74KW
             UI74KW.MainApp().run()
-        elif keep_alive == "7":
+        elif keep_alive == '7':
             db_file = he.db_path.replace('.ctb', '_tab.db')
             logger.log_operation('universal python for ' + db_file)
             cpc('python').external_call(FileSystemObject().append_objects(file='UI74AJ.py'))
-        elif keep_alive == "8":
+        elif keep_alive == '8':
             import UI74
             # running Tkinter GUI
             logger.log_operation('universal python in ' + args.d)
             UI74.h808e_browser(args.d)
-        elif keep_alive == "9":
+        elif keep_alive == '9':
             print("\n    Opening web browser\n")
             browser = cpc('web')
             browser.run_with_argument(arg_1=args.c)
@@ -313,7 +312,7 @@ def build_text_menu(he):
             print("\n Goodbye")
             keep_alive = False
         elif keep_alive != "":
-            print("\n Not Valid Choice Try again")
+            print("\n {0} (type {1}) Not Valid Choice Try again".format(keep_alive, type(keep_alive)))
 
 
 def build_structure_numbers():
