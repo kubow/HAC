@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 from appJar import gui
 from OS74 import FileSystemObject
 from DB74 import DataBaseObject

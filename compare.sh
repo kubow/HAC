@@ -4,7 +4,7 @@ mode_name="compare"
 execute_py()
 {
     echo 'python '${py_file}' -m '${mode_name}' -i '${in_object}' -o '${out_object}' -e '${extra_name}' -l '${log_file}
-    python ${py_file} -m ${mode_name} -i ${in_object} -o ${out_object} -e ${extra_name} -l ${log_file}
+    ${py_file} -m ${mode_name} -i ${in_object} -o ${out_object} -e ${extra_name} -l ${log_file}
 }
 if [ "$1" = "b" ]; then
     in_object=$2

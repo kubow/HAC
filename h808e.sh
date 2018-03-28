@@ -7,5 +7,6 @@ if [ ! -d "${media_path}" ]; then
 fi
 db_path=$( realpath ${script_path}/../H808E.ctb )
 echo "running from "${parent_path}" - watch directory: "${media_path}" - enc database: "${db_path}
+
 # calling batch menu (platform independent)
-python ${script_path}/System/H808E.py -d ${media_path} -c ${db_path} -l ${script_path}/Multimedia/logfile.log
+${script_path}/System/H808E.py -d ${media_path} -c ${db_path} -l ${script_path}/Multimedia/logfile.log

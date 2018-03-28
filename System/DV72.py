@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 """Developped by Kube Kubow 2017
 File contains class for controlling Device through sqlite settings

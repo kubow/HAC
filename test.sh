@@ -1,1 +1,1 @@
-python ./System/test.py
+./System/test.py

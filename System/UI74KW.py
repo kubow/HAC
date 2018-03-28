@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import os.path
 from kivy.resources import resource_add_path
 

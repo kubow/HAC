@@ -1,7 +1,7 @@
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 import os
 import argparse
-# sys.setdefaultencoding('utf-8')
 
 from log import Log
 from DB74 import DataBaseObject
@@ -297,7 +297,7 @@ def build_text_menu(he):
         elif keep_alive == '7':
             db_file = he.db_path.replace('.ctb', '_tab.db')
             logger.log_operation('universal python for ' + db_file)
-            cpc('python').external_call(FileSystemObject().append_objects(file='UI74AJ.py'))
+            cpc(FileSystemObject().append_objects(file='UI74AJ.py')).external_call()
         elif keep_alive == '8':
             import UI74
             # running Tkinter GUI

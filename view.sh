@@ -3,7 +3,7 @@ log_file=${PWD}/Multimedia/logfile.log
 execute_py()
 {
     echo 'python '${py_file}' -m '${mode_name}' -i '${in_object}' -e '${extra_name}' -l '${log_file}
-    python ${py_file} -m ${mode_name} -i ${in_object} -e ${extra_name} -l ${log_file}
+    ${py_file} -m ${mode_name} -i ${in_object} -e ${extra_name} -l ${log_file}
 }
 if [ "$1" = "h" ]; then # HANA
     py_file=hdbalm.py

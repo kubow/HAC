@@ -22,7 +22,7 @@ then
     echo python read forecast 
     echo ====================
     echo syntax: ${py_forecast_file} -m weather -i location -o destination_to_write_results
-    python ${py_forecast_file} -m weather -i ${location} -o ${PWD} -l ${log_file}
+    ${py_forecast_file} -m weather -i ${location} -o ${PWD} -l ${log_file}
     echo ==========================
     echo python write proccessed data
     echo ==========================
@@ -30,7 +30,7 @@ then
     echo 'syntax: '${py_data_file}' -l location -m mode(rea/agg)'
 
     echo Running on ${platform} - writing ${YY}${MM}"("${DD}").db"
-    python ${py_data_file} -l ${log_dir} -m aggregate
+    ${py_data_file} -l ${log_dir} -m aggregate
 elif [ "$1" = "s" ]
 then
     echo ==========================
@@ -41,7 +41,7 @@ then
 
     echo Running on ${platform} - writing ${YY}${MM}"("${DD}").db"
     #python ${py_data_file} -d ${weather_mo} -p ${platform}
-    python ${py_data_file} -l ${log_dir} -m aggregate
+    ${py_data_file} -l ${log_dir} -m aggregate
 else
     echo "1st argument - cycle type"
     echo "    b - Big tick / weather + forecast + aggreagte data" 

@@ -1,12 +1,9 @@
 #!/bin/bash
-#!/usr/bin/python3
 
 mainHTML=${PWD}'/index.html'
 mlt_dir=${PWD}'/Multimedia/'
 menu_dir=${mlt_dir}'RestMenu/'
 py_file=${PWD}'/System/SO74.py'
-
-which python
 
 if [ -d "${menu_dir}" ]; then
     echo 'directory exists'
@@ -16,7 +13,8 @@ else
     mkdir -p "${menu_dir}"
 fi
 
-python ${py_file} -m restaurant -i ${PWD} -l ${mlt_dir}logfile.log
+# python ${py_file} -m restaurant -i ${PWD} -l ${mlt_dir}logfile.log
+${py_file} -m restaurant -i ${PWD} -l ${mlt_dir}logfile.log
 
 cat ${PWD}'/Structure/HTML_Base_head.txt' > "${mainHTML}"
 
