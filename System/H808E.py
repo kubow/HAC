@@ -147,7 +147,7 @@ class h808e(object):
         db = DataBaseObject(self.db_path)
         fathers = db.return_many(SQL.select_father_nodes)
         main_fathers = [father[0] for father in fathers]
-        root_nodes = db.return_many(SQL.select_root_nodes)
+        root_nodes = db.return_many(SQL.selectRootNodes)
         for root_node in root_nodes:
             print(root_node[2] + ' root node / id ' + str(
                 root_node[4]) + ' / sqn ' + str(root_node[5]) + ' level 1')
@@ -320,6 +320,7 @@ def build_structure_numbers():
     will be a module after.."""
     return [x for x in range(400, 800) if str(x)[1:2] <= str(x)[:1] and str(x)[2:] <= str(x)[:1]]
     
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description="construct h808e")

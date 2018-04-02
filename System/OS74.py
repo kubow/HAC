@@ -346,8 +346,11 @@ class CurrentPlatformControl(CurrentPlatform):
                     devices.append(dinfo)
             return devices
 
-    def external_call(self, script_file):
-        call(self.app_run_path + " " + script_file, shell=True)
+    def external_call(self, script_file=''):
+        if script_file:
+            call(self.app_run_path + " " + script_file, shell=True)
+        else:
+            call(self.app_run_path, shell=True)
 
 
 def compare_directories(dir1, dir2):
