@@ -1,5 +1,9 @@
 @ECHO OFF
 
-SET app_cmd=C:\_Run\App\Database\openrefine-2.8\refine.bat
+SET JAVA_HOME=C:\SAP\Shared\SAPJRE-8_1_022_64BIT
+SET now_dir=%~dp0
+SET app_dir=C:\_Run\App\Database\openrefine-2.8
 
-call %app_cmd%
+cd %app_dir%
+call refine.bat
+cd now_dir
