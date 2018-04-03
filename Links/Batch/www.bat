@@ -28,4 +28,4 @@ REM rd /s /q "%DataDir%"
 REM for /d %%x in (C:\Users\%USERNAME%\AppData\Roaming\Mozilla\Firefox\Profiles\*) do del /q /s /f %%x\*sqlite
 
 :end
-exi
+exit
