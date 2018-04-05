@@ -1,3 +1,4 @@
+#!/bin/bash
 if [ "$1" = "b" ]; then
 	/usr/bin/qbrowser %F
 elif [ "$1" = "d" ]; then

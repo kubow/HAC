@@ -1,3 +1,4 @@
+#!/bin/bash
 log_file=${PWD}/Multimedia/logfile.log
 py_file=${PWD}/System/SO74.py
 mode_name="compare"
