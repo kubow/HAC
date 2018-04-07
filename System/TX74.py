@@ -1,28 +1,42 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
 """ Proccessing Text (c) Kube Kubow
 replace line endings, load/write text to a file
 compare text simrality
 """
-import sys
-# sys.setdefaultencoding('utf-8')
-import re
+
 import argparse
-import difflib
 import datetime
+import difflib
 import json
-from pprint import pprint
+import re
+import sys
 import xml.etree.ElementTree
-import requests
-from glob import glob  #pdf reading purposes
-from time import clock #benchmark purposes
+from glob import glob  # pdf reading purposes
+from pprint import pprint
+from time import clock  # benchmark purposes
+
+from DB74 import DataBaseObject
+from OS74 import CurrentPlatform, FileSystemObject
+from Template import HTML, SQL
+
+# sys.setdefaultencoding('utf-8')
 # from xml.dom.minidom import parseString
 
 try:
+    import requests
+    request_logic = True
+except:
+    import urllib
+    request_logic = False
+
+try:
     import feedparser
+    feed_logic = True
 except ImportError:
     print("feedparser not imported, cannot process rss")
-
+    feed_logic = False
 
 try:
     import lxml.html
@@ -46,11 +60,6 @@ except ImportError:
     print('using alternative csv parser')
 finally:
     import csv
-
-
-from DB74 import DataBaseObject
-from Template import HTML, SQL
-from OS74 import FileSystemObject, CurrentPlatform
 
 
 class TextContent(object):
@@ -153,12 +162,11 @@ class WebContent(HTMLParser):
 
     def parse_html_text(self):
         if self.easier:
-            soup = BeautifulSoup(self.html_text, 'lxml')
-            return soup
+            parsed = BeautifulSoup(self.html_text, 'lxml')
         else:
             # TODO: same logic as with beautiful soup
-            oups = HTMLParser().feed(self.html_text)
-            return oups
+            parsed = HTMLParser().feed(self.html_text.decode('utf-8'))
+        return parsed
 
     def parse_rss_feed(self, the_feed):
         inner_text = ''
@@ -189,18 +197,21 @@ class WebContent(HTMLParser):
             self.div = ''
             self.div_text = ''
             if 'rss' in self.mode:
-                self.html_text = feedparser.parse(self.url)
-                self.div_text = self.parse_rss_feed(self.html_text)
-                done = True
+                if feed_logic:
+                    self.html_text = feedparser.parse(self.url)
+                    self.div_text = self.parse_rss_feed(self.html_text)
+                    done = True
+                else:
+                    self.html_text = self.get_url(self.url)
             else:
                 if self.url.startswith('file:'):
                     self.html_text = FileSystemObject(self.url.split('///')[-1]).object_read()
                 elif self.url.startswith('ftp:'):
                     self.html_text = 'FTP read not implemented yet'
                 elif self.url.startswith('http:') or self.url.startswith('https:'):
-                    self.html_text = requests.get(self.url, timeout=(10, 5), headers=self.headers).content
+                    self.html_text = self.get_url(self.url)
                 else:
-                    self.html_text = requests.get('http://' + self.url, timeout=(10, 5), headers=self.headers).content
+                    self.html_text = self.get_url('http://' + self.url)
             if self.is_html():
                 parsed_content = self.parse_html_text()
                 done = True
@@ -223,7 +234,7 @@ class WebContent(HTMLParser):
                 if not self.div_text:
                     self.div_text = self.html_text
         except:
-            print('---some else error occurred (' + self.url + '): ' + str(sys.exc_info()[0]))
+            print('---some else error occurred (' + self.url + '): ' + str(sys.exc_info()))
             if done:
                 if parsed_content:
                     self.div = str(parsed_content)
@@ -233,7 +244,14 @@ class WebContent(HTMLParser):
             else:
                 self.div = ''
                 self.div_text = ''
-            pprint(vars(self))
+            #pprint(vars(self))
+
+    def get_url(self, url_valid):
+        if request_logic:
+            return requests.get(url_valid, timeout=(10, 5), headers=self.headers).content
+        else:
+            return urllib.request.urlopen(url_valid)
+
 
     def write_web_content_to_file(self, file_path, heading):
         if self.div:
@@ -475,4 +493,3 @@ def test_utf_special_characters(logger=''):
     print(veta)
     if logger:
         logger.file_write('aaa.log', 'temp', veta)
-

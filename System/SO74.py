@@ -76,6 +76,8 @@ def mode_launcher(mode=None, source=None, additional_par=None, destination=None)
                 logger.log_operation('universal file browser still not implemented')
             elif any(str(additional_par) in s for s in ['data', 'database']):
                 temp_connect_database(source) # will be a GUI browser in future
+            elif any(str(additional_par) in s for s in ['web', 'html']):
+                browse_internet(mode='', match_dir='', url=source)
             else:
                 logger.log_operation('not known ' + mode + ' mode: ' + additional_par)
         elif any(str(mode) in s for s in ['6', 'convert', 'converter']):

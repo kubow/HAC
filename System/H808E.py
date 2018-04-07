@@ -9,6 +9,7 @@ from OS74 import FileSystemObject, CurrentPlatformControl as cpc
 from TX74 import xml_to_html
 from Template import HTML, SQL
 
+
 class h808e(object):
     def __init__(self, debug=False):
         self.enc = self.create_structure()
@@ -18,7 +19,7 @@ class h808e(object):
         self.db_path = ''
         self.db_tables = self.get_table()
         self.db_query = 'SELECT * FROM enc_nodes;'
-        self.toolkit = 'toolkit'
+        self.toolkit = 'toolkit'  # special upper menu toolkit
         self.area_links = 'will be a list with referrals...'
         # self.db_data = None
         self.debug = debug
@@ -71,7 +72,7 @@ class h808e(object):
         return folders
 
     def get_sub_directories(self, main_node):
-        sub_folders = []
+        # sub_folders = []
         for main_folder in self.dir_folders:
             if main_folder == main_node:
                 print('get all directories for {0}'.format(main_node))
@@ -107,11 +108,11 @@ class h808e(object):
         
         self.db_data = database.return_many('select * from h808e;')
     
-    def contain_same_data(self):
-        flag = False
-        db = DataBaseObject()
+    def contain_same_data(self, another_db):
+        # flag = False
+        db = DataBaseObject(another_db)
         for record in self.db_data:
-            print(record[0])
+            print(str(record[0]) + '/' + str(db.obj_list))
             
     def directory_watcher(self):
         flag = True
