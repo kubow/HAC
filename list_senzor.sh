@@ -1,4 +1,5 @@
 #!/bin/bash
+# file reading USB/SERIAL inputs from devices bash way
 
 for sysdevpath in $(find /sys/bus/usb/devices/usb*/ -name dev); do
     (

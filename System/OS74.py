@@ -97,11 +97,12 @@ class FileSystemObject:
         # build_path = self.separator.join('{0}'.format(val) for key, val in kwargs.items())
         build_path = ''
         for fso_type, fso_name in kwargs.items():
+            # print(kwargs[fso_type])
             if 'file' in fso_type:
-                build_path = fso_name
-                break
-            build_path += fso_name + self.separator  
-        return self.path + self.separator + build_path
+                file_name = kwargs[fso_type]
+            else:
+                build_path += fso_name + self.separator  
+        return self.path + self.separator + build_path + self.separator + file_name
 
     def get_another_directory_file(self, another):
         if self.is_file:
@@ -318,7 +319,10 @@ class CurrentPlatformControl(CurrentPlatform):
 
     def check_output(self, arg='', timeout=2):
         try:
-            command_input = self.app_run_path + ' ' + arg
+            if arg:
+                command_input = self.app_run_path + ' ' + arg
+            else:
+                command_input = self.app_run_path
             return check_output(command_input, stderr=STDOUT, timeout=timeout, shell=True)
         except:
             return None

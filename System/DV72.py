@@ -12,8 +12,14 @@ and a logger module - currently not implemented
 import time
 import datetime
 from pprint import pprint
-import serial
 import argparse
+
+try:
+    import serial
+    serial_read = True
+except ImportError:
+    print('cannot read serial input, missing python library..')
+    serial_read = False
 
 from OS74 import FileSystemObject, CurrentPlatform, CurrentPlatformControl
 from DB74 import DataBaseObject
@@ -36,10 +42,12 @@ class ControlDevice(object):
         self.output_path = this_file.dir_up(1)
         self.csv_file = ''
         self.last_run = ''
-        pprint(vars(current_platform))
+        # pprint(vars(current_platform))
         self.device_name = current_platform.hostname
         self.device_user = current_platform.environment
         self.device_platform = current_platform.main
+        b = FileSystemObject(self.output_path).get_another_directory_file('list_senzor.sh')
+        self.usb_list2 = current_platform.check_output(b)
         self.usb_list = current_platform.list_attached_peripherals()
 
     def setup_device(self, device, sensor=None, timeout=0):
@@ -90,6 +98,8 @@ class ControlDevice(object):
         
     def read_serial(self):
         """reading serial line and mirror it to CSV file"""
+        if not serial_read:
+            return None
         ac_time = datetime.datetime.now()
         data_vals = {}  # dictionary holding all/interval values
         just_now = ac_time.strftime(self.date_format)
@@ -124,6 +134,7 @@ class ControlDevice(object):
         except Exception as ex:
             print(ex.args[0].replace('\n', ' '))
             print('timeframe now : '+ str(now) + ' / ' + 'last_run' + str(self.last_run))
+            pprint(vars(self))
             # if error found, do timeout
             # raw_input("Press enter to continue")
             return 'however error ocured .. '
@@ -176,7 +187,7 @@ class ControlDevice(object):
                 if hour_new > 23:
                     hour_new = 0
                     nd = datetime.date(time_value.year, time_value.month, time_value.day)
-                    ndn = nd + timedelta(days=1)
+                    ndn = nd + datetime.timedelta(days=1)
                     time_value.year = ndn.year
                     time_value.month = ndn.month
                     time_value.day = ndn.day

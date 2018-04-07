@@ -98,8 +98,7 @@ def mode_launcher(mode=None, source=None, additional_par=None, destination=None)
                     file_content = TextContent(FileSystemObject(file_name).object_read())
                     if not additional_par:
                         new_content = file_content.replace_crlf_lf()
-                    # must do a broader logic
-                        
+                    # TODO: must be a broader logic             
         elif any(str(mode) in s for s in ['7', 'comparison', 'compare']):
             if not destination:
                 print('cannot compare, missing destination')
@@ -121,7 +120,7 @@ def mode_launcher(mode=None, source=None, additional_par=None, destination=None)
             mode = False
         elif mode != "":
             print("\n " + mode + "Not Valid Choice Try again")
-        mode = None
+        mode = None # quit after first run, do not let repeat for now
 
 
 if __name__ == '__main__':
@@ -132,7 +131,7 @@ if __name__ == '__main__':
     from log import Log
 
     global modes
-    modes = ("""       ===-Software_Launcher-currently_implement_modes-===
+    modes = ("""       ===-Software_Launcher-working_modes-===
             -------------------------------------
             1.  Download weather
             2.  Download restaurants menu

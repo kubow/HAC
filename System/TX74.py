@@ -252,7 +252,6 @@ class WebContent(HTMLParser):
         else:
             return urllib.request.urlopen(url_valid)
 
-
     def write_web_content_to_file(self, file_path, heading):
         if self.div:
             print('creating ' + file_path + ' from: ' + self.url)

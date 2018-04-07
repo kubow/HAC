@@ -1,24 +1,30 @@
 import argparse
 import datetime
 import logging
+from pprint import pprint
 
 from OS74 import FileSystemObject
 
 
 class Log(object):
-    def __init__(self, log_file, module, caller_file='log.py', advanced=True):
+    def __init__(self, log_file='', module='not_defined', caller_file='log.py', advanced=True):
         self.date_format = '%d.%m.%Y %H:%M:%S'
+        if not log_file:
+            log_file = FileSystemObject(FileSystemObject().dir_up(1)).append_objects(dir='Multimedia', file='logfile.log')
         if not FileSystemObject(log_file).exist:
             print(log_file + ' does not exist! - create new one in actual path')
         self.log_file = log_file
-        self.module = module
+        self.module = str(module)
         self.line_text = ''
         self.caller_file = caller_file
-        if advanced:
-            self.advanced = advanced
-            self.logger = self.init_logger()
-        else:
-            self.advanced = False
+        try:
+            if advanced:
+                self.advanced = advanced
+                self.logger = self.init_logger()
+            else:
+                self.advanced = False
+        except:
+            pprint(vars(self))
 
     def log_operation(self, text, level=20):
         now = datetime.datetime.now().strftime(self.date_format)
