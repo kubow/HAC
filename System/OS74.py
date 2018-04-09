@@ -101,8 +101,11 @@ class FileSystemObject:
             if 'file' in fso_type:
                 file_name = kwargs[fso_type]
             else:
-                build_path += fso_name + self.separator  
-        return self.path + self.separator + build_path + self.separator + file_name
+                build_path += fso_name + self.separator
+        if file_name:
+            return self.path + self.separator + build_path + self.separator + file_name
+        else:
+            return self.path + self.separator + build_path
 
     def get_another_directory_file(self, another):
         if self.is_file:
@@ -145,8 +148,7 @@ class FileSystemObject:
             content = content_file.read()
         template = content.replace('XXX', self.path)
 
-        head = '<table><tr class="Head"><td>List Generated on {0} / Total Folder Size - {1} / {2} Subfolders </td></tr>'
-        table_head = '<table><tr class="Head">{0}<td>{1}</table>'
+        table_head = '<table><tr class="Head"><td>List Generated on {0} / Total Folder Size - {1} / {2} Subfolders </td></tr>'
         table_row = '<tr class="{0}"><td>{1}</td><td>{2}</td></tr>'
 
         htm_content = ''
@@ -170,7 +172,7 @@ class FileSystemObject:
             total_size = total_size + folder_size
             folder_count += 1
 
-        content = head.format(DateTimeObject().date_string, str(total_size) + ' kb', folder_count) + '\n' + htm_content
+        content = table_head.format(DateTimeObject().date_string, str(total_size) + ' kb', folder_count) + '\n' + htm_content
         whole_content = template.replace('YYY', content)
         # print(content)
         # print(template)

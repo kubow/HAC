@@ -32,27 +32,27 @@ except:
     request_logic = False
 
 try:
-    import feedparser
-    feed_logic = True
+    from html.parser import HTMLParser  # python 3x
 except ImportError:
-    print("feedparser not imported, cannot process rss")
-    feed_logic = False
+    from HTMLParser import HTMLParser  # python 2x
 
 try:
     import lxml.html
 except ImportError:
     print("lxml not imported, cannot determine html text")
+
+try:
+    import feedparser
+    xml_easier = True
+except ImportError:
+    print("feedparser not imported, cannot process rss")
+    xml_easier = False
     
 try:
     html_easier = True
     from bs4 import BeautifulSoup
 except ImportError:
     html_easier = False
-
-try:
-    from html.parser import HTMLParser  # python 3x
-except ImportError:
-    from HTMLParser import HTMLParser  # python 2x
 
 try:
     import pandas
@@ -197,7 +197,7 @@ class WebContent(HTMLParser):
             self.div = ''
             self.div_text = ''
             if 'rss' in self.mode:
-                if feed_logic:
+                if xml_easier:
                     self.html_text = feedparser.parse(self.url)
                     self.div_text = self.parse_rss_feed(self.html_text)
                     done = True
@@ -461,6 +461,25 @@ def file_content_difference(file1, file2):
         if line not in removed:
             print(line)
 
+def whats_on(obj_type='', obj_content='', tag_type='', tag_name=''):
+    """function for parsing and extracting texts from objects
+    HTML content - using bs4 or HTMLParser
+    XML content - using feedparser or lxml
+    TEXT content - using match pattern or regexp
+    """
+    if 'html' in obj_type:
+        if html_easier:
+            parsed = BeautifulSoup(obj_content, 'lxml')
+        else:
+            # TODO: same logic as with beautiful soup
+            parsed = HTMLParser().feed(obj_content.decode('utf-8'))
+    elif 'xml' on obj_type:
+        if xml_easier:
+            
+
+    return extract
+
+#def load_content()
 
 def xml_to_html(xml_text):
     html_text = ''

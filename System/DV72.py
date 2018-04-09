@@ -39,7 +39,7 @@ class ControlDevice(object):
         self.table_name = '_'
         self.table_fields = ''
         self.table_default_val = ''
-        self.output_path = this_file.dir_up(1)
+        self.output_path = this_file.dir_up(2)
         self.csv_file = ''
         self.last_run = ''
         # pprint(vars(current_platform))
@@ -47,6 +47,7 @@ class ControlDevice(object):
         self.device_user = current_platform.environment
         self.device_platform = current_platform.main
         b = FileSystemObject(self.output_path).get_another_directory_file('list_senzor.sh')
+        print(b)
         self.usb_list2 = current_platform.check_output(b)
         self.usb_list = current_platform.list_attached_peripherals()
 
@@ -71,7 +72,7 @@ class ControlDevice(object):
                     self.port = db.return_one(SQL.get_driver_loc.format(device_check[0]))[0]
                     self.br = db.return_one(SQL.get_driver_br.format(device_check[0]))[0]
                     str_device_id = 'identified device %s' % self.device_name
-                    str_device_adress = 'reading from %s' % self.port
+                    str_device_adress = 'should read from %s' % self.port
                     logger.log_operation(str_device_id+' / '+str_device_adress)
                     break
             if not self.port:
@@ -129,6 +130,7 @@ class ControlDevice(object):
         except serial.SerialException as se:
             logger.log_operation(se.args[-1])
             logger.log_operation(','.join(d['tag'] for d in dev.usb_list))
+            pprint(vars(self))
             # print('serial communication not accesible!')
             return None
         except Exception as ex:
@@ -139,7 +141,7 @@ class ControlDevice(object):
             # raw_input("Press enter to continue")
             return 'however error ocured .. '
 
-    def write_to_database(self, timestamp, value, velocity):
+    def write_to_database(self, timestamp='now', value=0, velocity='m/s'):
         # check if Archive directory present
         csv_cnt = 0
         ac_time = self.time_aggregated(datetime.datetime.now()).strftime(self.date_format)
@@ -235,7 +237,7 @@ if __name__ == '__main__':
     elif 'agg' in args.m:
         text = 'aggregating values in {0}, last run: {1}'.format(args.l, dev.last_run)
         logger.log_operation(text)
-        dev.write_to_database('now', 0, 'm/s')
+        dev.write_to_database()
         JsonContent(args.l + 'Measured', write=True)
     else:
         logger.log_operation(','.join(d['tag'] for d in dev.usb_list))
