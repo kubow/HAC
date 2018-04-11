@@ -9,7 +9,7 @@ compare text simrality
 import argparse
 import datetime
 import difflib
-import json
+import json # alternative simplejson not used
 import re
 import sys
 import xml.etree.ElementTree
@@ -27,8 +27,8 @@ from Template import HTML, SQL
 try:
     import requests
     request_logic = True
-except:
-    import urllib
+except ImportError:
+    import urllib.request
     request_logic = False
 
 try:
@@ -43,10 +43,10 @@ except ImportError:
 
 try:
     import feedparser
-    xml_easier = True
+    web_easier = True
 except ImportError:
     print("feedparser not imported, cannot process rss")
-    xml_easier = False
+    web_easier = False
     
 try:
     html_easier = True
@@ -62,15 +62,29 @@ finally:
     import csv
 
 
+uah = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.90 Safari/537.36'
+headers = {"User-Agent": uah}
+
+
 class TextContent(object):
     def __init__(self, block_text='', file_name=''):
-        if file_name:
-            self.file_name = file_name
-            with open(file_name, 'rb') as input_file:
-                self.block_text = input_file.read()
-        else:
-            self.block_text = block_text
-            self.file_name = ''
+        try:
+            if file_name:
+                self.source = file_name
+                with open(file_name, 'rb') as input_file:
+                    self.block_text = input_file.read()
+            else:
+                self.block_text = block_text
+                self.source = 'direct_input'
+            self.valid = len(block_text) > 0 
+        except (OSError, IOError) as e:
+            print(str(e.args))
+        except:
+            print('not valid string ... ' + str(self.block_text))
+            self.valid = False
+
+    def recompile_regexp(self):
+        self.block_text = re.compile(r"(?ui)\W", self.block_text)
 
     def replace_line_endings(self):
         # replace double carriage return with tildos
@@ -192,15 +206,15 @@ class WebContent(HTMLParser):
             tag_type = 'id'
         elif 'class' in str(tag_type).lower():
             tag_type = 'class'
-        done = False
+        parsed_succesfuly = False
         try:
             self.div = ''
             self.div_text = ''
             if 'rss' in self.mode:
-                if xml_easier:
+                if web_easier:
                     self.html_text = feedparser.parse(self.url)
                     self.div_text = self.parse_rss_feed(self.html_text)
-                    done = True
+                    parsed_succesfuly = True
                 else:
                     self.html_text = self.get_url(self.url)
             else:
@@ -214,7 +228,7 @@ class WebContent(HTMLParser):
                     self.html_text = self.get_url('http://' + self.url)
             if self.is_html():
                 parsed_content = self.parse_html_text()
-                done = True
+                parsed_succesfuly = True
                 if self.easier:
                     if not tag_name:
                         self.div = parsed_content.find('body')
@@ -235,11 +249,11 @@ class WebContent(HTMLParser):
                     self.div_text = self.html_text
         except:
             print('---some else error occurred (' + self.url + '): ' + str(sys.exc_info()))
-            if done:
+            if parsed_succesfuly:
                 if parsed_content:
                     self.div = str(parsed_content)
                     print('---cannot parse content of {0} ({1})'.format(self.url, parsed_content[:10]))
-                elif self.html_text:
+                else:
                     self.div = str(self.html_text)
             else:
                 self.div = ''
@@ -450,6 +464,38 @@ class PdfContent(object):
         return vMsg
 
 
+class MyHTMLParser(HTMLParser):
+    def __init__(self, tag_type, tag_name):
+        HTMLParser.__init__(self)
+        self.recording = 0
+        self.data = []
+        print(tag_type + ' / ' + tag_name)
+        self.start_tag_type = tag_type
+        self.start_tag_name = tag_name
+
+    def handle_starttag(self, tag, attributes):
+        if tag != 'div':
+            return
+        if self.recording:
+            self.recording += 1
+            return
+        for name, value in attributes:
+            if str(name) == self.start_tag_type and str(value) == self.start_tag_name:
+                print('found ' + name + ' tag: ' + value)
+                break
+        else:
+            return
+        self.recording = 1
+
+    def handle_endtag(self, tag):
+        if tag == 'div' and self.recording:
+            self.recording -= 1
+
+    def handle_data(self, data):
+        if self.recording:
+            self.data.append(data)
+
+
 def file_content_difference(file1, file2):
     diff = difflib.unified_diff(a=file1, b=file2, lineterm='', n=0)
     lines = list(diff)[2:]
@@ -463,23 +509,69 @@ def file_content_difference(file1, file2):
 
 def whats_on(obj_type='', obj_content='', tag_type='', tag_name=''):
     """function for parsing and extracting texts from objects
+    URL link to a site - using feed parser
     HTML content - using bs4 or HTMLParser
     XML content - using feedparser or lxml
+    JSON content - 
     TEXT content - using match pattern or regexp
     """
-    if 'html' in obj_type:
+    if any(s in str(obj_type) for s in ['url', 'link', 'web']):
+        if web_easier:
+            parsed = feedparser.parse(obj_content)
+        else:
+            obj_content = load_content(obj_content)
+    if any(s in str(obj_type) for s in ['htm', 'url', 'link', 'web']):
         if html_easier:
             parsed = BeautifulSoup(obj_content, 'lxml')
         else:
-            # TODO: same logic as with beautiful soup
-            parsed = HTMLParser().feed(obj_content.decode('utf-8'))
-    elif 'xml' on obj_type:
-        if xml_easier:
-            
+            parsed = obj_content
+    elif any(s in str(obj_type) for s in ['xml', 'rss']):
+        parsed = xml.etree.ElementTree.fromstring(obj_content)
+    elif any(s in str(obj_type) for s in ['json', 'js']):
+        parsed = json.loads(obj_content)
+    else:
+        parsed = obj_content
+    # second step is voluntary - extract only filtered tags
+    # pprint(parsed)
+    # uncomment above for debug purposes
+    if tag_type or tag_name:
+        if any(s in str(obj_type) for s in ['htm', 'url', 'link', 'web']):
+            if web_easier:
+                return parsed[tag_name]
+            elif html_easier:
+                return parsed.find('div', {tag_type: tag_name})
+            else:
+                print('should get here...')
+                return MyHTMLParser(tag_type, tag_name).feed(parsed.decode('utf-8'))
+        elif any(s in str(obj_type) for s in ['xml', 'rss']):
+            return parsed[tag_name]
+        else:
+            return TextContent(parsed).similar_to(tag_name)
+    else:
+        return parsed
 
-    return extract
+def load_content(content_address, is_local=False):
+    content_address = str(content_address)
+    if is_local:
+        return FileSystemObject(content_address).object_read()
+    elif content_address.startswith('file:'):
+        return FileSystemObject(content_address.split('///')[-1]).object_read()
+    elif content_address.startswith('ftp:'):
+        return 'FTP read not implemented yet'
+    else:
+        if not content_address.startswith(('http://', 'https://')):
+            # append http in case of missing
+            content_address = 'http://' + content_address
+        try:
+            if request_logic:
+                print('- - - > using requests to download')
+                return requests.get(content_address, timeout=(10, 5), headers=headers).content
+            else:
+                print('- - - > using urllib to download')
+                return urllib.request.urlopen(content_address).read()
+        except Exception as ex:
+            print('failure: ' + str(ex.args))
 
-#def load_content()
 
 def xml_to_html(xml_text):
     html_text = ''
