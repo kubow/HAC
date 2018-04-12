@@ -507,6 +507,7 @@ def file_content_difference(file1, file2):
         if line not in removed:
             print(line)
 
+
 def whats_on(obj_type='', obj_content='', tag_type='', tag_name=''):
     """function for parsing and extracting texts from objects
     URL link to a site - using feed parser
@@ -515,11 +516,13 @@ def whats_on(obj_type='', obj_content='', tag_type='', tag_name=''):
     JSON content - 
     TEXT content - using match pattern or regexp
     """
-    if any(s in str(obj_type) for s in ['url', 'link', 'web']):
+    # if any(s in str(obj_type) for s in ['url', 'link', 'web', 'rss', 'xml']):
+    if '://' in obj_content:
         if web_easier:
             parsed = feedparser.parse(obj_content)
         else:
             obj_content = load_content(obj_content)
+    # distinct logic based on input object type
     if any(s in str(obj_type) for s in ['htm', 'url', 'link', 'web']):
         if html_easier:
             parsed = BeautifulSoup(obj_content, 'lxml')
@@ -549,6 +552,7 @@ def whats_on(obj_type='', obj_content='', tag_type='', tag_name=''):
             return TextContent(parsed).similar_to(tag_name)
     else:
         return parsed
+
 
 def load_content(content_address, is_local=False):
     content_address = str(content_address)
