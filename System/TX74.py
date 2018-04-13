@@ -141,46 +141,7 @@ class WebContent(HTMLParser):
         self.url = url
         self.div = None
         self.div_text = ''
-        self.html_text = ''
         self.log_file = log_file
-
-    def is_html(self):
-        try:
-            if lxml.html.fromstring(self.html_text).find('.//*') is not None:
-                return True
-            else:
-                return False
-        except:
-            return False
-
-    def handle_starttag(self, tag, attributes):  # , tag_type, tag_name):
-        if tag != 'div':
-            return
-        if self.recording:
-            self.recording += 1
-            return
-        for name, value in attributes:
-            if name == self.start_tag_type and value == self.start_tag_name:
-                break
-        else:
-            return
-        self.recording = 1
-
-    def handle_endtag(self, tag):
-        if tag == 'div' and self.recording:
-            self.recording -= 1
-
-    def handle_data(self, data):
-        if self.recording:
-            self.data.append(data)
-
-    def parse_html_text(self):
-        if self.easier:
-            parsed = BeautifulSoup(self.html_text, 'lxml')
-        else:
-            # TODO: same logic as with beautiful soup
-            parsed = HTMLParser().feed(self.html_text.decode('utf-8'))
-        return parsed
 
     def parse_rss_feed(self, the_feed):
         inner_text = ''
@@ -206,65 +167,17 @@ class WebContent(HTMLParser):
             tag_type = 'id'
         elif 'class' in str(tag_type).lower():
             tag_type = 'class'
-        parsed_succesfuly = False
-        try:
-            self.div = ''
-            self.div_text = ''
-            if 'rss' in self.mode:
-                if web_easier:
-                    self.html_text = feedparser.parse(self.url)
-                    self.div_text = self.parse_rss_feed(self.html_text)
-                    parsed_succesfuly = True
-                else:
-                    self.html_text = self.get_url(self.url)
-            else:
-                if self.url.startswith('file:'):
-                    self.html_text = FileSystemObject(self.url.split('///')[-1]).object_read()
-                elif self.url.startswith('ftp:'):
-                    self.html_text = 'FTP read not implemented yet'
-                elif self.url.startswith('http:') or self.url.startswith('https:'):
-                    self.html_text = self.get_url(self.url)
-                else:
-                    self.html_text = self.get_url('http://' + self.url)
-            if self.is_html():
-                parsed_content = self.parse_html_text()
-                parsed_succesfuly = True
-                if self.easier:
-                    if not tag_name:
-                        self.div = parsed_content.find('body')
-                        self.div_text = parsed_content.find('body').text
-                    else:
-                        self.div = parsed_content.find('div', {tag_type: tag_name})
-                        if not self.div:
-                            self.div = parsed_content.find('body')
-                            self.div_text = parsed_content.find('body').text
-                        else:
-                            self.div_text = parsed_content.find('div', {tag_type: tag_name}).text
-                else:
-                    self.div = parsed_content
-                    self.div_text = parsed_content
-            else:
-                self.div = self.html_text
-                if not self.div_text:
-                    self.div_text = self.html_text
+        self.div = ''
+        self.div_text = ''
+        try:    
+            self.div = whats_on(obj_type='html', obj_content=self.url, tag_type=tag_type, tag_name=tag_name)
         except:
             print('---some else error occurred (' + self.url + '): ' + str(sys.exc_info()))
-            if parsed_succesfuly:
-                if parsed_content:
-                    self.div = str(parsed_content)
-                    print('---cannot parse content of {0} ({1})'.format(self.url, parsed_content[:10]))
-                else:
-                    self.div = str(self.html_text)
-            else:
-                self.div = ''
-                self.div_text = ''
+            if not self.div:
+                print('---fetching whole page: {0} ( instead of tag {1}: {2} )'.format(self.url, tag_type, tag_name))
+                self.div = whats_on(obj_type='html', obj_content=self.url)
             #pprint(vars(self))
-
-    def get_url(self, url_valid):
-        if request_logic:
-            return requests.get(url_valid, timeout=(10, 5), headers=self.headers).content
-        else:
-            return urllib.request.urlopen(url_valid)
+        self.div_text = self.div
 
     def write_web_content_to_file(self, file_path, heading):
         if self.div:
@@ -517,6 +430,7 @@ def whats_on(obj_type='', obj_content='', tag_type='', tag_name=''):
     TEXT content - using match pattern or regexp
     """
     # if any(s in str(obj_type) for s in ['url', 'link', 'web', 'rss', 'xml']):
+    # if is address
     if '://' in obj_content:
         if web_easier:
             parsed = feedparser.parse(obj_content)
@@ -560,7 +474,7 @@ def load_content(content_address, is_local=False):
         return FileSystemObject(content_address).object_read()
     elif content_address.startswith('file:'):
         return FileSystemObject(content_address.split('///')[-1]).object_read()
-    elif content_address.startswith('ftp:'):
+    elif content_address.startswith('ftp:') or content_address.startswith('ftp.'):
         return 'FTP read not implemented yet'
     else:
         if not content_address.startswith(('http://', 'https://')):
@@ -575,6 +489,16 @@ def load_content(content_address, is_local=False):
                 return urllib.request.urlopen(content_address).read()
         except Exception as ex:
             print('failure: ' + str(ex.args))
+
+
+def is_html(query_text=''):
+    try:
+        if lxml.html.fromstring(query_text).find('.//*') is not None:
+            return True
+        else:
+            return False
+    except:
+        return False
 
 
 def xml_to_html(xml_text):

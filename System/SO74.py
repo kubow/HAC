@@ -15,7 +15,7 @@ def process_web_content(mode='', final_dir='', url=''):
         elif 'rss' in mode:
             web_objects = db.return_many('SELECT * FROM src_rss;')
         elif 'radio' in mode:
-            web_objects = db.return_many('SELECT * FROM src_rss;')
+            web_objects = db.return_many('SELECT * FROM src_radio;')
         else:
             web_objects = None  # must implement other browsing mode types
         for w in web_objects:

@@ -118,6 +118,7 @@ class SQL(object):
     select = 'SELECT {0} FROM {1};'
     select_where = 'SELECT {0} FROM {1} WHERE {2};'
 
+    select_log_values = select_where.format('log_text', 'Log', 'log_date="{0}"')
     select_node_text = select_where.format('txt', '"enc_nodes"', 'code = {0}')
     select_tables_in_db = select_where.format('tbl_name, type', '"sqlite_master"', 'type = "table"')
     select_views_in_db = select_where.format('tbl_name, type', '"sqlite_master"', 'type = "view"')
