@@ -49,7 +49,7 @@ except ImportError:
     web_easier = False
     
 try:
-    html_easier = True
+    html_easier = False # change after debug
     from bs4 import BeautifulSoup
 except ImportError:
     html_easier = False
@@ -131,8 +131,6 @@ class WebContent(HTMLParser):
     """General class for reading HTML Pages or RSS Feeds"""
 
     def __init__(self, url, log_file='', mode='html'):
-        uah = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.90 Safari/537.36'
-        HTMLParser.__init__(self)
         self.headers = {"User-Agent": uah}
         self.easier = html_easier # can use beatiful soup 4
         self.mode = mode
@@ -432,10 +430,9 @@ def whats_on(obj_type='', obj_content='', tag_type='', tag_name=''):
     # if any(s in str(obj_type) for s in ['url', 'link', 'web', 'rss', 'xml']):
     # if is address
     if '://' in obj_content:
+        obj_content = load_content(obj_content)
         if web_easier:
             parsed = feedparser.parse(obj_content)
-        else:
-            obj_content = load_content(obj_content)
     # distinct logic based on input object type
     if any(s in str(obj_type) for s in ['htm', 'url', 'link', 'web']):
         if html_easier:
@@ -443,7 +440,8 @@ def whats_on(obj_type='', obj_content='', tag_type='', tag_name=''):
         else:
             parsed = obj_content
     elif any(s in str(obj_type) for s in ['xml', 'rss']):
-        parsed = xml.etree.ElementTree.fromstring(obj_content)
+        parsed1 = xml.etree.ElementTree.fromstring(obj_content)
+        # compare variables parsed1 and parsed
     elif any(s in str(obj_type) for s in ['json', 'js']):
         parsed = json.loads(obj_content)
     else:
@@ -453,9 +451,7 @@ def whats_on(obj_type='', obj_content='', tag_type='', tag_name=''):
     # uncomment above for debug purposes
     if tag_type or tag_name:
         if any(s in str(obj_type) for s in ['htm', 'url', 'link', 'web']):
-            if web_easier:
-                return parsed[tag_name]
-            elif html_easier:
+            if html_easier:
                 return parsed.find('div', {tag_type: tag_name})
             else:
                 print('should get here...')

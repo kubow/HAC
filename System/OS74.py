@@ -96,13 +96,11 @@ class FileSystemObject:
         # if all dirs could do - or could it be used with files
         # build_path = self.separator.join('{0}'.format(val) for key, val in kwargs.items())
         build_path = ''
-        print(sorted(kwargs))
-        for fso_type, fso_name in sorted(kwargs).items():
-            # print(kwargs[fso_type])
-            if 'file' in fso_type:
-                file_name = kwargs[fso_type]
+        for arg in (sorted(kwargs)):
+            if 'file' in arg:
+                file_name = kwargs[arg]
             else:
-                build_path += fso_name + self.separator
+                build_path += kwargs[arg] + self.separator
                 file_name = ''
         if file_name:
             return self.path + self.separator + build_path + self.separator + file_name
