@@ -9,7 +9,7 @@ compare text simrality
 import argparse
 import datetime
 import difflib
-import json # alternative simplejson not used
+import json  # alternative simplejson not used
 import re
 import sys
 import xml.etree.ElementTree
@@ -26,10 +26,27 @@ from Template import HTML, SQL
 
 try:
     import requests
+
     request_logic = True
 except ImportError:
     import urllib.request
+
     request_logic = False
+
+try:
+    import lxml.html
+
+    html_easy = True
+except ImportError:
+    print("+++ lxml not imported, must determine html text alternatively")
+    html_easy = False
+
+try:
+    html_easier = False  # change after debug
+    from bs4 import BeautifulSoup
+except ImportError:
+    print("+++ beautiful soup not imported, must determine html text alternatively")
+    html_easier = False
 
 try:
     from html.parser import HTMLParser  # python 3x
@@ -37,30 +54,19 @@ except ImportError:
     from HTMLParser import HTMLParser  # python 2x
 
 try:
-    import lxml.html
-except ImportError:
-    print("lxml not imported, cannot determine html text")
-
-try:
     import feedparser
+
     web_easier = True
 except ImportError:
-    print("feedparser not imported, cannot process rss")
+    print("+++ feedparser not imported, cannot process rss")
     web_easier = False
-    
-try:
-    html_easier = False # change after debug
-    from bs4 import BeautifulSoup
-except ImportError:
-    html_easier = False
 
 try:
     import pandas
 except ImportError:
-    print('using alternative csv parser')
+    print('+++ using alternative csv parser')
 finally:
     import csv
-
 
 uah = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.90 Safari/537.36'
 headers = {"User-Agent": uah}
@@ -76,7 +82,7 @@ class TextContent(object):
             else:
                 self.block_text = block_text
                 self.source = 'direct_input'
-            self.valid = len(block_text) > 0 
+            self.valid = len(block_text) > 0
         except (OSError, IOError) as e:
             print(str(e.args))
         except:
@@ -114,7 +120,7 @@ class TextContent(object):
             return self.block_text
 
     def trim_line_last_n_chars(self, n=1):
-        n_chars = (-1*n)-1
+        n_chars = (-1 * n) - 1
         block_text = []
         for line in self.block_text:
             block_text.append(line[:n_chars])
@@ -132,7 +138,7 @@ class WebContent(HTMLParser):
 
     def __init__(self, url, log_file='', mode='html'):
         self.headers = {"User-Agent": uah}
-        self.easier = html_easier # can use beatiful soup 4
+        self.easier = html_easier  # can use beatiful soup 4
         self.mode = mode
         self.recording = 0  # flag for exporting data
         self.data = []
@@ -160,21 +166,21 @@ class WebContent(HTMLParser):
                         inner_text += themediacontent["width"]
         return inner_text
 
-    def process_url(self, tag_type='', tag_name=''):    
+    def process_url(self, tag_type='', tag_name=''):
         if 'id' in str(tag_type).lower():
             tag_type = 'id'
         elif 'class' in str(tag_type).lower():
             tag_type = 'class'
         self.div = ''
         self.div_text = ''
-        try:    
+        try:
             self.div = whats_on(obj_type='html', obj_content=self.url, tag_type=tag_type, tag_name=tag_name)
         except:
             print('---some else error occurred (' + self.url + '): ' + str(sys.exc_info()))
             if not self.div:
                 print('---fetching whole page: {0} ( instead of tag {1}: {2} )'.format(self.url, tag_type, tag_name))
                 self.div = whats_on(obj_type='html', obj_content=self.url)
-            #pprint(vars(self))
+            # pprint(vars(self))
         self.div_text = self.div
 
     def write_web_content_to_file(self, file_path, heading):
@@ -182,14 +188,14 @@ class WebContent(HTMLParser):
             print('creating ' + file_path + ' from: ' + self.url)
             top = heading.encode('utf-8')
             try:
-                FileSystemObject(file_path).object_write(HTML.skelet_titled.format(top, self.div), 'w+')
+                FileSystemObject(file_path).object_write(HTML.skelet_titled.format(top, self.div.decode('utf-8')), 'w+')
                 if self.log_file:
                     self.log_to_database(self.log_file.replace('.log', '.sqlite'), heading)
             except Exception as ex:
                 print('failure: ' + str(ex.args))
                 print(type(top))
                 print(dir(top))
-                #pprint(vars(self))
+                # pprint(vars(self))
         else:
             print('no content parsed from: ' + self.url)
 
@@ -330,7 +336,7 @@ class JsonContent(object):
         else:
             print('cycle all json files in folder and recursively call this function')
 
-    def write(self, file_name,  content=''):
+    def write(self, file_name, content=''):
         json_file = FileSystemObject(file_name)
         final_content = ''
         for record in content:
@@ -403,6 +409,7 @@ class MyHTMLParser(HTMLParser):
             self.recording -= 1
 
     def handle_data(self, data):
+        print('debug in parser handle_data: ' + str(self.recording))
         if self.recording:
             self.data.append(data)
 
@@ -431,7 +438,9 @@ def whats_on(obj_type='', obj_content='', tag_type='', tag_name=''):
     # if is address
     if '://' in obj_content:
         obj_content = load_content(obj_content)
-        if web_easier:
+        if html_easy:
+            obj_content = lxml.html.parse(obj_content).getroot()
+        elif web_easier:
             parsed = feedparser.parse(obj_content)
     # distinct logic based on input object type
     if any(s in str(obj_type) for s in ['htm', 'url', 'link', 'web']):
@@ -451,11 +460,16 @@ def whats_on(obj_type='', obj_content='', tag_type='', tag_name=''):
     # uncomment above for debug purposes
     if tag_type or tag_name:
         if any(s in str(obj_type) for s in ['htm', 'url', 'link', 'web']):
-            if html_easier:
+            if html_easy:
+                print('- - - lxml processing')
+                build = [a for a in parsed.cssselect('a')]
+                return ', '.join(build)
+            elif html_easier:
+                print('- - - beatifulSoup processing')
                 return parsed.find('div', {tag_type: tag_name})
             else:
-                print('should get here...')
-                return MyHTMLParser(tag_type, tag_name).feed(parsed.decode('utf-8'))
+                print('- - - HTMLParser processing')
+                return MyHTMLParser(tag_type, tag_name).feed(parsed.decode('utf-8')).data
         elif any(s in str(obj_type) for s in ['xml', 'rss']):
             return parsed[tag_name]
         else:
@@ -482,9 +496,10 @@ def load_content(content_address, is_local=False):
                 return requests.get(content_address, timeout=(10, 5), headers=headers).content
             else:
                 print('- - - > using urllib to download')
-                return urllib.request.urlopen(content_address).read()
+                request = urllib.request.Request(content_address, data=None, headers=headers)
+                return urllib.request.urlopen(request).read()
         except Exception as ex:
-            print('failure: ' + str(ex.args))
+            print('failure while fetching (' + content_address + '): ' + str(ex.args))
 
 
 def is_html(query_text=''):
