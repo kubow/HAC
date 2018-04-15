@@ -2,19 +2,19 @@ try:
     import pyowm
     weather_wrapper = True 
 except ImportError:
-    print('using weather simple web requesting')
+    print('+++ using weather simple web requesting')
     weather_wrapper = False
 try:
     from osmapi import OsmApi
     map_wrapper = True
 except ImportError:
-    print('using map simple web requesting')
+    print('+++ using map simple web requesting')
     map_wrapper = False
 try:
     import mapscript
     map_script = True
 except ImportError:
-    print('using simple map managing (map_server)')
+    print('+++ using simple map managing (map_server)')
     map_script = False
 
 from OS74 import FileSystemObject, DateTimeObject
@@ -73,7 +73,7 @@ class OpenWeatherMap(object):
     def owm_data_from_web(self, address):
         owm = WebContent(address)
         owm.process_url()
-        owm_data = JsonContent(owm.html_text, direct=True).content
+        owm_data = JsonContent(owm.div_text, direct=True).content
         #velocities = (self.weather_local._status, str(self.weather_local._pressure['press']),
         #              str(self.weather_local._humidity))
         return owm_data

@@ -26,16 +26,15 @@ from Template import HTML, SQL
 
 try:
     import requests
-
     request_logic = True
 except ImportError:
-    import urllib.request
-
+    #import urllib.request
+    url_logic = False
+    import http.client
     request_logic = False
 
 try:
     import lxml.html
-
     html_easy = True
 except ImportError:
     print("+++ lxml not imported, must determine html text alternatively")
@@ -55,7 +54,6 @@ except ImportError:
 
 try:
     import feedparser
-
     web_easier = True
 except ImportError:
     print("+++ feedparser not imported, cannot process rss")
@@ -295,16 +293,21 @@ class CsvContent(object):
 
 class JsonContent(object):
     def __init__(self, location, write=False, direct=False):
-        if direct:
-            self.content = json.loads(location)
-        else:
-            self.path = location
-            self.json_skeleton = '[\n{0}\n]'
-            self.json_row = '[{0}, {1}],\n'
-            if not write:
-                self.content = self.json_format()
+        try:
+            if direct:
+                self.content = json.loads(whats_on('http://'+location))
             else:
-                self.process()
+                self.path = location
+                self.json_skeleton = '[\n{0}\n]'
+                self.json_row = '[{0}, {1}],\n'
+                if not write:
+                    self.content = self.json_format()
+                else:
+                    self.process()
+        except:
+            print(location + ' > json_parse failure')
+            pprint(vars(self))
+            self.content = ''
 
     def process(self):
         fs = FileSystemObject(self.path)
@@ -437,8 +440,9 @@ def whats_on(obj_type='', obj_content='', tag_type='', tag_name=''):
     # if any(s in str(obj_type) for s in ['url', 'link', 'web', 'rss', 'xml']):
     # if is address
     if '://' in obj_content:
+        print('first loading content from web address')
         obj_content = load_content(obj_content)
-        if html_easy:
+        if html_easy and 'json' not in obj_type and 'xml' not in obj_type:
             obj_content = lxml.html.parse(obj_content).getroot()
         elif web_easier:
             parsed = feedparser.parse(obj_content)
@@ -452,6 +456,9 @@ def whats_on(obj_type='', obj_content='', tag_type='', tag_name=''):
         parsed1 = xml.etree.ElementTree.fromstring(obj_content)
         # compare variables parsed1 and parsed
     elif any(s in str(obj_type) for s in ['json', 'js']):
+        print('json proccess - ' + str(obj_content))
+        if not obj_content:
+            return 'cannot parse content (' + str(obj_content) + ')'
         parsed = json.loads(obj_content)
     else:
         parsed = obj_content
@@ -492,14 +499,22 @@ def load_content(content_address, is_local=False):
             content_address = 'http://' + content_address
         try:
             if request_logic:
-                print('- - - > using requests to download')
-                return requests.get(content_address, timeout=(10, 5), headers=headers).content
-            else:
-                print('- - - > using urllib to download')
+                request = requests.get(content_address, timeout=(10, 5), headers=headers)
+                print('- - - > succesfuly used requests to download')
+                return request.content
+            elif url_logic: # urllib seems to be malfunctioning in some environments
                 request = urllib.request.Request(content_address, data=None, headers=headers)
+                print('- - - > succesfuly used urllib to download')
                 return urllib.request.urlopen(request).read()
+            else:
+                conn = http.client.HTTPSConnection(content_address)
+                conn.request("GET", "/")
+                request = conn.getresponse()
+                request_data = request.read()
+                conn.close()
+                return request_data
         except Exception as ex:
-            print('failure while fetching (' + content_address + '): ' + str(ex.args))
+            print('! ! ! failure while fetching (' + content_address + '): ' + str(ex.args))
 
 
 def is_html(query_text=''):
