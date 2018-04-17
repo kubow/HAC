@@ -26,11 +26,11 @@ from Template import HTML, SQL
 
 try:
     import requests
-    request_logic = True
+    import http.client
+    request_logic = False
 except ImportError:
     #import urllib.request
     url_logic = False
-    import http.client
     request_logic = False
 
 try:

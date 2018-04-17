@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 import argparse
+import http.server
+import socketserver
 
 
 def process_web_content(mode='', final_dir='', url=''):
@@ -117,6 +119,13 @@ def mode_launcher(mode=None, source=None, additional_par=None, destination=None)
                     logger.log_operation('cannot compare in mode: ' + additional_par)
             else:
                 print(TextContent(source).similar_to(destination))
+        elif any(str(mode) in s for s in ['9', 'ui', 'localhost']):
+            port = 8000
+            handler = http.server.SimpleHTTPRequestHandler
+            with socketserver.TCPServer(("", port), handler) as httpd:
+                print("serving at port", port)
+                httpd.serve_forever()
+        
         elif str(mode).lower() == "q":
             print("\n Goodbye")
             mode = False
@@ -145,7 +154,7 @@ if __name__ == '__main__':
             -------------------------------------
             7.  Comparison text / directory / database
             8.  - NA -
-            9.  - NA -
+            9.  UI browser
             -------------------------------------
             ==========PRESS 'Q' TO QUIT==========""")
     input_loc = (" place/location of original data\n"
