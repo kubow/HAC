@@ -24,9 +24,14 @@ elif [ "$1" = "b" ]; then # directory
     extra_name="directory"
     in_object=$2
     execute_py
-elif [ "$1" = "l" ]; then # list directory files
+elif [ "$1" = "f" ]; then # list directories (without files)
     mode_name="lister"
     extra_name="directory"
+    in_object=$2
+    execute_py
+elif [ "$1" = "l" ]; then # list directory files
+    mode_name="lister"
+    extra_name="files"
     in_object=$2
     execute_py
 elif [ "$1" = "r" ]; then # rss
@@ -48,6 +53,7 @@ else
     echo '  t - pure text file'
     echo '- - - FOLDER MODE - - -'
     echo '  b - browse folders'
+    echo '  f - list just folders'
     echo '  l - list folder files'
     echo '- - - WEB MODE -'
     echo '  r - rss feed display'

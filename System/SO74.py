@@ -120,11 +120,12 @@ def mode_launcher(mode=None, source=None, additional_par=None, destination=None)
             else:
                 print(TextContent(source).similar_to(destination))
         elif any(str(mode) in s for s in ['9', 'ui', 'localhost']):
-            port = 8000
             handler = http.server.SimpleHTTPRequestHandler
-            with socketserver.TCPServer(("", port), handler) as httpd:
-                print("serving at port", port)
-                httpd.serve_forever()
+            #handler = http.server.BaseHTTPRequestHandler
+            server_address = ("", 8000)
+            httpd = http.server.HTTPServer(server_address, handler)
+            print("serving at ", server_address)
+            httpd.serve_forever()
         
         elif str(mode).lower() == "q":
             print("\n Goodbye")

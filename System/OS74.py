@@ -74,7 +74,7 @@ class FileSystemObject:
         if to_path:
             self.destination = to_path
         else:
-            self.destination = from_path
+            self.destination = ''
 
     def get_separator_from_path(self):
         if '\\' in self.path:
@@ -138,8 +138,9 @@ class FileSystemObject:
                 print('directory copy not implemented')
 
     def directory_lister(self, list_files=False):
-        structure_fld = FileSystemObject(FileSystemObject().dir_up(1)).append_objects(dir='Structure')
-        mlt_fld = FileSystemObject(FileSystemObject().dir_up(1)).append_objects(dir='Multimedia')
+        root_fld = FileSystemObject().dir_up(1)
+        structure_fld = FileSystemObject(root_fld).append_objects(dir='Structure')
+        mlt_fld = FileSystemObject(root_fld).append_objects(dir='Multimedia')
         template_file = FileSystemObject(structure_fld).append_objects(file='HTML_DirectoryList.txt')
         if not self.destination:
             self.destination = FileSystemObject(mlt_fld).append_objects(file='DirectoryList.html')
