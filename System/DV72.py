@@ -43,16 +43,17 @@ class ControlDevice(object):
         self.csv_file = ''
         self.last_run = ''
         # pprint(vars(current_platform))
+        self.device_sender = ''
         self.device_name = current_platform.hostname
         self.device_user = current_platform.environment
         self.device_platform = current_platform.main
         b = FileSystemObject(self.output_path).get_another_directory_file('list_senzor.sh')
-        print(b)
-        self.usb_list2 = current_platform.check_output(b)
+        self.usb_list2 = current_platform.check_output(b).decode().split('\n')
         self.usb_list = current_platform.list_attached_peripherals()
 
     def setup_device(self, device, sensor=None, timeout=0):
         # override values: table_fields, table_default_val, port, br, timeout, last_run
+        self.device_sender = device
         if FileSystemObject(self.setup_db).is_file:
             db = DataBaseObject(self.setup_db)
             # table name, that will hold values
@@ -88,6 +89,11 @@ class ControlDevice(object):
             self.table_name = 'measured'
             print_text = 'not able to load setup database, using default {0} / {1}'
             logger.log_operation(print_text.format(self.port, self.br))
+        # validate port & br (that the device is really connected)
+        if self.validate_usb_driver():
+            print('corresponding driver found, currently set: ' + self.port)
+        else:
+            print('no corresponding driver found, currently set: ' + self.port)
         # timeout waiting time
         self.timeout = timeout
         # last run file
@@ -96,6 +102,19 @@ class ControlDevice(object):
 
     def setup_output_path(self, path):
         self.output_path = path
+
+    def validate_usb_driver(self):
+        for device in self.usb_list2:
+            if len(device) < 1:
+                continue
+            if device.split(' - ')[0] in self.port:
+                print(device.split(' - ')[0], self.port)
+                return True
+            elif self.device_sender in str(device.split(' - ')[-1]).lower():
+                print('found ' + self.device_sender + ' string - changing to it')
+                self.port = device.split(' - ')[0]
+                return True
+        return False
         
     def read_serial(self):
         """reading serial line and mirror it to CSV file"""
@@ -136,7 +155,7 @@ class ControlDevice(object):
         except Exception as ex:
             print(ex.args[0].replace('\n', ' '))
             print('timeframe now : '+ str(now) + ' / ' + 'last_run' + str(self.last_run))
-            pprint(vars(self))
+            # pprint(vars(self))
             # if error found, do timeout
             # raw_input("Press enter to continue")
             return 'however error ocured .. '

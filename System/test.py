@@ -30,7 +30,7 @@ class DeviceSetting(unittest.TestCase):
 class TestLocalContent(unittest.TestCase):
     """Check if local data accessible"""
     def test_local_content(self):
-        location = 'C:\\_Run\\Script\\Multimedia'
+        location = FileSystemObject().dir_up(1)
         fso = FileSystemObject(location)
         logger = Log(load_platform_based('Script/Multimedia/logfile.log'), 'Folder', 'test.py', False)
         text = 'Checking folder ({0}) manageable: {1}'.format(location, str(1))
