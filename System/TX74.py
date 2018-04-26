@@ -27,11 +27,15 @@ from Template import HTML, SQL
 try:
     import requests
     import http.client
-    request_logic = False
+    request_logic = True
 except ImportError:
-    #import urllib.request
-    url_logic = False
     request_logic = False
+
+try:
+    import urllib.request
+    url_logic = True
+except ImportError:
+    url_logic = False
 
 try:
     import lxml.html
@@ -263,6 +267,7 @@ class CsvContent(object):
         try:
             # load field names as variables
             csv_object = pandas.read_csv(self.path, error_bad_lines=False)  # , parse_dates=True, index_col=0, header=0)
+            print(csv_object.describe())
             for column in csv_object.describe().items():
                 if 'unnamed' in column[0][0].lower():
                     continue
@@ -440,8 +445,12 @@ def whats_on(obj_type='', obj_content='', tag_type='', tag_name=''):
     # if any(s in str(obj_type) for s in ['url', 'link', 'web', 'rss', 'xml']):
     # if is address
     if '://' in obj_content:
-        print('first loading content from web address')
+        print('... first loading content from web address')
+        adr = obj_content
         obj_content = load_content(obj_content)
+        if not obj_content:
+            print('counld not read web address: ' + adr)
+            return None
         if html_easy and 'json' not in obj_type and 'xml' not in obj_type:
             obj_content = lxml.html.parse(obj_content).getroot()
         elif web_easier:
@@ -500,11 +509,11 @@ def load_content(content_address, is_local=False):
         try:
             if request_logic:
                 request = requests.get(content_address, timeout=(10, 5), headers=headers)
-                print('- - - > succesfuly used requests to download')
+                print('--- > succesfuly used requests to download')
                 return request.content
             elif url_logic: # urllib seems to be malfunctioning in some environments
                 request = urllib.request.Request(content_address, data=None, headers=headers)
-                print('- - - > succesfuly used urllib to download')
+                print('--- > succesfuly used urllib to download')
                 return urllib.request.urlopen(request).read()
             else:
                 conn = http.client.HTTPSConnection(content_address)
@@ -514,7 +523,7 @@ def load_content(content_address, is_local=False):
                 conn.close()
                 return request_data
         except Exception as ex:
-            print('! ! ! failure while fetching (' + content_address + '): ' + str(ex.args))
+            print('!!! failure while fetching (' + content_address + '): ' + str(ex.args))
 
 
 def is_html(query_text=''):

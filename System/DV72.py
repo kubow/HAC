@@ -134,7 +134,7 @@ class ControlDevice(object):
             time.sleep(self.timeout + 2)
             # received = ser.readline().replace('\r\n', ' ')  # not used - instead read a stack, average with one ts
             to_read = ser.inWaiting()
-            received = ser.read(to_read)
+            received = ser.read(to_read).decode()
             # parse data / now = rounded to x min intervals
             if len(received) >= 1:
                 data_vals[just_now] = dict(item.split(":") for item in received.split("\r\n") if len(item) > 1)
@@ -167,8 +167,10 @@ class ControlDevice(object):
         fs = FileSystemObject(self.output_path + 'Measured')
         fs.object_create_neccesary()
         for csv_file in fs.object_read(filter='csv').items():
+            print('processing file: ' + str(csv_file))
             db = DataBaseObject(fs.append_objects(file=csv_file[0][:6] + '.sqlite'))
             csv = CsvContent(fs.append_objects(file=csv_file[0]), date_format=self.date_format)
+            print(csv)
             into = 'timestamp, '
             values = '"' + csv.time_stamp + '", '
             for time_series, average in csv.content.items():
