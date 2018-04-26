@@ -6,7 +6,6 @@ replace line endings, load/write text to a file
 compare text simrality
 """
 
-import argparse
 import datetime
 import difflib
 import json  # alternative simplejson not used
@@ -15,7 +14,7 @@ import sys
 import xml.etree.ElementTree
 from glob import glob  # pdf reading purposes
 from pprint import pprint
-from time import clock  # benchmark purposes
+# from time import clock  # benchmark purposes
 
 from DB74 import DataBaseObject
 from OS74 import CurrentPlatform, FileSystemObject
@@ -175,14 +174,11 @@ class WebContent(HTMLParser):
             tag_type = 'class'
         self.div = ''
         self.div_text = ''
-        try:
-            self.div = whats_on(obj_type='html', obj_content=self.url, tag_type=tag_type, tag_name=tag_name)
-        except:
-            print('---some else error occurred (' + self.url + '): ' + str(sys.exc_info()))
-            if not self.div:
-                print('---fetching whole page: {0} ( instead of tag {1}: {2} )'.format(self.url, tag_type, tag_name))
-                self.div = whats_on(obj_type='html', obj_content=self.url)
-            # pprint(vars(self))
+        self.div = whats_on(obj_type='html', obj_content=self.url, tag_type=tag_type, tag_name=tag_name)
+        if not self.div:
+            print('--- fetching whole page: {0} ( instead of tag {1}: {2} )'.format(self.url, tag_type, tag_name))
+            self.div = whats_on(obj_type='html', obj_content=self.url)
+        # pprint(vars(self))
         self.div_text = self.div
 
     def write_web_content_to_file(self, file_path, heading):
@@ -445,22 +441,14 @@ def whats_on(obj_type='', obj_content='', tag_type='', tag_name=''):
     # if any(s in str(obj_type) for s in ['url', 'link', 'web', 'rss', 'xml']):
     # if is address
     if '://' in obj_content:
-        print('... first loading content from web address')
-        adr = obj_content
+        print('... loading content from web address ' + obj_content)
         obj_content = load_content(obj_content)
-        if not obj_content:
-            print('counld not read web address: ' + adr)
-            return None
-        if html_easy and 'json' not in obj_type and 'xml' not in obj_type:
-            obj_content = lxml.html.parse(obj_content).getroot()
-        elif web_easier:
-            parsed = feedparser.parse(obj_content)
-    # distinct logic based on input object type
+    # distinct logic based on input object type (presuming obj_content already contain text)
     if any(s in str(obj_type) for s in ['htm', 'url', 'link', 'web']):
         if html_easier:
             parsed = BeautifulSoup(obj_content, 'lxml')
         else:
-            parsed = obj_content
+            parsed = obj_content.decode()
     elif any(s in str(obj_type) for s in ['xml', 'rss']):
         parsed1 = xml.etree.ElementTree.fromstring(obj_content)
         # compare variables parsed1 and parsed
@@ -470,26 +458,30 @@ def whats_on(obj_type='', obj_content='', tag_type='', tag_name=''):
             return 'cannot parse content (' + str(obj_content) + ')'
         parsed = json.loads(obj_content)
     else:
-        parsed = obj_content
+        parsed = obj_content.decode()
     # second step is voluntary - extract only filtered tags
     # pprint(parsed)
     # uncomment above for debug purposes
     if tag_type or tag_name:
-        if any(s in str(obj_type) for s in ['htm', 'url', 'link', 'web']):
-            if html_easy:
-                print('- - - lxml processing')
-                build = [a for a in parsed.cssselect('a')]
-                return ', '.join(build)
-            elif html_easier:
-                print('- - - beatifulSoup processing')
-                return parsed.find('div', {tag_type: tag_name})
+        try:
+            if any(s in str(obj_type) for s in ['htm', 'url', 'link', 'web']):
+                if html_easy:
+                    print('--- lxml processing')
+                    build = [a for a in parsed.cssselect('a')]
+                    return ', '.join(build)
+                elif html_easier:
+                    print('- - - beatifulSoup processing')
+                    return parsed.find('div', {tag_type: tag_name})
+                else:
+                    print('- - - HTMLParser processing')
+                    return MyHTMLParser(tag_type, tag_name).feed(parsed.decode('utf-8')).data
+            elif any(s in str(obj_type) for s in ['xml', 'rss']):
+                return parsed[tag_name]
             else:
-                print('- - - HTMLParser processing')
-                return MyHTMLParser(tag_type, tag_name).feed(parsed.decode('utf-8')).data
-        elif any(s in str(obj_type) for s in ['xml', 'rss']):
-            return parsed[tag_name]
-        else:
-            return TextContent(parsed).similar_to(tag_name)
+                return TextContent(parsed).similar_to(tag_name)
+        except:
+            print('!!! cannot find tag ' + tag_type + ' - ' + tag_name)
+            return parsed
     else:
         return parsed
 
@@ -509,12 +501,20 @@ def load_content(content_address, is_local=False):
         try:
             if request_logic:
                 request = requests.get(content_address, timeout=(10, 5), headers=headers)
-                print('--- > succesfuly used requests to download')
+                print('--- > successfully used requests to download')
                 return request.content
+            elif html_easy:
+                request = lxml.html.parse(content_address)
+                print('--- > successfully used lxml.html to download')
+                return request.getroot()
             elif url_logic: # urllib seems to be malfunctioning in some environments
                 request = urllib.request.Request(content_address, data=None, headers=headers)
-                print('--- > succesfuly used urllib to download')
+                print('--- > successfully used urllib to download')
                 return urllib.request.urlopen(request).read()
+            elif web_easier:
+                request = feedparser.parse(content_address)
+                print('--- > successfully used feedparser to download')
+                return request
             else:
                 conn = http.client.HTTPSConnection(content_address)
                 conn.request("GET", "/")
@@ -523,7 +523,7 @@ def load_content(content_address, is_local=False):
                 conn.close()
                 return request_data
         except Exception as ex:
-            print('!!! failure while fetching (' + content_address + '): ' + str(ex.args))
+            print('!!! failure while fetching (' + content_address + '): ' + str(sys.exc_info()))  # + str(ex.args))
 
 
 def is_html(query_text=''):
