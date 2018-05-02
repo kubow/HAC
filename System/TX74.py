@@ -38,7 +38,7 @@ except ImportError:
 
 try:
     import lxml.html
-    html_easy = True
+    html_easy = True  # change after debug
 except ImportError:
     print("+++ lxml not imported, must determine html text alternatively")
     html_easy = False
@@ -186,7 +186,7 @@ class WebContent(HTMLParser):
             print('creating ' + file_path + ' from: ' + self.url)
             top = heading.encode('utf-8')
             try:
-                FileSystemObject(file_path).object_write(HTML.skelet_titled.format(top, self.div.decode('utf-8')), 'w+')
+                FileSystemObject(file_path).object_write(HTML.skelet_titled.format(top, self.div), 'w+')
                 if self.log_file:
                     self.log_to_database(self.log_file.replace('.log', '.sqlite'), heading)
             except Exception as ex:
@@ -207,7 +207,10 @@ class WebContent(HTMLParser):
         # table structure
         table_def = 'Log (Connection, CPName, Report, LogDate, User, Domain)'
         values_template = '"{0}", "{1}", "{2}", "{3}", "{4}", "{5}"'
-        table_values = values_template.format(heading, 0, tag_content, time_stamp, user, domain)
+        if "" in tag_content:
+            table_values = values_template.format(heading, 0, len(tag_content), time_stamp, user, domain)
+        else:
+            table_values = values_template.format(heading, 0, tag_content, time_stamp, user, domain)
         sql = SQL.insert.format(table_def, table_values)
         DataBaseObject(db_path).log_to_database('Log', sql)
 
@@ -470,17 +473,17 @@ def whats_on(obj_type='', obj_content='', tag_type='', tag_name=''):
                     build = [a for a in parsed.cssselect('a')]
                     return ', '.join(build)
                 elif html_easier:
-                    print('- - - beatifulSoup processing')
+                    print('--- beatifulSoup processing')
                     return parsed.find('div', {tag_type: tag_name})
                 else:
-                    print('- - - HTMLParser processing')
-                    return MyHTMLParser(tag_type, tag_name).feed(parsed.decode('utf-8')).data
+                    print('--- HTMLParser processing')
+                    return MyHTMLParser(tag_type, tag_name).feed(parsed).data
             elif any(s in str(obj_type) for s in ['xml', 'rss']):
                 return parsed[tag_name]
             else:
                 return TextContent(parsed).similar_to(tag_name)
         except:
-            print('!!! cannot find tag ' + tag_type + ' - ' + tag_name)
+            print('!!! cannot find tag ' + tag_type + ' - ' + tag_name + '(' + str(sys.exc_info()) + ')')
             return parsed
     else:
         return parsed

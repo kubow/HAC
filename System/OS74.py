@@ -203,6 +203,8 @@ class FileSystemObject:
             return obj_lib
 
     def object_write(self, content='', mode='w+'):
+        if not self.destination:
+            self.destination = self.path
         if not self.exist:
             self.object_create_neccesary()
         if FileSystemObject(self.destination).is_file:
