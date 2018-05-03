@@ -187,38 +187,41 @@ class ControlDevice(object):
         else:
             print('{0} files processed ...'.format(str(csv_cnt)))
 
-    def time_aggregated(self, time_value, debug=False):
-        """function to return rounded time
+    def time_aggregated(self, t_val=False, debug=False):
+        """use to return rounded time
         second parameter aggregation time interval """
         # saving in <self.interval_shift> minute intervals
-        if isinstance(time_value, str):
-            time_value = datetime.datetime.strptime(time_value, self.date_format)
-        minute = float(time_value.minute) + float(time_value.second) / 60
+        if isinstance(t_val, str):
+            t_val = datetime.datetime.strptime(t_val, self.date_format)
+        else:
+            t_val = datetime.datetime.now()
+            print('time value not submited, using now: ', t_val)
+        minute = float(t_val.minute) + float(t_val.second) / 60
         modulo = float(minute % self.interval_shift)
         if debug:
             print('***************** debug *****************')
-            print('time_value : ' + time_value)
-            print('minutes : ' + str(minute) + ' / modulo: ' + str(modulo))
+            print('time value : ' + t_val)
+            print('in minutes : ' + str(minute) + ' / modulo: ' + str(modulo))
             print('***************** debug *****************')
         # decide where to put value
-        hour_new = time_value.hour
+        hour_new = t_val.hour
         if modulo >= float(self.interval_shift / 2):
             min_new = minute - modulo + self.interval_shift
             if min_new > 60 - self.interval_shift:
                 min_new = 0
-                hour_new = time_value.hour + 1
+                hour_new = t_val.hour + 1
                 if hour_new > 23:
                     hour_new = 0
-                    nd = datetime.date(time_value.year, time_value.month, time_value.day)
+                    nd = datetime.date(t_val.year, t_val.month, t_val.day)
                     ndn = nd + datetime.timedelta(days=1)
-                    time_value.year = ndn.year
-                    time_value.month = ndn.month
-                    time_value.day = ndn.day
+                    t_val.year = ndn.year
+                    t_val.month = ndn.month
+                    t_val.day = ndn.day
         else:
             min_new = minute - modulo
-        value_aggregated = datetime.datetime(time_value.year,
-                                             time_value.month, time_value.day, hour_new, int(min_new), 0, 0)
-        # print('timestamp: ' + str(time_value) + ' > ' + str(value_aggregated))
+        value_aggregated = datetime.datetime(t_val.year,
+                                             t_val.month, t_val.day, hour_new, int(min_new), 0, 0)
+        # print('timestamp: ' + str(t_val) + ' > ' + str(value_aggregated))
         return value_aggregated
 
     def process_time_series(self, values):
