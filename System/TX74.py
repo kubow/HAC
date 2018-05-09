@@ -12,8 +12,10 @@ import json  # alternative simplejson not used
 import re
 import sys
 import xml.etree.ElementTree
+from collections import Counter
 from glob import glob  # pdf reading purposes
 from pprint import pprint
+from itertools import islice
 # from time import clock  # benchmark purposes
 
 from DB74 import DataBaseObject
@@ -431,6 +433,18 @@ def file_content_difference(file1, file2):
     for line in added:
         if line not in removed:
             print(line)
+
+
+def frequency_count(text_stream, top_counts=10):
+    """function to return top n words from text stream
+    return object is a dictionary"""
+    # make a list from text stream
+    stream_list = text_stream.replace('.', '').replace(',', '').split()
+    # get counts of all words
+    counts = Counter(stream_list)
+    # determine statistics
+    final_dict = {k: counts[k] for k in list(counts.keys())[:top_counts]}
+    return final_dict
 
 
 def whats_on(obj_type='', obj_content='', tag_type='', tag_name=''):
