@@ -170,10 +170,6 @@ class WebContent(HTMLParser):
         return inner_text
 
     def process_url(self, tag_type='', tag_name=''):
-        if 'id' in str(tag_type).lower():
-            tag_type = 'id'
-        elif 'class' in str(tag_type).lower():
-            tag_type = 'class'
         self.div = ''
         self.div_text = ''
         self.div = whats_on(obj_type='html', obj_content=self.url, tag_type=tag_type, tag_name=tag_name)
@@ -456,7 +452,6 @@ def whats_on(obj_type='', obj_content='', tag_type='', tag_name=''):
     TEXT content - using match pattern or regexp
     """
     # if any(s in str(obj_type) for s in ['url', 'link', 'web', 'rss', 'xml']):
-    # if is address
     if '://' in obj_content:
         print('... loading content from web address ' + obj_content)
         obj_content = load_content(obj_content)
