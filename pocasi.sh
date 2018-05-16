@@ -22,8 +22,8 @@ aggregate()
     echo =============================
     echo "python write proccessed data"
     echo =============================
-    echo 'syntax: '${py_data_file}' -l location -m mode(rea/agg)'
-    echo 'Running on linux - writing '${YY}${MM}"("${DD}").db"
+    echo 'syntax: '${py_data_file}' -l '${log_dir}' -m mode(rea/agg)'
+    #echo 'Running on linux - writing '${YY}${MM}"("${DD}").db"
     ${py_data_file} -l ${log_dir} -m aggregate
 }
 

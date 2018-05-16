@@ -18,12 +18,13 @@ try:
     import serial
     serial_read = True
 except ImportError:
-    print('cannot read serial input, missing python library..')
+    print('!!! cannot read serial input, missing python library..')
     serial_read = False
 
-from OS74 import FileSystemObject, CurrentPlatform, CurrentPlatformControl
+from OS74 import FileSystemObject, CurrentPlatformControl
 from DB74 import DataBaseObject
 from TX74 import CsvContent, JsonContent
+
 
 class ControlDevice(object):
     def __init__(self, aggregate_time_step=2):
@@ -51,7 +52,7 @@ class ControlDevice(object):
         self.usb_list2 = current_platform.check_output(b).decode().split('\n')
         self.usb_list = current_platform.list_attached_peripherals()
 
-    def setup_device(self, device, sensor=None, timeout=0):
+    def setup_device(self, device, timeout=0):
         # override values: table_fields, table_default_val, port, br, timeout, last_run
         self.device_sender = device
         if FileSystemObject(self.setup_db).is_file:
@@ -173,7 +174,9 @@ class ControlDevice(object):
             print(csv)
             into = 'timestamp, '
             values = '"' + csv.time_stamp + '", '
-            for time_series, average in csv.content.items():
+            print(dir(csv))
+            print(type(csv))
+            for time_series, average in csv.content().items():
                 into += time_series + ', '
                 values += str(average) + ', '
             into = self.table_name + ' (' + into[:-2] + ')'
@@ -249,7 +252,7 @@ if __name__ == '__main__':
     logger = Log(args.l + 'logfile.log', 'device', 'DV72.py',  True)
     dev.setup_output_path(args.l)
     # device settings: port, baud rate and timeout
-    dev.setup_device('arduino', "all sensors", 0)
+    dev.setup_device('arduino', timeout=0)
     # log sql (debug) print(sql)
     
     if 'read' in args.m or 'ser' in args.m:

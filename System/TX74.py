@@ -264,7 +264,6 @@ class CsvContent(object):
         try:
             # load field names as variables
             csv_object = pandas.read_csv(self.path, error_bad_lines=False)  # , parse_dates=True, index_col=0, header=0)
-            print(csv_object.describe())
             for column in csv_object.describe().items():
                 if 'unnamed' in column[0][0].lower():
                     continue
